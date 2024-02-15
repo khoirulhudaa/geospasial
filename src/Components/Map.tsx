@@ -2009,7 +2009,7 @@ const Map: React.FC<mapProps> = ({
         name_location: nameIndex !== -1 ? row[nameIndex] : '',
         lat: latIndex !== -1 ? row[latIndex] : '',
         long: longIndex !== -1 ? row[longIndex] : ''
-      }));
+      })).filter((obj: any) => obj.name_location !== '' && obj.lat !== '' && obj.long !== '' && obj.name_location !== undefined && obj.lat !== undefined && obj.long !== undefined);
 
       // Menyimpan data yang sudah dikonversi
       setExcelData(convertedData);
