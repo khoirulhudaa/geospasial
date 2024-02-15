@@ -9,7 +9,7 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(
-    async function (config) {
+    async function (config: any) {
         const token = store.getState().Auth.token;
         console.log(token)
 
@@ -23,17 +23,17 @@ api.interceptors.request.use(
 
         return config;
     },
-    function (error) {
+    function (error: any) {
         return Promise.reject(error);
     }
 );
 
 // Tambahkan interceptor respons
 api.interceptors.response.use(
-    function (response) {
+    function (response: any) {
         return response;
     },
-    function (error) {
+    function (error: any) {
           if (error.response.status === 403 || error.response.message == "You don't have access permissions.") {
               window.location.pathname = '/'
           }
