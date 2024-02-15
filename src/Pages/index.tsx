@@ -84,7 +84,7 @@ const Homepage: React.FC = () => {
       setAllDinas(resultDinas.data.data)
       setStatus(false)
     })()
-  }, [status])
+  }, [status, dinasID])
 
   const auth = store.getState().Auth.auth ?? ''
   console.log(auth)
@@ -642,7 +642,7 @@ const Homepage: React.FC = () => {
                               if(searchTitle !== '') {
                                 return data.title.toLowerCase().includes(searchTitle.toLowerCase()) && data?.dinas_id === dinasID
                               } else {
-                                return true
+                                return data?.dinas_id === dinasID
                               }
                             })
                             .map((data: any, index: number) => (
