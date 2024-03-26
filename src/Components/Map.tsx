@@ -1,3 +1,5 @@
+import { faArrowsRotate, faLocationCrosshairs } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import domtoimage from 'dom-to-image'; // Jika menggunakan dom-to-image
 import { saveAs } from 'file-saver';
 import L, { icon } from 'leaflet';
@@ -5,11 +7,16 @@ import markerIconUrl from 'leaflet/dist/images/marker-icon.png';
 import markerShadowUrl from 'leaflet/dist/images/marker-shadow.png';
 import 'leaflet/dist/leaflet.css';
 import React, { useEffect, useRef, useState } from "react";
-import { FaBuilding, FaCameraRetro, FaEye, FaEyeSlash, FaFileExport, FaGoogle, FaGripLines, FaIcons, FaPlusCircle, FaTextHeight, FaTextWidth, FaTimes, FaUpload, FaVectorSquare } from 'react-icons/fa';
+import ReactDOMServer from 'react-dom/server';
+import { FaBuilding, FaCameraRetro, FaEye, FaEyeSlash, FaFileExport, FaGoogle, FaGripLines, FaIcons, FaPlusCircle, FaTextHeight, FaTextWidth, FaTimes, FaTrashAlt, FaUpload, FaVectorSquare } from 'react-icons/fa';
 import { MapContainer, Marker, Polygon, Polyline, Popup, TileLayer, Tooltip, useMapEvent } from "react-leaflet";
+import { useDispatch, useSelector } from 'react-redux';
 import * as XLSX from 'xlsx';
 import { mapProps } from '../Models/componentInterface';
+import { clearCoordinate, getCoordinate } from '../Store/coordinateSlice';
 import PopupUploadFile from './PopupUploadFile';
+import SweetAlert from './SweetAlert';
+import API from '../Services/service';
 
 const Map: React.FC<mapProps> = ({
   handleAddKoordinat, 
@@ -22,7 +29,13 @@ const Map: React.FC<mapProps> = ({
   handleShowAll,
   showAll,
   dataSubdistrict,
+  swipe,
+  color,
+  customData,
+  handleAlert,
 }) => {
+
+  const dispatch = useDispatch()
   
   const [lines, setLines] = useState<any>([]);
   const [excelData, setExcelData] = useState<any>([]);
@@ -38,6 +51,29 @@ const Map: React.FC<mapProps> = ({
   const [selectIcon, setSelectIcon] = useState<string>('')
   const [activeMenuIcon, setActieMenuIcon] = useState<boolean>(false)
   const [subdistrictDots, setSubdistrictDots] = useState<boolean>(false)
+  const [coordinates, setCoordinates] = useState<any[]>([])
+  const [activeClick, setActiveClick] = useState<boolean>(false)
+  const [activeClick2, setActiveClick2] = useState<any>(null)
+  const [selectColor, setSelectColor] = useState<any>(null)
+  const [status, setStatus] = useState<boolean>(false)
+
+  const coorNew = useSelector((state: any) => state.Coordinate?.coordinate)
+  
+  useEffect(() => {
+    setCoordinates(coorNew)
+    if(activeClick) {
+      changeColor(color)
+    }
+    setStatus(false)
+  }, [coordinates.length, coorNew.length, status, color, selectColor])
+
+  const changeColor = (newColor: any) => {
+    setSelectColor(newColor);
+    setActiveClick2(false)
+    setTimeout(() => {
+      setActiveClick2(true)
+    }, 100)
+  };
 
   const kabupatenCirebonBoundary = [
     [-6.516341029775919, 108.53873545063794], // Koordinat 1
@@ -1902,6 +1938,8 @@ const Map: React.FC<mapProps> = ({
     return coordinates;
   };
 
+  console.log('all title:',data)
+  
   // Blok area koordinat (bgcolor dan border)
   const areas = (excelData.length > 0 ? excelData : (subdistrictDots && dataSubdistrict.length > 0 ? dataSubdistrict : data[0]?.coordinate)).map((marker: any) => {
     const lat = parseFloat(marker.lat);
@@ -1913,7 +1951,6 @@ const Map: React.FC<mapProps> = ({
     };
   });
 
-  // Perbatasan kabupaten cirebon
   useEffect(() => {
     const linesData = [...kabupatenCirebonBoundary.map((marker: any) => [marker[0], marker[1]]), [kabupatenCirebonBoundary[0][0], kabupatenCirebonBoundary[0][1]]];
     setLines(linesData);
@@ -1927,16 +1964,26 @@ const Map: React.FC<mapProps> = ({
         excelData.length > 0 ? excelData[0]?.long : (subdistrictDots ? parseFloat(dataSubdistrict[0]?.long) : parseFloat(data[0]?.coordinate[0]?.long))
     ]];
 
-    console.log('lineMarker',linesDataMarker)
-
     setLineMarkers(linesDataMarker);
-  }, [kabupatenCirebonBoundary?.length, data[0]?.coordinate.length, excelData?.length, nameFile, subdistrictDots]);
+    setStatus(false)
+
+  }, [kabupatenCirebonBoundary?.length, status, data[0]?.coordinate.length, excelData?.length, nameFile, subdistrictDots]);
 
   const MapEventsHandler = () => {
+    if(activeClick) {
+      useMapEvent('click', (value: any) => {
+        const data = [
+          value?.latlng?.lat,
+          value?.latlng?.lng
+        ]
+        dispatch(getCoordinate(data))
+        setCoordinates((prev: any) => [...prev, data])
+      })
+    }
     useMapEvent('moveend', (event: any) => {
-      const map = event.target; // Target peta
-      const center = map.getCenter(); // Mendapatkan koordinat tengah peta yang baru
-      setCurrentPosition([center.lat, center.lng]); // Simpan koordinat ke state
+      const map = event.target;
+      const center = map.getCenter(); 
+      setCurrentPosition([center.lat, center.lng]); 
     });
 
     return null;
@@ -1965,10 +2012,24 @@ const Map: React.FC<mapProps> = ({
     saveAs(geoJSONBlob, 'geospasial.geojson');
   };
 
+  const CustomIcon = ({number}: {number: number}) => (
+    <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+      <span className="text-white">{number}</span>
+    </div>
+  );
+
+  const createCustomIcon = (index: number) => {
+    return L.divIcon({
+      html: ReactDOMServer.renderToString(<CustomIcon number={index} />),
+      iconSize: [30,  30], 
+      className: '', 
+    });
+  };
+
   const myIcon = L.divIcon({
     className: 'my-div-icon',
     html: `<p style="font-size:  26px;">${subdistrictDots ? '🏤' : selectIcon}</p>`, 
-    iconAnchor: [10,  25], // titik ancaman ikon
+    iconAnchor: [10,  25],
   });
 
   const defaultIcon = icon({
@@ -1996,7 +2057,7 @@ const Map: React.FC<mapProps> = ({
             return i;
           }
         }
-        return -1; // Jika tidak ditemukan
+        return -1; 
       };
       
       // Mengonversi data Excel menjadi array of objects dengan property name_location, lat, dan long
@@ -2012,6 +2073,7 @@ const Map: React.FC<mapProps> = ({
       })).filter((obj: any) => obj.name_location !== '' && obj.lat !== '' && obj.long !== '' && obj.name_location !== undefined && obj.lat !== undefined && obj.long !== undefined);
 
       // Menyimpan data yang sudah dikonversi
+      console.log('new data from excel:', convertedData)
       setExcelData(convertedData);
       setActiveUploadExcel(!activeUploadExcel)
     };
@@ -2037,15 +2099,47 @@ const Map: React.FC<mapProps> = ({
   };
 
   const filteredData = excelData.length > 0 ? excelData : (showAll ? data.flatMap(entry => entry.coordinate) : (data.length > 0 ? data[0]?.coordinate : []));
-  
+
   const checkForDisaster = (conditions: any[]) => {
     for (let i = 0; i < conditions?.length; i++) {
       if (conditions[i].label === "Rawan bencana") {
-        console.log(i) // Jika ada label "rawan bencana", kembalikan true
+        console.log(i) 
         return true;
       }
     }
-    return false; // Jika tidak ada label "rawan bencana", kembalikan false
+    return false; 
+  }
+
+  const handleClear = () => {
+    dispatch(clearCoordinate())
+    setCoordinates([])
+  }
+
+  const handleActiveCustom = () => {
+    setActiveClick(!activeClick)
+    setActiveClick2(!activeClick2)
+    swipe()
+  }
+
+  const handleFinallyRemoveCoordinate = async (id: string) => {
+    const response = await API.removeCoordinateCustom(id)
+    console.log('delete:', response.data)
+    if(response.status === 200) {
+      setStatus(false)
+      setActiveClick2(false)
+      setTimeout(() => {
+        setActiveClick2(true)
+      }, 100)
+      handleAlert('Berhasil hapus koordinat!')
+    }
+  }
+
+  const handleRemoveCoordinateCustom = (id: string) => {
+    SweetAlert({
+      text: 'Yakin hapus polygon ?',
+      icon: 'question',
+      onClick: () => handleFinallyRemoveCoordinate(id)
+    })
   }
 
   return (
@@ -2061,9 +2155,9 @@ const Map: React.FC<mapProps> = ({
       {/* Tombol tambah koordinat dan pengaturan */}
       <div className="w-max z-[444] flex items-center h-[68px] py-[14px] pl-4 rounded-bl-[32px] absolute top-0 right-2">
         <div title='Tambah koordinat baru' className=" top-4 mr-3 w-full flex items-center">
-          <div onClick={() => handleAddKoordinat()} className={`bg-white hover:bg-green-200 cursor-pointer active:scale-[0.98] z-[22222] w-max h-max px-4 py-2 flex items-center justify-center text-center rounded-full text-[16px] border border-slate-700`}>Koordinat <FaPlusCircle className='ml-3 text-[18px]' /></div>
+          <div onClick={() => handleAddKoordinat()} className={`bg-white hover:bg-green-200 cursor-pointer active:scale-[0.98] z-[22222] w-max h-max px-4 py-2 ${activeClick ? 'hidden' : 'flex'} items-center justify-center text-center rounded-full text-[16px] border border-slate-700`}>Koordinat <FaPlusCircle className='ml-3 text-[18px]' /></div>
         </div>
-        <div className=" w-max flex items-center top-4 mr-3">
+        <div className={`w-max ${activeClick ? 'hidden' : 'flex'} items-center top-4 mr-3`}>
           <div title='Kotak area koordinat' onClick={() => subdistrictDots ? null : setActiveArea(!activeArea)} className={`${activeArea ? 'bg-green-200' : 'bg-white'} ${subdistrictDots ? 'cursor-not-allowed bg-red-400 before:absolute before:h-[50px] before:w-[3px] before:rotate-[40deg] before:bg-red-400 text-slate-400' : 'cursor-pointer active:scale-[0.98] hover:bg-green-200'} z-[22222] w-max h-max px-4 py-2 flex items-center justify-center text-center rounded-full text-[16px] border border-slate-700 top-4 right-4`}>Area titik <FaVectorSquare className="ml-3" /></div>
           <div title='Bukan google map' className="flex items-center top-4 mr-3">
             <a href="https://www.google.com/maps/place/Cirebon,+Kota+Cirebon,+Jawa+Barat/@-6.7428609,108.5128389,13z/data=!3m1!4b1!4m15!1m8!3m7!1s0x2e6f1d0f69dbc5d5:0x301e8f1fc28ba20!2sKabupaten+Cirebon,+Jawa+Barat!3b1!8m2!3d-6.6898876!4d108.4750846!16zL20vMGdjN3h6!3m5!1s0x2e6ee2649e6e5bbb:0x70a07638a7fe12fe!8m2!3d-6.7320229!4d108.5523164!16s%2Fg%2F11bc5j9s76?entry=ttu" target='__blank'>
@@ -2091,6 +2185,7 @@ const Map: React.FC<mapProps> = ({
           </div>
         </div>
       </div>
+      <div title='Area perbatasan kabupaten' onClick={() => setActiveLineSub(!activeLineSub)} className={`absolute ${activeLineSub ? 'bg-green-200' : 'bg-white'} hover:bg-green-200 cursor-pointer active:scale-[0.98] z-[22222] w-max h-max px-4 py-2 ${activeClick ? 'flex' : 'hidden'} items-center justify-center text-center rounded-full text-[16px] border border-slate-700 right-4 top-[13px]`}>Batas kabupaten <FaVectorSquare className="ml-3" /></div>
       
       <div className='absolute right-2 pl-7 bottom-4 w-full flex items-center justify-between'>
         <div className='w-max flex items-center'>
@@ -2107,69 +2202,142 @@ const Map: React.FC<mapProps> = ({
           }
           <div className={`z-[552] ${nameFile ? 'ml-3' : 'ml-0'} w-max h-max px-4 py-2 flex items-center justify-center text-center bg-white rounded-full text-[16px] border border-slate-700 bottom-4`}>{ currentPosition?.[0].toFixed(6) + `  |  ` + currentPosition?.[1].toFixed(6) ?? 0 }</div>
         </div>
-        <div className='w-max flex items-center'>
+        <div className={`w-max ${activeClick ? 'hidden' : 'flex'} items-center`}>
           <div title='Kantor kecataman' onClick={() => setSubdistrictDots(!subdistrictDots)} className={`${subdistrictDots ? 'bg-green-200' : 'bg-white'} mr-3 hover:bg-green-200 cursor-pointer active:scale-[0.98] z-[22222] w-[40px] h-[40px] py-2 flex items-center justify-center text-center rounded-full text-[16px] border border-slate-700 top-4`}><FaBuilding /></div>
           <div title='Lihat semua koordinat' onClick={() => handleShowAll()} className={`${showAll ? 'bg-green-200' : 'bg-white'} mr-3 hover:bg-green-200 cursor-pointer active:scale-[0.98] z-[22222] w-[40px] h-[40px] py-2 flex items-center justify-center text-center rounded-full text-[16px] border border-slate-700 top-4`}>{showAll ? <FaEyeSlash /> : <FaEye />}</div>
           <div onClick={() => exportToGeoJSON()} className={`bg-white mr-3 hover:bg-green-200 cursor-pointer active:scale-[0.98] z-[22222] w-max h-max px-4 py-2 flex items-center justify-center text-center rounded-full text-[16px] border border-slate-700 top-4`}>GeoJSON <FaFileExport className="ml-3" /></div>
-          <div title='Ambil gambar peta' onClick={() => downloadImage()} className={`z-[3333333333333333] active:bg-green-200  bg-white mr-3 hover:brightness-[90%] cursor-pointer active:scale-[0.98] z-[22222] w-[40px] h-[40px] py-2 flex items-center justify-center text-center rounded-full text-[16px] border border-slate-700 top-4`}><FaCameraRetro /></div>
-          <div title='Upload excel' onClick={() => setActiveUploadExcel(!activeUploadExcel)} className={`z-[3333333333333333] active:bg-green-200  bg-white mr-3 hover:brightness-[90%] cursor-pointer active:scale-[0.98] z-[22222] w-[40px] h-[40px] py-2 flex items-center justify-center text-center rounded-full text-[16px] border border-slate-700 top-4`}><FaUpload /></div>
+          <div title='Ambil gambar peta' onClick={() => downloadImage()} className={`z-[33333] active:bg-green-200 bg-white mr-3 hover:brightness-[90%] cursor-pointer active:scale-[0.98] z-[22222] w-[40px] h-[40px] py-2 flex items-center justify-center text-center rounded-full text-[16px] border border-slate-700 top-4`}><FaCameraRetro /></div>
+          <div title='Upload excel' onClick={() => setActiveUploadExcel(!activeUploadExcel)} className={`z-[3333333333333333] active:bg-green-200 bg-white mr-3 hover:brightness-[90%] cursor-pointer active:scale-[0.98] z-[22222] w-[40px] h-[40px] py-2 flex items-center justify-center text-center rounded-full text-[16px] border border-slate-700 top-4`}><FaUpload /></div>
         </div>
+      </div>
+      <div title='Hapus semua koordinat' onClick={() => handleClear()} className={`absolute left-[18px] bottom-36 z-[500] active:bg-green-200 bg-white hover:brightness-[90%] cursor-pointer active:rotate-[120deg] duration-100 z-[22222] w-[45px] h-[45px] py-2 ${coordinates.length > 0 && activeClick ? 'flex' : 'hidden'} items-center justify-center text-center rounded-full text-[16px] border border-slate-700`}>
+        <FontAwesomeIcon icon={faArrowsRotate} />
+      </div>
+      <div title='Ambil titik koordinat (Manual)' onClick={() => handleActiveCustom()} className={`absolute left-[18px] bottom-20 z-[500] ${activeClick ? 'bg-green-200' : 'bg-white'} flex hover:brightness-[90%] cursor-pointer active:scale-[0.98] z-[22222] w-[45px] h-[45px] py-2 items-center justify-center text-center rounded-full text-[16px] border border-slate-700`}>
+        <FontAwesomeIcon icon={faLocationCrosshairs} />
       </div>
 
       <div className='w-full h-max' ref={captureRef}>
-        <MapContainer center={center} className="w-full" zoom={zoom} scrollWheelZoom={true}>
+        <MapContainer 
+          className="w-full" 
+          center={center} 
+          zoom={zoom} 
+          scrollWheelZoom={true}  
+          attributionControl={true}
+          zoomControl={true}
+          doubleClickZoom={true}
+          dragging={true}
+          easeLinearity={0.35}
+        >
         <MapEventsHandler />
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
+
           {
-          (subdistrictDots ? dataSubdistrict : filteredData)
-          .filter((con: any) => {
-            // Jika pencarian tidak kosong, filter data berdasarkan label yang cocok dengan pencarian
-            if (search && search !== '') {
-              return con.name_location.toLowerCase().includes(search.toLowerCase());
-            }
-            // Jika pencarian kosong, tampilkan semua data
-            return true;
-          })
-          .map((marker: any, index: number) => (
-              <Marker 
-                key={index} 
-                position={[marker.lat, marker.long]} 
-                icon={selectIcon !== '' ? myIcon : subdistrictDots ? myIcon : defaultIcon}
-                >
-                  {
-                    subdistrictDots ? (
-                      null
-                    ):
-                      <Popup>
-                        <div className='flex items-center'>
-                          {
-                            marker.condition && marker.condition.slice(0, 3)
-                            .map((con: any, index: number) => (
-                              <div className='w-max flex items-center'>
-                                <p key={index}>{con.label} {con.icon}</p>
-                                <div className='w-[6px] h-1'></div>
-                              </div>
-                            ))
-                          }
-                        </div>
-                        {marker.name_location}
-                      </Popup>
-                  }
-                <Tooltip sticky>{(subdistrictDots ? marker.name_subdistrict : marker.name_location)}</Tooltip> {/* Label hanya muncul saat hover */}
-              </Marker>
-            ))}
+            (subdistrictDots ? dataSubdistrict : filteredData)
+            .filter((con: any) => {
+              if (search && search !== '') {
+                return con.name_location.toLowerCase().includes(search.toLowerCase());
+              }
+              return true;
+            })
+            .map((marker: any, index: number) => (
+                <Marker 
+                  key={index} 
+                  position={[marker.lat, marker.long]} 
+                  icon={selectIcon !== '' ? myIcon : subdistrictDots ? myIcon : defaultIcon}
+                  >
+                    {
+                      subdistrictDots ? (
+                        null
+                      ):
+                        <Popup>
+                          <div className='flex flex-col'>
+                            <div className='relative overflow-hidden mb-2 rounded-[12px] w-full h-[160px]'>
+                              <img src={marker?.thumbnail} onClick={() => {window.location.href = marker?.thumbnail as string, '__blank' }} alt="thumbnail" className='cursor-pointer hover:scale-[1.2] duration-300 hover:brightness-[70%]' />
+                            </div>
+                            <small className='text-[12px] rounded-[8px] hover:brightness-[90%] duration-200 py-3 mb-4 mt-2 bg-blue-700 text-white text-center' onClick={() => {window.location.href = marker?.link as string, '__blank' }}>Lihat di google map</small>
+                            <div className='w-[300px] flex flex-wrap items-center'>
+                              {
+                                marker.condition && marker.condition.slice(0, 3)
+                                .map((con: any, index: number) => (
+                                  <div className='w-max rounded-full bg-white border border-slate-300 h-[35px] mb-2 px-3 flex items-center'>
+                                    <p key={index}>{con.label} {con.icon}</p>
+                                    <div className='w-[6px] h-1'></div>
+                                  </div>
+                                ))
+                              }
+                            </div>
+                          </div>
+                          <p className='text-center mt-[-10px]'>
+                            {marker.name_location}
+                          </p>
+                        </Popup>
+                    }
+                  <Tooltip sticky>{(subdistrictDots ? marker.name_subdistrict : marker.name_location)}</Tooltip> {/* Label hanya muncul saat hover */}
+                </Marker>
+            ))
+          }
+
+          {
+            activeClick ? (
+              coordinates?.map((data: any, index: number) => (
+                <Marker 
+                  key={index} 
+                  position={[data[0], data[1]]} 
+                  icon={createCustomIcon(index + 1)}
+                  >
+                </Marker>
+              ))
+            ):
+              null
+          }
 
           {/* Garis kabupaten perbatasan */}
           {activeLineSub && lines && lines?.length > 1 && (
             <Polygon positions={lines} color="#008ada" />
           )}
+
+          {
+            activeClick && activeClick2 && coordinates && coordinates.length > 1 && (
+              <Polygon positions={coordinates} color={`${selectColor ? selectColor : '#00eada'}`} />
+              )
+            }
+
+          {
+            customData && customData.length > 0 ? (
+              customData?.map((data: any, index: number) => (
+                <Polygon key={index} positions={data?.coordinates} color={`${data?.color}`}>
+                  <Popup>
+                      <div className='flex mb-3 border-b border-slate-300 pb-2 items-center'>
+                       <b className='mr-2'>Nama :</b> {data?.name}
+                      </div>
+                      <div className='flex mb-3 border-b border-slate-300 pb-2 items-center'>
+                        <b className='mr-2'>Luas area :</b> {data?.wide ?? 0} {data?.typeWide ?? null}
+                      </div>
+                      <div className='flex mb-3 border-b border-slate-300 pb-2 items-center'>
+                        <b className='mr-2'>Tipe area :</b> {data?.type_area ?? '-'}
+                      </div>
+                      <div className='flex mb-3 border-b border-slate-300 pb-2 items-center'>
+                        <b className='mr-2'>Tipe kerawanan :</b> {data?.type_danger ?? '-'}
+                      </div>
+                      <div className='flex mb-3 border-b border-slate-300 pb-2 items-center'>
+                        <b className='mr-2'>Deskripsi :</b> {data?.description ?? ''} 
+                      </div>
+                      <div onClick={() => handleRemoveCoordinateCustom(data?.coordinate_id)} className='bg-red-500 text-white rounded-md px-3 py-2 cursor-pointer active:scale-[0.98] hover:brightness-[90%] duration-100 w-max'>
+                        <FaTrashAlt />
+                      </div>
+                    </Popup>
+                </Polygon>
+              ))
+            ):
+              null
+          }
           
           {/* Blok area koordinat */}
           {activeArea && areas.map((area: any, index: number) => (
-            // console.log(area)
             <Polygon key={index} positions={area.coordinates} color={checkForDisaster(area?.condition) ? "red" : "blue"} fillColor={checkForDisaster(area?.condition) ? "red" : "green"} fillOpacity={0.4}>
               <Tooltip>{area.name}</Tooltip>
             </Polygon>

@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .leaflet-container {
-    height: 100vh;
+    height: 100vh;  
     background-size: contain;
     background-repeat: no-repeat;
     overflow: hidden;

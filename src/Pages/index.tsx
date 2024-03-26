@@ -1,7 +1,8 @@
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import React, { RefObject, useEffect, useRef, useState } from 'react';
-import { FaFileExcel, FaFilePdf, FaPenAlt, FaPlus, FaSignOutAlt, FaTimes, FaTrash } from 'react-icons/fa';
+import { FaBezierCurve, FaCalendarAlt, FaClock, FaDotCircle, FaDrawPolygon, FaFileExcel, FaFilePdf, FaPenAlt, FaPlus, FaSignOutAlt, FaTimes, FaTrash } from 'react-icons/fa';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';
 import { Map, PopupService, Subdistrict } from '../Components';
@@ -10,21 +11,26 @@ import Grafik from '../Components/Grafik';
 import PopupSubdistrict from '../Components/PopSubdistrict';
 import PopupKoordinat from '../Components/PopupKoordinat';
 import PopupTitleGeospasial from '../Components/PopupTitleGeospasial';
+import PopupTitleGeospasialExcel from '../Components/PopupTitleGeospasialExcel';
 import PopupUpdateService from '../Components/PopupUpdateService';
+import PopupUpdateTitleGeospasial from '../Components/PopupUpdateTitle';
 import SweetAlert from '../Components/SweetAlert';
 import convertArrayOfObjectsToArray from '../Helpers/arrayTwoDimention';
 import API from '../Services/service';
+import { clearCoordinate } from '../Store/coordinateSlice';
 import store from '../Store/store';
 import { Device, EarthPNG, Success } from '../assets';
 
 const Homepage: React.FC = () => {
 
   const navigate = useNavigate()
-  
+  const dispatch = useDispatch()
+
   // Boolean
   const [addService, setAddService] = useState<boolean>(false)
   const [alert, setAlert] = useState<boolean>(false)
   const [addGeospasial, setAddGeospasial] = useState<boolean>(false)
+  const [addGeospasialExcel, setAddGeospasialExcel] = useState<boolean>(false)
   const [addKoordinat, setAddKoordinat] = useState<boolean>(false)
   const [addSubdistrict, setAddSubdistrict] = useState<boolean>(false)
   const [line] = useState<boolean>(false)
@@ -34,6 +40,8 @@ const Homepage: React.FC = () => {
   const [activeSidebarUpdateSub, setActiveSidebarUpdateSub] = useState<boolean>(false)
   const [showAll, setShowAll] = useState<boolean>(false)
   const [updateDinas, setUpdateDinas] = useState<boolean>(false)
+  const [updateTitle, setUpdateTitle] = useState<boolean>(false)
+  const [swipe, setSwipe] = useState<boolean>(false)
 
   // String
   const [activeUpdate, setActiveUpdate] = useState<string>('')
@@ -43,12 +51,16 @@ const Homepage: React.FC = () => {
   const [selectNameSub, setSelectNameSub] = useState<string>('')
   const [subdistrictID, setSubdistrictID] = useState<string>('')
   const [search, setSearch] = useState<string>('')
+  const [searchCustom, setSearchCustom] = useState<string>('')
   const [searchTitle, setSearchTitle] = useState<string>('')
   const [lat, setLat] = useState<string>('')
   const [long, setLong] = useState<string>('')
   const [selectTitle, setSelectTitle] = useState<string>('')
   const [abbreviation, setAbbreviation] = useState<string>('')
   const [nameDinas, setNameDinas] = useState<string>('')
+  const [color, setColor] = useState<string>('')
+  const [custom, setCustom] = useState<any[]>([])
+  const [dataTitleNow, setDataTitleNow] = useState<any>(null)
 
   // Any
   const [textAlert, setTextAlert] = useState<any>(null)
@@ -60,6 +72,15 @@ const Homepage: React.FC = () => {
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
   useEffect(() => {
+
+    if(titleID !== '') {
+      (async () => {
+        const response = await API.getCustomCoordinate(titleID)
+        setCustom(response?.data?.data)
+      })()
+    }
+    
+    setStatus(false)
     const handleResize = () => {
       setScreenWidth(window.innerWidth);
     };
@@ -69,7 +90,12 @@ const Homepage: React.FC = () => {
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, []);
+
+    window.scrollTo(0, 0)
+  
+  }, [status, titleID, dinasID]);
+
+  console.log('custom:', custom)
 
   const isDesktop = screenWidth >= 900;
 
@@ -81,6 +107,7 @@ const Homepage: React.FC = () => {
       const resultTitle = await API.getAllTitle()
       setAllSubdistrict(resultSubdistrict.data.data)
       setAllTitle(resultTitle.data.data)
+      console.log('all title:', resultTitle?.data?.data)
       setAllDinas(resultDinas.data.data)
       setStatus(false)
     })()
@@ -91,18 +118,22 @@ const Homepage: React.FC = () => {
   
   const handleStatus = () => {
     setStatus(true)
+    setUpdateTitle(false)
   }
-
+  
   const handleAlert = (textAlert?: string) => {
     setAddService(false)
     setAddGeospasial(false)
+    setUpdateTitle(false)
     setAddSubdistrict(false)
     setActiveSidebarUpdateSub(false)
     setActiveUpdate('')
+    setAddGeospasialExcel(false)
     setTextAlert(textAlert)
     setAlert(true)
     setStatus(true)
     setUpdateDinas(false)
+    dispatch(clearCoordinate())
   }
 
   const closePopup = () => {
@@ -110,6 +141,7 @@ const Homepage: React.FC = () => {
     setAddService(false)
     setAddKoordinat(false)
     setAddSubdistrict(false)
+    setAddGeospasialExcel(false)
   }
 
   const handleSubdistrict = () => {
@@ -129,6 +161,7 @@ const Homepage: React.FC = () => {
   const popups = [
     { condition: addSubdistrict, component: <PopupSubdistrict handleAlert={(textAlert?: string) => handleAlert(textAlert)} close={() => closePopup()} /> },
     { condition: updateDinas, component: <PopupUpdateService data={dataDinasNow} close={() => setUpdateDinas(!updateDinas)} handleAlert={handleAlert} /> },
+    { condition: updateTitle, component: <PopupUpdateTitleGeospasial data={dataTitleNow} handleStatus={() => handleStatus()} close={() => setUpdateTitle(!updateTitle)} /> },
     { condition: addService, component: <PopupService close={closePopup} handleAlert={handleAlert} /> },
     { condition: alert, component: (
       <div className='w-screen h-screen fixed left-0 top-0 flex justify-center items-center z-[999999] bg-slate-700 bg-opacity-[0.7]'>
@@ -141,7 +174,8 @@ const Homepage: React.FC = () => {
         </div>
       </div>
     ) },
-    { condition: addGeospasial, component: <PopupTitleGeospasial handleStatus={() => handleStatus()} dinasID={dinasID} close={closePopup} handleAlert={handleAlert} /> },
+    { condition: addGeospasial, component: <PopupTitleGeospasial dinasNAME={nameDinas ?? ''} handleStatus={() => handleStatus()} dinasID={dinasID} close={closePopup} handleAlert={handleAlert} /> },
+    { condition: addGeospasialExcel, component: <PopupTitleGeospasialExcel dinasNAME={nameDinas ?? ''} handleStatus={() => handleStatus()} dinasID={dinasID} close={closePopup} handleAlert={handleAlert} /> },
     { condition: addKoordinat, component: <PopupKoordinat dataSubdistrict={allSubdistrict ?? []} handleDone={() => setAddKoordinat(!addKoordinat)} titleID={titleID} close={closePopup} handleStatus={() => handleStatus()} handleAlert={handleAlert} /> },
   ];
 
@@ -305,6 +339,62 @@ const Homepage: React.FC = () => {
     };
   }
 
+  const exportToExcel2 = () => {
+    custom?.sort((a: any, b: any) => {
+        const customA = a.name.toUpperCase(); // Konversi kecamatam menjadi huruf besar untuk memastikan urutan yang konsisten
+        const customB = b.name.toUpperCase();
+      
+        if (customA < customB) {
+          return -1;
+        }
+        if (customA > customB) {
+          return 1;
+        }
+      
+        // Jika kedua kecamatan sama, tidak perlu melakukan perubahan pada urutan
+        return 0;
+    });
+  
+    const filteredArray = custom && custom?.map((obj: any, index: number) => ({
+      No: (index + 1).toString(),
+      name: obj?.name,
+      type_area: obj?.type_area,
+      type_danger: obj?.type_danger,
+      wide: obj?.wide,
+      type_wide: obj?.typeWide,
+      description: obj?.description,
+    }));
+  
+    if (filteredArray) {
+      const newTableData = convertArrayOfObjectsToArray(filteredArray);
+  
+      const wb = XLSX.utils.book_new();
+
+      // Add data to a new worksheet
+      const ws = XLSX.utils.aoa_to_sheet(newTableData);
+  
+      // Auto-adjust column widths based on content
+      const range = XLSX.utils.decode_range(ws['!ref'] as any);
+      for (let C = range.s.c; C <= range.e.c; ++C) {
+        let max_width = 0;
+        for (let R = range.s.r; R <= range.e.r; ++R) {
+          const cell = ws[XLSX.utils.encode_cell({ c: C, r: R })];
+          if (!cell) continue;
+          const cell_width = cell.v.toString().length;
+          if (cell_width > max_width) max_width = cell_width;
+        }
+        ws['!cols'] = ws['!cols'] || [];
+        ws['!cols'][C] = { width: max_width + 2 }; // Tambahkan margin untuk keamanan
+      }
+  
+      // Append the worksheet to the workbook
+      XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+  
+      // Save the workbook
+      XLSX.writeFile(wb, 'koordinat.xlsx');
+    };
+  }
+
   const exportToPDF = () => {
     const doc = new jsPDF() as any;
     const getCoordinate = () => {
@@ -365,8 +455,66 @@ const Homepage: React.FC = () => {
     doc.save('geospasial.pdf');
   }
 
+  const exportToPDF2 = () => {
+    const doc = new jsPDF() as any;
+  
+    custom?.sort((a: any, b: any) => {
+        const customA = a.name.toUpperCase(); // Konversi kecamatam menjadi huruf besar untuk memastikan urutan yang konsisten
+        const customB = b.name.toUpperCase();
+      
+        if (customA < customB) {
+          return -1;
+        }
+        if (customA > customB) {
+          return 1;
+        }
+      
+        // Jika kedua kecamatan sama, tidak perlu melakukan perubahan pada urutan
+        return 0;
+    });
+
+
+    const filteredArray = custom && custom?.map((obj: any, index: number) => ({
+      No: (index + 1).toString(),
+      name: obj?.name,
+      type_area: obj?.type_area,
+      type_danger: obj?.type_danger,
+      wide: obj?.wide,
+      type_wide: obj?.typeWide,
+    }));
+
+    // Tambahkan judul
+    const titleText = "Data koordinat";
+    const fontSize = 16;
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const { w } = doc.getTextDimensions(titleText, { fontSize }); // Menggunakan properti 'w' bukan 'width'
+    const textX = (pageWidth - w) / 2;
+    doc.text(titleText, textX, 10);
+
+    // Get table data
+    const tableData = convertArrayOfObjectsToArray(filteredArray);
+
+    // Add table headers
+    const headers = Object.keys(tableData[0]);
+    const data = tableData.map(obj => headers.map(key => obj[key])).slice(1);
+  
+    // Add table to PDF
+    doc.autoTable({
+      head: [tableData[0]],
+      body: data,
+      startY: 20
+    });
+    
+    // Save PDF file
+    doc.save('koordinat.pdf');
+  }
+
   const handleLink = (link: string) => {
     window.open(link, '_blank');
+  }
+
+  const handleSwipe = () => {
+    setSwipe(!swipe)
   }
 
   return (
@@ -383,53 +531,61 @@ const Homepage: React.FC = () => {
           ))}
           
           <div className={`relative ${activeWidth ? 'w-0 ml-[-60px]' : 'w-[30vw]'} duration-200 ease h-screen overflow-y-auto bg-slate-700 border-r border-r-slate-300 py-6 px-7`}>
-              <img src={EarthPNG} alt="side-bg" className='absolute scale-[1.8] z-[1] left-[-15px] bottom-[-150px] opacity-[0.1]' />
-              <div className='relative w-full h-max z-[40] flex mb-10 items-center justify-between'>
-                <h2 onClick={() => window.location.reload()} className={`cursor-pointer active:scale-[0.98] hover:brightness-[90%] text-white text-[22px] ${activeWidth ? 'hidden' : 'inline'}`}>Geospasial ✨</h2>
-                <button title='Buat dinas baru' onClick={() => setAddService(!addService)} className={`w-max border border-black hover:brightness-[90%] active:scale-[0.99] duration-100 h-max ${activeWidth ? 'hidden' : 'flex'} items-center px-5 py-2 rounded-full text-[16px] bg-white text-black`}>
-                  <p className='mr-4'>
-                    Dinas Baru
-                  </p>
-                  <FaPlus />
-                </button>
-              </div>
-    
-              <div className='relative w-full h-[1px] bg-white mb-9 z-[40]'></div>
-    
               {
-                allDinas && allDinas.length > 0 ? (
-                  allDinas.map((data: any, index: number) => (
-                    <div 
-                        key={index} 
-                        className={`relative ${data.dinas_id === dinasID ? 'border-2 bg-blue-400 text-white' : 'border border-white bg-white'} cursor-pointer active:scale-[0.99] z-[40] w-full flex justify-between items-center px-4 h-[80px] rounded-[12px] overflow-hidden text-black mb-5`}
-                      >
-                      <div className='w-[78%] h-max' 
-                        onClick={() => {
-                            setDinasID(data?.dinas_id)
-                            setTitleID('')
-                            setNameDinas(data?.name_dinas)
-                            setAbbreviation(data?.abbreviation)
-                            setShowAll(false)
-                            setActivePage('peta')
-                            setActiveHeight(false)
-                          }
-                        } 
-                      >
-                        <p title='nama dinas' className={`text-[18px] underline overflow-hidden overflow-ellipsis whitespace-nowrap max-w-full ${data.dinas_id === dinasID ? 'text-white' : 'text-blue-500 hover:text-blue-700'} ${activeWidth ? 'hidden' : 'block'}`}>{data?.name_dinas}</p>
-                        <small className={`text-[14px] ${activeWidth ? 'hidden' : 'block'}`}>( { data?.abbreviation } )</small>
-                      </div>
-                      <div title='Hapus dinas' onClick={() => handleRemoveDinas(data?.dinas_id)} className='w-[55px] border-l border-white acive:scale-[0.98] hover:bg-slate-500 cursor-pointer h-full flex justify-center items-center font-normal p-2 text-white bg-blue-400 relative left-4'>
-                        <FaTimes className='cursor-pointer active:scale-[0.98]' />
-                      </div>
-                    </div>
-                  ))
+                swipe ? (
+                  <>
+                    <FormGroup changeColor={(e: any) => setColor(e)} handleAlert={(textAlert?: string) => handleAlert(textAlert)} titleID={titleID} swipe={() => handleSwipe()} type='custom-coordinate' />
+                  </>
                 ):
-                  <div className='border text-center border-dashed text-slate-400 border-black cursor-pointer active:scale-[0.99] w-full bg-white flex justify-between items-center px-4 h-[80px] rounded-[12px] overflow-hidden mb-5'>
-                    <p>Data dinas masih kosong!..</p>
-                  </div>
+                  <>
+                    <img src={EarthPNG} alt="side-bg" className='absolute scale-[1.8] z-[1] left-[-15px] bottom-[-150px] opacity-[0.1]' />
+                    <div className='relative w-full h-max z-[40] flex mb-10 items-center justify-between'>
+                      <h2 onClick={() => window.location.reload()} className={`cursor-pointer active:scale-[0.98] hover:brightness-[90%] text-white text-[22px] ${activeWidth ? 'hidden' : 'inline'}`}>Geospasial ✨</h2>
+                      <button title='Buat dinas baru' onClick={() => setAddService(!addService)} className={`w-max border border-black hover:brightness-[90%] active:scale-[0.99] duration-100 h-max ${activeWidth ? 'hidden' : 'flex'} items-center px-5 py-2 rounded-full text-[16px] bg-white text-black`}>
+                        <p className='mr-4'>
+                          Dinas Baru
+                        </p>
+                        <FaPlus />
+                      </button>
+                    </div>
+          
+                    <div className='relative w-full h-[1px] bg-white mb-9 z-[40]'></div>
+          
+                    {
+                      allDinas && allDinas.length > 0 ? (
+                        allDinas.map((data: any, index: number) => (
+                          <div 
+                              key={index} 
+                              className={`relative ${data.dinas_id === dinasID ? 'border-2 bg-blue-400 text-white' : 'border border-white bg-white'} cursor-pointer active:scale-[0.99] z-[40] w-full flex justify-between items-center px-4 h-[80px] rounded-[12px] overflow-hidden text-black mb-5`}
+                            >
+                            <div className='w-[78%] h-max' 
+                              onClick={() => {
+                                  setDinasID(data?.dinas_id)
+                                  setTitleID('')
+                                  setNameDinas(data?.name_dinas)
+                                  setAbbreviation(data?.abbreviation)
+                                  setShowAll(false)
+                                  setActivePage('peta')
+                                  setActiveHeight(false)
+                                }
+                              } 
+                            >
+                              <p title='nama dinas' className={`text-[18px] underline overflow-hidden overflow-ellipsis whitespace-nowrap max-w-full ${data.dinas_id === dinasID ? 'text-white' : 'text-blue-500 hover:text-blue-700'} ${activeWidth ? 'hidden' : 'block'}`}>{data?.name_dinas}</p>
+                              <small className={`text-[14px] ${activeWidth ? 'hidden' : 'block'}`}>( { data?.abbreviation } )</small>
+                            </div>
+                            <div title='Hapus dinas' onClick={() => handleRemoveDinas(data?.dinas_id)} className='w-[55px] border-l border-white acive:scale-[0.98] hover:bg-slate-500 cursor-pointer h-full flex justify-center items-center font-normal p-2 text-white bg-blue-400 relative left-4'>
+                              <FaTimes className='cursor-pointer active:scale-[0.98]' />
+                            </div>
+                          </div>
+                        ))
+                      ):
+                        <div onClick={() => setAddService(!addService)} className='border text-center border-dashed text-slate-400 border-black  cursor-pointer active:scale-[0.99] w-full bg-white flex justify-center items-center px-4 h-[80px] rounded-[12px] overflow-hidden mb-5'>
+                          <p className='flex items-center'>Tambah Dinas baru <FaPlus className='ml-3' /></p>
+                        </div>
+                    }
+                  </>
               }
-          </div>
-    
+            </div>
           <div className={`${activeWidth ? 'w-[100vw]' : 'w-[70vw]'} h-screen overflow-y-auto px-8 pb-6 pt-5`}>
             <div className={`w-full ${activeHeight ? 'mt-[-120px] opacity-0' : 'mt-0 opacity-1'} flex duration-200 ease items-center pb-9`}>
               <h2 title='Judul website' className='text-[21px]'>Data Geospasial 🗺️</h2>
@@ -495,7 +651,7 @@ const Homepage: React.FC = () => {
                           </div>
                         </div>
                         <div className={`w-full ${activeHeight ? 'h-[80vh]' : 'h-[72vh]'} border-[1px] border-black ease duration-200 rounded-[16px] overflow-hidden mt-3`}>
-                          <Map dataSubdistrict={allSubdistrict} handleShowAll={() => setShowAll(!showAll)} showAll={showAll} search={search} width={activeWidth} height={activeHeight} handleWidth={() => setActiveWidth(!activeWidth)} handleHeight={() => setActiveHeight(!activeHeight)} ref={mapRef} data={!showAll ? allTitle?.filter((data: any) => data?.title_id === titleID) : allTitle?.filter((data: any) => data?.dinas_id === dinasID) ?? []} line={line} handleAddKoordinat={() => setAddKoordinat(true)} />
+                          <Map handleAlert={(textAlert?: string) => handleAlert(textAlert)} customData={custom} color={color} swipe={() => handleSwipe()} dataSubdistrict={allSubdistrict} handleShowAll={() => setShowAll(!showAll)} showAll={showAll} search={search} width={activeWidth} height={activeHeight} handleWidth={() => setActiveWidth(!activeWidth)} handleHeight={() => setActiveHeight(!activeHeight)} ref={mapRef} data={!showAll ? allTitle?.filter((data: any) => data?.title_id === titleID) : allTitle?.filter((data: any) => data?.dinas_id === dinasID) ?? []} line={line} handleAddKoordinat={() => setAddKoordinat(true)} />
                         </div>
                         
                         <h2 className='font-bold text-[26px] my-8'>Daftar (lokasi & bangunan)</h2>
@@ -580,7 +736,77 @@ const Homepage: React.FC = () => {
                                               </td>
                                           </tr>
                                         ))
-                                      ))
+                                      ))    
+                                     ):
+                                      null
+                                  }
+                                </tbody>
+                            </table>
+                        </div>
+                       
+                        <hr className='w-full mt-16 mb-12 border-[1px] border-slate-300' />
+
+                        <h2 className='font-bold text-[26px] my-8'>Daftar (koordinat kustom)</h2>
+                        <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 dark:bg-gray-900">
+                            <div className="relative">
+                                <div className="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                                    <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                                    </svg>
+                                </div>
+                                <input type="text" name='search' value={searchCustom} onChange={(e:any) => setSearchCustom(e.target.value)} id="table-search-users" className="block px-2 ps-10 py-3 text-sm text-gray-900 border border-slate-700 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700 dark:border-slate-700 dark:placeholder-slate-700 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search for users" />
+                            </div>
+                            <div className='w-max flex items-center'>
+                              <button onClick={() => exportToExcel2()} className='border-0 outline-0 rounded-full flex items-center active:scale-[0.98] hover:brightness-[90%] bg-green-500 text-white px-6 py-2'>Excel <FaFileExcel className='ml-3' /></button>
+                              <button onClick={() => exportToPDF2()} className='border-0 outline-0 active:scale-[0.98] hover:brightness-[90%] rounded-full flex ml-4 items-center bg-red-500 text-white px-6 py-2'>PDF <FaFilePdf className='ml-3' /></button>
+                            </div>
+                        </div>
+                        <div className="relative w-full mt-2 border-[1px] border-black overflow-x-auto shadow-md sm:rounded-lg">
+                            <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                    <tr>
+                                        <th scope="col" className="w-[350px] pl-6 py-6">
+                                            Nama area
+                                        </th>
+                                        <th scope="col" className="py-6">
+                                            Luas area
+                                        </th>
+                                        <th scope="col" className="py-6">
+                                          Satua luas
+                                        </th>
+                                        <th scope="col" className="py-6">
+                                            Tipe kerawanan
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                  {
+                                     custom && custom.length > 0 ? (
+                                      custom
+                                      .filter((data: any) => {
+                                        data?.title_id === titleID
+                                        if (searchCustom && searchCustom !== '') {
+                                            return data?.name.toLowerCase().includes(searchCustom.toLowerCase());
+                                        }
+                                          // Jika pencarian kosong, tampilkan semua data
+                                          return true;
+                                        })
+                                        .map((data: any, index: number) => (
+                                            <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                              <td className="py-4 px-6  ">
+                                                {data?.name}
+                                              </td>
+                                              <td className="py-4">
+                                                {data?.wide} 
+                                              </td>
+                                              <td className="py-4">
+                                                {data?.typeWide}
+                                              </td>
+                                              <td className="py-4">
+                                                {data?.type_danger}
+                                              </td>
+                                          </tr>
+                                        ))
                                      ):
                                       null
                                   }
@@ -623,13 +849,25 @@ const Homepage: React.FC = () => {
                             </button>
                         </div>
     
-                        <div className={`${dinasID !== '' && titleID=== '' ? 'flex' : 'hidden'} w-full h-[1px] mb-4 mt-5 bg-black`}></div>
-                       
-                        <div title='Tambah koordinat/lokasi baru' onClick={() => setAddGeospasial(!addGeospasial)} className={`w-[96%] md:w-[30%] border-[2px] border-slate-700 px-6 h-[180px] mr-4 mt-6 rounded-lg cursor-pointer shadow-lg p-4 bg-white ${dinasID !== '' ? 'flex' : 'hidden'} items-center justify-center flex-col hover:brightness-[95%] active:scale-[0.98]`}>
-                            <FaPlus />
-                            <small className="mt-5 text-[14px] text-slate-400">Tambahkan data geospasial</small>
+                        <div className={`${dinasID !== '' && titleID=== '' ? 'flex' : 'hidden'} w-full h-[1px] mb-2 mt-5 bg-black`}></div>
+                        
+                        <div className='w-full flex items-center mt-[-10px]'>
+                          <div title='Tambah koordinat/lokasi baru' onClick={() => setAddGeospasial(!addGeospasial)} className={`w-[96%] overflow-hidden pr-4 md:w-max border-[2px] border-slate-700 h-[55px] mr-4 mt-6 cursor-pointer shadow-lg rounded-[10px] bg-white ${dinasID !== '' ? 'flex' : 'hidden'} items-center justify-center items-center hover:brightness-[95%] active:scale-[0.98]`}>
+                            <div className='flex px-5 items-center bg-blue-500 h-full text-white w-max'>
+                              <FaPlus />
+                            </div>
+                            <small className="text-[14px] ml-3 text-slate-400">Tambahkan data (manual)</small>
+                          </div>
+                        
+                          <div title='Tambah koordinat/lokasi baru' onClick={() => setAddGeospasialExcel(!addGeospasialExcel)} className={`w-[96%] pr-4 md:w-max border-[2px] border-slate-700 h-[55px] rounded-[10px] mr-4 mt-6 overflow-hidden cursor-pointer shadow-lg bg-white ${dinasID !== '' ? 'flex' : 'hidden'} items-center justify-center items-center hover:brightness-[95%] active:scale-[0.98]`}>
+                            <div className='flex px-3 items-center bg-green-500 h-full text-white w-max'>
+                              <FaPlus />
+                              <FaFileExcel className='ml-1' />
+                            </div>
+                            <small className="text-[14px] ml-3 text-slate-400">Tambahkan data (excel)</small>
+                          </div>
                         </div>
-        
+
                         {
                           dinasID === '' && typeof dinasID === 'string' ? (
                             <div className='flex h-full mt-[240px] text-[22px] text-slate-500 flex-col items-center w-full justify-center'>
@@ -646,12 +884,30 @@ const Homepage: React.FC = () => {
                               }
                             })
                             .map((data: any, index: number) => (
-                              <div key={index} className='cursor-pointer relative w-[96%] md:w-[30%] border-[2px] border-slate-700 px-4 h-[180px] flex flex-col justify-between mr-4 mt-6 rounded-lg shadow-lg p-4 bg-white'>
-                                  <h2 onClick={() => {setTitleID(data.title_id), setSelectTitle(data.title)}} className="max-w-[926%] cursor-pointer hover:text-blue-600 active:scale-[0.98] text-blue-400 overflow-hidden overflow-ellipsis whitespace-nowrap border-b border-b-slate-700 pb-4 mt-2 text-[16px]">{ data?.title }</h2>
-                                  <div className='w-full flex items-center justify-between'>
-                                    <p onClick={() => {setTitleID(data.title_id), setSelectTitle(data.title)}} className='max-w-[926%] text-slate-500 overflow-hidden overflow-ellipsis whitespace-nowrap'>{ (data?.coordinate)?.length } Data koordinat</p>
-                                    <div onClick={() => handleRemoveTitle(data?.title_id)} className='w-[30px] h-[30px] rounded-full bg-red-500 text-white flex items-center justify-center p-[10px] cursor-pointer hover:bg-red-600 active:scale-[0.98]'>
-                                      <FaTrash />
+                              <div key={index} title={data?.description} className='cursor-pointer relative w-[96%] md:w-[47%] border-[2px] border-slate-700 px-4 h-[180px] flex flex-col justify-between mr-4 mt-6 rounded-lg shadow-lg p-4 bg-white'>
+                                  <h2 onClick={() => {setTitleID(data.title_id), setSelectTitle(data.title), window.scrollTo(0, 0)}} className="max-w-[926%] cursor-pointer hover:text-blue-600 active:scale-[0.98] text-blue-400 overflow-hidden overflow-ellipsis whitespace-nowrap border-b border-b-slate-700 pb-4 mt-2 text-[16px]">{ data?.title }</h2>
+                                  <div className='w-max flex items-center'>
+                                    <div className='rounded-full w-max h-max px-4 py-2 flex items-center justify-center bg-slate-200 text-slate-500 mr-3'>
+                                      <FaCalendarAlt className='mr-2' /> {data?.year}
+                                    </div>
+                                    <div className='rounded-full w-max h-max px-4 py-2 flex items-center justify-center bg-green-200 text-green-600 mr-4'>
+                                      <FaClock className='mr-2' /> {data?.status}
+                                    </div>
+                                    <div className='rounded-full w-max h-max px-4 py-2 flex items-center justify-center bg-yellow-200 text-yellow-600 mr-4'>
+                                      {data?.category === 'Titik Koordinat' ? <FaDotCircle className='mr-2' /> : data?.category === 'Polygon' ? <FaDrawPolygon className='mr-2' /> : <FaBezierCurve className='mr-2' />} { data?.category ?? 'Titik Koordinat' }
+                                    </div>
+                                  </div>
+                                  <div className='w-full flex items-center justify-between mt-1'>
+                                    <div className='w-full flex items-center'>
+                                      <p onClick={() => {setTitleID(data.title_id), setSelectTitle(data.title)}} className='max-w-[926%] text-slate-500 overflow-hidden overflow-ellipsis whitespace-nowrap'>{ (data?.coordinate)?.length } Data koordinat</p>
+                                    </div>
+                                    <div className='w-max flex iems-center'>
+                                      <div onClick={() => {setUpdateTitle(!updateTitle), setDataTitleNow(data)}} className='w-[30px] h-[30px] rounded-full bg-yellow-500 text-white flex items-center justify-center p-[10px] cursor-pointer hover:bg-yellow-600 active:scale-[0.98]'>
+                                        <FaPenAlt />
+                                      </div>
+                                      <div onClick={() => handleRemoveTitle(data?.title_id)} className='ml-3 w-[30px] h-[30px] rounded-full bg-red-500 text-white flex items-center justify-center p-[10px] cursor-pointer hover:bg-red-600 active:scale-[0.98]'>
+                                        <FaTrash />
+                                      </div>
                                     </div>
                                   </div>
                               </div>

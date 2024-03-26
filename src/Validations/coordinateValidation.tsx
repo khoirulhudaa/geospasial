@@ -11,6 +11,7 @@ export const useCoordinateFormik = ({onError, onResponse, titleID, condition}: {
             lat: '',
             long: '',
             link: '',  
+            thumbnail: '',  
             condition: [],  
         },
         validationSchema: Yup.object({
@@ -24,7 +25,9 @@ export const useCoordinateFormik = ({onError, onResponse, titleID, condition}: {
             long: Yup.string()
             .required('Tidak boleh kosong!'),
             link: Yup.string()
-            .notRequired(),
+            .required(),
+            thumbnail: Yup.string()
+            .required(),
             condition: Yup.array()
             .notRequired(),
         }),
@@ -40,8 +43,10 @@ export const useCoordinateFormik = ({onError, onResponse, titleID, condition}: {
                     lat: values.lat,
                     long: values.long,
                     link: values.link, 
+                    thumbnail: values.thumbnail, 
                     condition: condition,  
                 }
+                
                 console.log('data coordinate new:', data)
                 
                 const response = await API.addCoordinate(data)

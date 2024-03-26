@@ -1,17 +1,22 @@
 import axios from 'axios'
 import { debounce } from 'lodash'
 import React, { useEffect, useState } from 'react'
-import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa'
+import { ChromePicker } from 'react-color'
+import { FaCheckCircle, FaSpinner, FaTimesCircle, FaTrashAlt } from 'react-icons/fa'
+import { useDispatch, useSelector } from 'react-redux'
 import { formProps } from '../Models/componentInterface'
 import store from '../Store/store'
 import { useCoordinateFormik } from '../Validations/coordinateValidation'
+import { useCustomCoordinateFormik } from '../Validations/createCoordinateValidation'
 import { useDinasFormik } from '../Validations/dinasValidation'
 import { useSignInFormik } from '../Validations/signinValidation'
 import { useSignUpFormik } from '../Validations/signupValidation'
 import { useUpdateCoordinateFormik } from '../Validations/updateCoordinate'
 import { useUpdateSubdistrictFormik } from '../Validations/updateSubdistrict'
 import InputField from './InputField'
+import SweetAlert from './SweetAlert'
 import ErrorMessage from './errorMessage'
+import { removeCoordinateById } from '../Store/coordinateSlice'
 
 const FormGroup: React.FC<formProps> = ({
     type,
@@ -24,7 +29,14 @@ const FormGroup: React.FC<formProps> = ({
     handleDone,
     data,
     dataSubdistrict,
+    swipe,
+    changeColor
 }) => {
+
+    const coordinates = useSelector((state: any) => state.Coordinate?.coordinate)
+    console.log('coor nbew:', coordinates)
+
+    const dispatch = useDispatch()
 
     const [error, setError] = useState<string>('')
     const [check, setCheck] = useState<number>(0)
@@ -32,6 +44,21 @@ const FormGroup: React.FC<formProps> = ({
     const [condition, setCondition] = useState<any[]>([])
     const [activeDanger, setActiveDanger] = useState<boolean>(false)
     const [borderError, setBorderError] = useState<boolean>(false)
+    const [selectColor, setSelectColor] = useState<string>('')
+    const [danger, setDanger] = useState<boolean>(false)
+    const [showTrash, setShowTrash] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [nowIndex, setNowIndex] = useState<number>(999999999);
+
+    const handleMouseEnter = (index: number) => {
+      setShowTrash(true);
+      setNowIndex(index)
+    };
+    
+    const handleMouseLeave = () => {
+        setShowTrash(false);
+        setNowIndex(999999999)
+    };
 
     const dataConditionArea = [
         {
@@ -114,13 +141,22 @@ const FormGroup: React.FC<formProps> = ({
             handleStatus()
         }
     }
+   
+    const handleResponseCustom = (response: number) => {
+        if(response === 200) {
+            clearAllForm()
+            handleAlert('Berhasil tambah data')
+            handleStatus()
+        }
+    }
 
     const handleResponseCoordinate = (response: number) => {
         if(response === 200) {
             setCondition([])
             clearAllForm()
-            handleDone()
             handleAlert()
+            handleDone()
+            swipe()
         }
     }
 
@@ -131,7 +167,12 @@ const FormGroup: React.FC<formProps> = ({
     
     const handleErrorMessage = (error: string) => {
         setError(error)
+        setLoading(false)
         setCondition([])
+    }
+
+    const handleResponseAuth = () => {
+        setLoading(false)
     }
     
     const dinasFormik = useDinasFormik({
@@ -140,7 +181,8 @@ const FormGroup: React.FC<formProps> = ({
     })
     
     const authFormiks = useSignInFormik({
-        onError: handleErrorMessage
+        onError: handleErrorMessage,
+        onResponse: handleResponseAuth
     })
     
     const authFormiks2 = useSignUpFormik({
@@ -234,6 +276,59 @@ const FormGroup: React.FC<formProps> = ({
         onClick()
     }
 
+    const dataDanger = [
+        {label: 'Pilih jenis kerawan', value: ''},
+        {label: 'Banjir', value: 'Banjir'},
+        {label: 'Longsor', value: 'Longsor'},
+        {label: 'Abu vulkanik', value: 'Abu vulkanik'},
+        {label: 'Badai', value: 'Badai'},
+        {label: 'Petir', value: 'Petir'},
+        {label: 'Kekeringan', value: 'Kekeringan'},
+        {label: 'Wabah', value: 'Wabah'},
+        {label: 'Kriminalitas', value: 'Kriminalitas'},
+        {label: 'Tawuran', value: 'Tawuran'},
+        {label: 'Pencurian', value: 'Pencurian'},
+        {label: 'Kecelakaan', value: 'Kecelakaan'},
+        {label: 'Hewan buas', value: 'Hewan buas'},
+        {label: 'Kebakarans', value: 'Kebakarans'}
+    ]
+
+    const dataArea = [
+        {label: 'Pilih jenis wilayah', value: ''},
+        {label: 'Kabupaten', value: 'Banjir'},
+        {label: 'Kota', value: 'Longsor'},
+        {label: 'Gabungan', value: 'Abu vulkanik'},
+    ]
+
+    const dataWide = [
+        {label: 'Pilih satuan', value: ''},
+        {label: 'KM', value: 'km'},
+        {label: 'CM', value: 'cm'},
+        {label: 'MM', value: 'mm'},
+        {label: 'ft', value: 'ft'},
+        {label: 'Yeard', value: 'yd'},
+    ]
+
+    const hanleFinallyRemoveCoordinate = (number: number) => {
+        dispatch(removeCoordinateById(number))
+    }
+
+    const handleRemoveCoordinate = (number: number) => {
+        SweetAlert({
+            text: `Yakin hapus koordinat (${number + 1}) ?`,
+            icon: 'question',
+            onClick: () => hanleFinallyRemoveCoordinate(number)
+        })
+    }
+
+    const createCustomCoordinate = useCustomCoordinateFormik({
+        onError: handleErrorMessage,
+        onResponse: handleResponseCustom,
+        color: selectColor,
+        titleID,
+        danger
+    })
+
     switch(type) {
         case "signup" :
             return (
@@ -282,7 +377,7 @@ const FormGroup: React.FC<formProps> = ({
             )
         case "coordinate":
             return (
-                <form onSubmit={coordinateFormik.handleSubmit} className={`w-[60vw] h-max rounded-[20px] bg-white p-7 border ${borderError ? 'border-[3px] border-red-500' : 'border-slate-300'} `}>
+                <form onSubmit={coordinateFormik.handleSubmit} className={`w-[80vw] h-max rounded-[20px] bg-white p-7 border ${borderError ? 'border-[3px] border-red-500' : 'border-slate-300'} `}>
                 {
                     error !== '' ? (
                         <ErrorMessage error={error} />
@@ -358,10 +453,10 @@ const FormGroup: React.FC<formProps> = ({
                                 />
                             </div>
                         </div>
-                        <div className='w-full mb-5 flex items-center'>
-                            <div className='w-1/2 pr-6'>
+                        <div className='w-full mt-8 justify-between mb-5 flex items-center'>
+                            <div className='w-[30%]'>
                                 <InputField 
-                                    label='Link google map (opsi)'
+                                    label='Link google map'
                                     name='link'
                                     id='link'
                                     value={coordinateFormik.values.link}
@@ -372,9 +467,22 @@ const FormGroup: React.FC<formProps> = ({
                                     onTouched={coordinateFormik.touched.link}
                                 />
                             </div>
-                            <div className='w-1/2 flex flex-col pl-[0.8px]'>
-                                <label className='mt-1'>Rawan bencana ? </label>
-                               <div className={`w-[40%] flec h-[45px] border mt-4 flex items-center border-slate-700 rounded-full px-2 duration-200 ${activeDanger ? 'bg-red-500' : 'bg-slate-200'}`}>
+                            <div className='w-[30%]'>
+                                <InputField 
+                                    label='Link Thumbnail (Google map)'
+                                    name='thumbnail'
+                                    id='thumbnail'
+                                    value={coordinateFormik.values.thumbnail}
+                                    placeholder='https://www.google.com/maps/...'
+                                    onChange={coordinateFormik.handleChange}
+                                    onBlur={coordinateFormik.handleBlur}
+                                    onError={coordinateFormik.errors.thumbnail}
+                                    onTouched={coordinateFormik.touched.thumbnail}
+                                />
+                            </div>
+                            <div className='w-[30%] flex flex-col pl-[0.8px]'>
+                                <label className='font-[500] text-[14px]'>Rawan bencana ? </label>
+                                <div className={`w-full flec h-[45px] border mt-4 flex items-center border-slate-700 rounded-full px-2 duration-200 ${activeDanger ? 'bg-red-500' : 'bg-slate-200'}`}>
                                     <div onClick={() => {
                                             addCondition('Rawan bencana', '🛑')
                                             setActiveDanger(!activeDanger)
@@ -384,7 +492,7 @@ const FormGroup: React.FC<formProps> = ({
                                                 !
                                             </p>
                                     </div>
-                               </div>
+                                </div>
                             </div>
                         </div>
                         <h2 className='mt-8 text-[20px] font-bold'>Dekat area apakah ? (opsi)</h2>
@@ -464,6 +572,155 @@ const FormGroup: React.FC<formProps> = ({
                                 Batalkan
                             </p>
                         </button>
+                    </div>
+                </form>
+            )
+        case "custom-coordinate":
+            return (
+                <form onSubmit={createCustomCoordinate.handleSubmit} className='w-full bg-white rounded-[12px] px-5 pb-4 py-5 h-max'>
+                    <label className='font-[500] text-[14px] text-slate-800'>Titik koordinat</label>
+                    <div className='my-5 h-max border-b border-black pb-3 w-full'>
+                    <div className='w-full overflow-x-auto flex flex-wrap items-center'>
+                        {
+                            coordinates && coordinates.length > 0 ? (
+                                coordinates?.map((data: any, index: number) => (
+                                    <div 
+                                        key={index} 
+                                        onMouseEnter={() => handleMouseEnter(index)}
+                                        onMouseLeave={handleMouseLeave} 
+                                        title={`lat: ${data[0]} & lng: ${data[1]}`} 
+                                        onClick={() => handleRemoveCoordinate(index)} 
+                                        className='w-[40px] h-[40px] cursor-pointer hover:bg-red-500 active:scale-[0.97] duration-100 rounded-full bg-blue-500 text-white mr-3 mb-3 flex justify-center items-center'
+                                    >
+                                        {
+                                            showTrash && nowIndex === index ? (
+                                                <FaTrashAlt />
+                                            ):
+                                                `${index + 1}`
+                                        }
+                                    </div>
+                                ))
+                            ):
+                                <div className='w-[40px] h-[40px] rounded-full bg-slate-300 text-slate-500 mr-3 mb-3 flex justify-center items-center'>0</div>
+                        }
+                    </div>
+                    </div>
+                    <div className='mb-5'>
+                        <InputField 
+                            name='name'
+                            label='Nama'
+                            value={createCustomCoordinate.values.name}
+                            onChange={createCustomCoordinate.handleChange}
+                            onBlur={createCustomCoordinate.handleBlur}
+                            onTouched={createCustomCoordinate.touched.name}
+                            onError={createCustomCoordinate.errors.name}
+                            placeholder='Masukan nama'
+                        />
+                    </div>
+                    <div className='mb-4 border-t border-black'></div>
+                    <div className='mb-5'>
+                        <InputField 
+                            name='wide'
+                            type='number'
+                            label='Luas wilayah (opsi)'
+                            value={createCustomCoordinate.values.wide}
+                            onChange={createCustomCoordinate.handleChange}
+                            onBlur={createCustomCoordinate.handleBlur}
+                            onTouched={createCustomCoordinate.touched.wide}
+                            onError={createCustomCoordinate.errors.wide}
+                            placeholder='Masukan luas'
+                        />
+                    </div>
+                    {
+                        createCustomCoordinate.values.wide ? (
+                            <div className='mb-5'>
+                                <InputField 
+                                    name='typeWide'
+                                    label='Satuan'
+                                    large
+                                    type='select-input'
+                                    options={dataWide}
+                                    value={createCustomCoordinate.values.typeWide}
+                                    onChange={createCustomCoordinate.handleChange}
+                                    onBlur={createCustomCoordinate.handleBlur}
+                                    onTouched={createCustomCoordinate.touched.typeWide}
+                                    onError={createCustomCoordinate.errors.typeWide}
+                                />
+                            </div>
+                        ):
+                            null
+                    }
+                    <div className='mb-5 border-t pb-6 pt-3 border-b border-black'>
+                    <label className='font-[500] text-[14px] text-slate-800 mb-4'>Warna polygon</label>
+                    <div className='mb-4' />
+                    <ChromePicker 
+                        color={selectColor}
+                        onChange={(e: any) => {setSelectColor(e), changeColor(e?.hex)}}
+                    />
+                    </div>
+                    <div className='mb-5'>
+                    <label className='font-[500] text-[14px] text-slate-800 mt-1'>Wilayah rawan ? </label>
+                    <div className={`w-[40%] flec h-[45px] border mt-4 flex items-center border-slate-700 rounded-full px-2 duration-200 ${danger ? 'bg-red-500' : 'bg-slate-200'}`}>
+                        <div onClick={() => setDanger(!danger)} 
+                            className={`w-[30px] flex items-center justify-center rounded-full h-[30px] ${danger ? 'ml-auto' : 'ml-0'} bg-white duration-300 cursor-pointer active:scale-[0.98] hover:brightness-[98%]`}>
+                                <p className={`${danger ? 'text-red-600 flex' : 'hidden'}`}>
+                                    !
+                                </p>
+                        </div>
+                    </div>
+                    </div>
+                    {
+                    danger ? (
+                        <div className='mb-5'>
+                            <InputField 
+                                name='type_danger'
+                                label='Jenis kerawanan'
+                                large
+                                type='select-input'
+                                options={dataDanger}
+                                value={createCustomCoordinate.values.type_danger}
+                                onChange={createCustomCoordinate.handleChange}
+                                onBlur={createCustomCoordinate.handleBlur}
+                                onTouched={createCustomCoordinate.touched.type_danger}
+                                onError={createCustomCoordinate.errors.type_danger}
+                            />
+                        </div>
+                    ):
+                        null
+                    }
+                    <div className='mb-5'>
+                        <InputField 
+                            name='type_area'
+                            label='Wilayah'
+                            large
+                            type='select-input'
+                            options={dataArea}
+                            value={createCustomCoordinate.values.type_area}
+                            onChange={createCustomCoordinate.handleChange}
+                            onBlur={createCustomCoordinate.handleBlur}
+                            onTouched={createCustomCoordinate.touched.type_area}
+                            onError={createCustomCoordinate.errors.type_area}
+                        />
+                    </div>
+                    <div className='mb-5'>
+                        <InputField 
+                            name='description'
+                            label='Deskripsi'
+                            type='textarea-input'
+                            value={createCustomCoordinate.values.description}
+                            onChange={createCustomCoordinate.handleChange}
+                            onBlur={createCustomCoordinate.handleBlur}
+                            onTouched={createCustomCoordinate.touched.description}
+                            onError={createCustomCoordinate.errors.description}
+                            placeholder='Masukan deskripsi'
+                        />
+                    </div>
+                    <div className='w-full flex items-center mb-3'>
+                    <button type='submit' className='w-full mt-12 text-center bg-slate-700 mr-6 border border-black hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center justify-center px-5 py-3 rounded-full text-[16px] text-white'>
+                        <p>
+                            Simpan
+                        </p>
+                    </button>
                     </div>
                 </form>
             )
@@ -633,7 +890,13 @@ const FormGroup: React.FC<formProps> = ({
                             onTouched={authFormiks.touched.password}
                         />
                     </div>
-                    <button type='submit' className='w-full mt-12 text-center bg-slate-700 mr-6 border border-black hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center justify-center px-5 py-3 rounded-full text-[16px] text-white'>
+                    <button type='submit' onClick={authFormiks.values.password !== '' ? () => setLoading(true) : () => null} className='w-full mt-12 text-center flex items-center bg-slate-700 mr-6 border border-black hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center justify-center px-5 py-3 rounded-full text-[16px] text-white'>
+                       {
+                        loading ? (
+                            <FaSpinner className='mr-2 animate-spin' />
+                        ):
+                            null
+                       }
                         <p>
                             Masuk sekarang
                         </p>

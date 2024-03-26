@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux'
 import { authSignIn, saveToken } from '../Store/authSlice.tsx';
 
-export const useSignInFormik = ({onError}: {onError?: any}) => {
+export const useSignInFormik = ({onError, onResponse}: {onError?: any, onResponse?: any}) => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     
@@ -34,7 +34,7 @@ export const useSignInFormik = ({onError}: {onError?: any}) => {
         const response = await API.checkAccount(values);
         if (response.data.status === 200) {
             resetForm()
-            console.log(response.data.data)
+            onResponse()
             dispatch(authSignIn(response.data.data))
             dispatch(saveToken(response.data.token))
             navigate('/home')

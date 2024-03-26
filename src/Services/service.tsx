@@ -34,6 +34,9 @@ const API = {
     getAllTitle: () => {
         return api.get('/title')
     },
+    updateTitle: (body: any) => {
+        return api.post('/title/update', body)
+    },
     removeTitle: (title_id: string) => {
         return api.post(`/title/${title_id}`)
     },
@@ -61,7 +64,16 @@ const API = {
     },
     updateCoordinate: (body: any) => {
         return api.post('/coordinate/update', body)
-    }
+    },
+    customCoordinate: (body: any) => {
+        return api.post('/coordinate/custom', body)
+    },
+    getCustomCoordinate: (title_id: string) => {
+        return api.get(`/coordinate/custom/${title_id}`)
+    },
+    removeCoordinateCustom: (coordinate_id?: string) => {
+        return api.post(`/coordinate/delete/custom/${coordinate_id}`)
+    },
 }
 
 export default API;

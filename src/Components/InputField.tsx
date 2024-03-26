@@ -32,7 +32,7 @@ const InputField: React.FC<inputProps> = ({
                     >
                         {
                             options?.map((data: any, index: number) => (
-                                <option key={index} value={data.name_subdistrict}>{data.name_subdistrict}</option>
+                                <option key={index} value={data?.name_subdistrict ?? data?.value}>{data?.name_subdistrict ?? data?.label}</option>
                             ))
                         }
                     </select>
@@ -44,6 +44,33 @@ const InputField: React.FC<inputProps> = ({
                         ): null
                     }
                 </div>
+            )
+        case "textarea-input": 
+            return (
+            <div className='w-full'>
+                <div className='flex items-center w-max mb-4'>
+                  <label htmlFor={id} className="block text-sm font-medium text-gray-900 dark:text-white">{label}</label>
+                  {iconLabel ? iconLabel : null}
+                </div>
+                <textarea 
+                    id={id} 
+                    name={name} 
+                    onChange={onChange} 
+                    className={`w-full border border-black hover:brightness-[90%] active:scale-[0.99] duration-100 h-[220px] flex items-center px-4 ${large ? 'py-3' : 'py-2'} rounded-[10px] text-[16px] bg-white text-black`}
+                    placeholder={placeholder} 
+                    value={value} 
+                    onBlur={onBlur}
+                    required 
+                >
+                </textarea>
+                {
+                    onError && onTouched ? (
+                        <small className='text-[red] text-[12px] font-normal my-2'>
+                            {onError}
+                        </small>
+                    ): null
+                }
+            </div>
             )
         default:
             return (

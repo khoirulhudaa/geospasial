@@ -20,6 +20,7 @@ export interface popUpProps {
     close?: any;
     handleSubdistrict?: any;
     dinasID?: string;
+    dinasNAME?: string;
     handleStatus?: any;
     titleID?: string;
     handleDone?: any;
@@ -44,6 +45,19 @@ export interface mapProps {
     handleShowAll?: any;
     showAll?: boolean;
     dataSubdistrict?: any;
+    name?: string;
+    color?: string;
+    description?: string;
+    status?: string;
+    date?: any;
+    condition?: any;
+    getCoordinate?: any;
+    removeCoordinate?: any;
+    swipe?: any;
+    selectSwipe?: any;
+    customData?: any;
+    handleAlert?: any;
+    statusCheck?: boolean;
 }
 
 export interface formProps {
@@ -57,4 +71,6 @@ export interface formProps {
     handleDone?: any;
     data?: any;
     dataSubdistrict?: any[];
+    swipe?: any;
+    changeColor?: any;
 }

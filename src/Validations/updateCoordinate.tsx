@@ -12,6 +12,7 @@ export const useUpdateCoordinateFormik = ({onError, onResponse, titleID, conditi
             lat: '',
             long: '',
             link: '',  
+            thumbnail: '',  
             note: '',  
             condition: [],  
         },
@@ -26,7 +27,9 @@ export const useUpdateCoordinateFormik = ({onError, onResponse, titleID, conditi
             long: Yup.string()
             .required('Tidak boleh kosong!'),
             link: Yup.string()
-            .notRequired(),
+            .required(),
+            thumbnail: Yup.string()
+            .required(),
             note: Yup.string()
             .notRequired(),
             condition: Yup.array()
@@ -45,6 +48,7 @@ export const useUpdateCoordinateFormik = ({onError, onResponse, titleID, conditi
                     lat: values.lat,
                     long: values.long,
                     link: values.link, 
+                    thumbnail: values.thumbnail, 
                     note: values.note, 
                     condition: condition,  
                 }
@@ -75,6 +79,7 @@ export const useUpdateCoordinateFormik = ({onError, onResponse, titleID, conditi
             lat: data ? data.lat : '',
             long: data ? data.long : '',
             link: data ? data.link : '',  
+            thumbnail: data ? data.thumbnail : '',  
             note: data ? data.note : '',  
             condition: data ? data.condition : [],  
         })
