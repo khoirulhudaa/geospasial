@@ -30,6 +30,7 @@ const InputField: React.FC<inputProps> = ({
                         onBlur={onBlur}
                         required 
                     >
+                            <option value={''} disabled={true}>Pilih Kecamatan</option>
                         {
                             options?.map((data: any, index: number) => (
                                 <option key={index} value={data?.name_subdistrict ?? data?.value}>{data?.name_subdistrict ?? data?.label}</option>

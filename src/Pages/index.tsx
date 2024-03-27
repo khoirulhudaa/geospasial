@@ -534,7 +534,7 @@ const Homepage: React.FC = () => {
             </React.Fragment>
           ))}
           
-          <div className={`relative ${activeWidth ? 'w-0 ml-[-60px]' : 'w-[30vw]'} duration-200 ease h-screen overflow-y-auto bg-slate-700 border-r border-r-slate-300 py-6 px-7`}>
+          <div className={`relative ${activeWidth ? 'w-0 ml-[-60px]' : 'w-[30vw]'} duration-200 ease h-screen overflow-y-auto overflow-x-hidden bg-slate-700 border-r border-r-slate-300 py-6 px-7`}>
               {
                 swipe ? (
                   <>
@@ -890,7 +890,7 @@ const Homepage: React.FC = () => {
                             })
                             .map((data: any, index: number) => (
                               <div key={index} title={data?.description} className='cursor-pointer relative w-[96%] md:w-[47%] border-[2px] border-slate-700 px-4 h-[180px] flex flex-col justify-between mr-4 mt-6 rounded-lg shadow-lg p-4 bg-white'>
-                                  <h2 onClick={() => {window.alert(data?.title_id), setTitleID(data.title_id), setSelectTitle(data.title), window.scrollTo(0, 0)}} className="max-w-[926%] cursor-pointer hover:text-blue-600 active:scale-[0.98] text-blue-400 overflow-hidden overflow-ellipsis whitespace-nowrap border-b border-b-slate-700 pb-4 mt-2 text-[16px]">{ data?.title }</h2>
+                                  <h2 onClick={() => {setTitleID(data.title_id), setSelectTitle(data.title), window.scrollTo(0, 0)}} className="max-w-[926%] cursor-pointer hover:text-blue-600 active:scale-[0.98] text-blue-400 overflow-hidden overflow-ellipsis whitespace-nowrap border-b border-b-slate-700 pb-4 mt-2 text-[16px]">{ data?.title }</h2>
                                   <div className='w-max flex items-center'>
                                     <div className='rounded-full w-max h-max px-4 py-2 flex items-center justify-center bg-slate-200 text-slate-500 mr-3'>
                                       <FaCalendarAlt className='mr-2' /> {data?.year}

@@ -36,6 +36,8 @@ const FormGroup: React.FC<formProps> = ({
     uploadExcel
 }) => {
 
+    console.log('kce:', dataSubdistrict)
+
     const coordinates = useSelector((state: any) => state.Coordinate?.coordinate)
     console.log('coor nbew:', coordinates)
 
@@ -516,7 +518,6 @@ const FormGroup: React.FC<formProps> = ({
                                 <InputField 
                                     label='Latitude'
                                     name='lat'
-                                    type='number'
                                     id='latitude'
                                     value={coordinateFormik.values.lat}
                                     placeholder='-6123762'
@@ -531,7 +532,6 @@ const FormGroup: React.FC<formProps> = ({
                                     label='Longitude'
                                     name='long'
                                     id='longitude'
-                                    type='number'
                                     value={coordinateFormik.values.long}
                                     placeholder='2009720'
                                     onChange={coordinateFormik.handleChange}
@@ -599,7 +599,7 @@ const FormGroup: React.FC<formProps> = ({
                         {/* <hr className='mb-4 mt-2 border-1 border-slate-700' /> */}
                     </div>
                 </div>
-                <div className='w-max flex items-center'>
+                <div className='w-max mt-4 flex items-center'>
                     <button type='submit' className='w-max hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-3 rounded-full text-[14px] bg-slate-700 text-white'>
                         <p>
                             Tambah koordinat

@@ -49,7 +49,7 @@ const PopupSubdistrict: React.FC<popUpProps> = ({
             </div>
             <div className='mb-5'>
                 <InputField 
-                    label='Latitude'
+                    label='Latitude (Kantor Kecamatan)'
                     name='lat'
                     id='lat'
                     placeholder='-632322.3233238'
@@ -62,7 +62,7 @@ const PopupSubdistrict: React.FC<popUpProps> = ({
             </div>
             <div className='mb-5'>
                 <InputField 
-                    label='Longitude'
+                    label='Longitude (Kantor Kecamatan)'
                     name='long'
                     id='long'
                     placeholder='108732327.3728'

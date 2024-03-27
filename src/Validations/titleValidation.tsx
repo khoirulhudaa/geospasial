@@ -1,7 +1,6 @@
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import API from '../Services/service';
-import capitalizeEveryWord from '../Helpers/capitalizeEveryWord';
 
 export const useTitleFormik = ({onError, onResponse, dinasID, dinasNAME, excelData, titleID}: {onError?: any, onResponse?: any, dinasID?: string, dinasNAME?: string, excelData?: any[], titleID?: string}) => {
     const formik = useFormik<any>({
@@ -50,7 +49,7 @@ export const useTitleFormik = ({onError, onResponse, dinasID, dinasNAME, excelDa
                     category: values.category,
                     status: values.status,
                     ...(excelData && excelData !== null && excelData !== undefined ? { coordinate: dataExcel } : {}),
-                    title: capitalizeEveryWord(values.title)
+                    title: values.title
                 }
 
                 console.log('new data title :', data)
