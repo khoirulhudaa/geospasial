@@ -11,7 +11,7 @@ const PopupTitleGeospasialExcel: React.FC<popUpProps> = ({
     close,
     dinasID,
     dinasNAME,
-    handleStatus
+    handleStatus,
 }) => {
 
     const [error, setError] = useState<string>('')
@@ -31,83 +31,99 @@ const PopupTitleGeospasialExcel: React.FC<popUpProps> = ({
             handleAlert()
         }
     }
+    
+    const generateRandomCharacters = (length: number) => {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let result = '';
+        for (let i = 0; i < length; i++) {
+          const randomIndex = Math.floor(Math.random() * characters.length);
+          result += characters.charAt(randomIndex);
+        }
+        return result;
+    };
+
+    const title_id = generateRandomCharacters(6)
 
     const titleFormik = useTitleFormik({
         onError: handleErrorMessage,
         onResponse: handleResponse,
         dinasID,
+        titleID: title_id,
         dinasNAME,
         ...(excelData !== null && excelData?.length > 0 ? { excelData } : {})
     });
 
     const handleFileUpload = (e: any) => {
+        const file = e.target.files[0];
+        setNameFile(file.name)
+        const reader = new FileReader();
+            
+        reader.onload = (event: any) => {
+        const binaryString = event.target.result;
+        const workbook = XLSX.read(binaryString, { type: 'binary' });
 
-    const file = e.target.files[0];
-    setNameFile(file.name)
-    const reader = new FileReader();
-        
-    reader.onload = (event: any) => {
-    const binaryString = event.target.result;
-    const workbook = XLSX.read(binaryString, { type: 'binary' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
 
-    const sheetName = workbook.SheetNames[0];
-    const worksheet = workbook.Sheets[sheetName];
-
-    const data: any = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-    const findFieldIndex = (fieldOptions: string[]) => {
-    for (let i = 0; i < data[0].length; i++) {
-        const field = data[0][i].toLowerCase();
-        if (fieldOptions.some(option => field.includes(option.toLowerCase()))) {
-        return i;
+        const data: any = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        const findFieldIndex = (fieldOptions: string[]) => {
+        for (let i = 0; i < data[0].length; i++) {
+            const field = data[0][i].toLowerCase();
+            if (fieldOptions.some(option => field.includes(option.toLowerCase()))) {
+            return i;
+            }
         }
-    }
-    return -1; 
+        return -1; 
+        };
+        
+        // Mengonversi data Excel menjadi array of objects dengan property name_location, lat, dan long
+        const nameIndex = findFieldIndex(["Nama lokasi", "nama lokasi", "lokasi", "Daftar data", 'daftar data", "nama", "Daftar Data", "Nama data', "Data", "NAMA LOKASI", "LOKASI", "DAFTAR DATA", "NAMA DATA", "Daftar_data", "Nama _lokasi"]);
+        const latIndex = findFieldIndex(["Latitude", "latitude", "lat", "Lat", "LAT", "LATITUDE"]);
+        const longIndex = findFieldIndex(["Longitude", "longitude", "long", "Long", "lng", "LONG", "LONGITUDE", "Longitudinal", "LONGITUDINAL"]);
+        const linkMap = findFieldIndex(["link", "url", "link", "Url", "LINK", "LING", "URL"]);
+        const linkThumbnail = findFieldIndex(["foto", "thumbnail", "gambar", "Foto", "Thumbnail", "Gambar", "FOTO", "THUMBNAIL", "GAMBAR"]);
+        const subdistrictExcel = findFieldIndex(["Kecamatan", "kecamatan", "KECAMATAN", "kcmtn", "KCMTN"]);
+
+        data.slice(1).map((row: any) => {console.log(row)})
+          
+        // Mengambil data sesuai dengan indeks yang telah ditemukan
+        const convertedData: any = data.slice(1).map((row: any) => ({
+            title_id,
+            coordinate_id: generateRandomCharacters(5),
+            name_location: nameIndex !== -1 ? row[nameIndex] : '-',
+            lat: latIndex !== -1 ? row[latIndex] : 0,
+            long: longIndex !== -1 ? row[longIndex] : 0,
+            link: linkMap !== -1 ? row[linkMap] : '-',
+            subdistrict: subdistrictExcel !== -1 ? row[subdistrictExcel] : '-',
+            thumbnail: linkThumbnail !== -1 ? row[linkThumbnail] : '-',
+        })).filter((obj: any) =>
+            obj.name_location !== '' &&
+            obj.lat !== '' &&
+            obj.long !== '' &&
+            obj.subdistrict !== '' &&
+            obj.link !== '' &&
+            obj.thumbnail !== '' &&
+            obj.name_location !== undefined &&
+            obj.lat !== undefined &&
+            obj.long !== undefined &&
+            obj.subdistrict !== undefined &&
+            obj.link !== undefined &&
+            obj.thumbnail !== undefined
+        );
+
+        console.log('data adata:', convertedData)
+        
+
+        // Menyimpan data yang sudah dikonversi
+        console.log('this is excel data:', data);
+        console.log('new data from excel:', convertedData);
+        setExcelData(convertedData);
+        setActiveUploadExcel(!activeUploadExcel);
+
+        };
+
+        reader.readAsBinaryString(file);
     };
-    
-    // Mengonversi data Excel menjadi array of objects dengan property name_location, lat, dan long
-    const nameIndex = findFieldIndex(["Nama lokasi", "nama lokasi", "lokasi", "Daftar data", 'daftar data", "nama", "Daftar Data", "Nama data', "Data", "NAMA LOKASI", "LOKASI", "DAFTAR DATA", "NAMA DATA", "Daftar_data", "Nama _lokasi"]);
-    const latIndex = findFieldIndex(["Latitude", "latitude", "lat", "Lat", "LAT", "LATITUDE"]);
-    const longIndex = findFieldIndex(["Longitude", "longitude", "long", "Long", "lng", "LONG", "LONGITUDE", "Longitudinal", "LONGITUDINAL"]);
-    const linkMap = findFieldIndex(["link", "url", "link", "Url", "LINK", "LING", "URL"]);
-    const linkThumbnail = findFieldIndex(["foto", "thumbnail", "gambar", "Foto", "Thumbnail", "Gambar", "FOTO", "THUMBNAIL", "GAMBAR"]);
-    const subdistrictExcel = findFieldIndex(["Kecamatan", "kecamatan", "KECAMATAN", "kcmtn", "KCMTN"]);
-
-    data.slice(1).map((row: any) => {console.log(row)})
-
-    // Mengambil data sesuai dengan indeks yang telah ditemukan
-    const convertedData: any = data.slice(1).map((row: any) => ({
-        name_location: nameIndex !== -1 ? row[nameIndex] : '-',
-        lat: latIndex !== -1 ? row[latIndex] : 0,
-        long: longIndex !== -1 ? row[longIndex] : 0,
-        link: linkMap !== -1 ? row[linkMap] : '-',
-        subdistrict: subdistrictExcel !== -1 ? row[subdistrictExcel] : '-',
-        thumbnail: linkThumbnail !== -1 ? row[linkThumbnail] : '-',
-    })).filter((obj: any) =>
-        obj.name_location !== '' &&
-        obj.lat !== '' &&
-        obj.long !== '' &&
-        obj.subdistrict !== '' &&
-        obj.link !== '' &&
-        obj.thumbnail !== '' &&
-        obj.name_location !== undefined &&
-        obj.lat !== undefined &&
-        obj.long !== undefined &&
-        obj.subdistrict !== undefined &&
-        obj.link !== undefined &&
-        obj.thumbnail !== undefined
-    );
-    
-
-    // Menyimpan data yang sudah dikonversi
-    console.log('this is excel data:', data);
-    console.log('new data from excel:', convertedData);
-    setExcelData(convertedData);
-    setActiveUploadExcel(!activeUploadExcel);
-
-    };
-
-    reader.readAsBinaryString(file);
-};
 
   return (
     <div className='w-screen h-screen fixed left-0 top-0 flex justify-center items-center z-[999999] bg-slate-700    bg-opacity-[0.7]'>
@@ -142,18 +158,31 @@ const PopupTitleGeospasialExcel: React.FC<popUpProps> = ({
                     onTouched={titleFormik.touched.year}
                 />
             </div>
-            <div className='mb-5 w-full pt-4 pb-5'>
-                <label htmlFor="status" className='text-[14px] font-bold text-slate-800'>Status Data</label>
-                <div role="group" id='status' aria-labelledby="my-radio-group" className="w-max mt-5 flex items-center space-x-2">
-                    <label className="inline-flex items-center">
-                        <input type="radio" name="status" value="Sementara" onChange={(e: any) => titleFormik.setFieldValue('status', e.target.value)} className="form-radio h-6 w-6"/>
-                        <span className="ml-2">Sementara</span>
-                    </label>
-                    <div className='w-[20px]'></div>
-                    <label className="inline-flex items-center">
-                        <input type="radio" name="status" value="Tetap" onChange={(e: any) => titleFormik.setFieldValue('status', e.target.value)} className="form-radio h-6 w-6"/>
-                        <span className="ml-2">Tetap</span>
-                    </label>
+            <div className='w-full flex border-y border-y-slate-600 items-center mb-5 pt-4 pb-8'>
+                <div className='w-full'>
+                    <label htmlFor="status" className='text-[14px] font-bold text-slate-800'>Status Data</label>
+                    <div role="group" id='status' aria-labelledby="my-radio-group" className="w-max mt-5 flex items-center space-x-2">
+                        <label className="inline-flex items-center">
+                            <input type="radio" name="status" value="Sementara" onChange={(e: any) => titleFormik.setFieldValue('status', e.target.value)} className="form-radio h-6 w-6"/>
+                            <span className="ml-2">Sementara</span>
+                        </label>
+                        <div className='w-[20px]'></div>
+                        <label className="inline-flex items-center">
+                            <input type="radio" name="status" value="Tetap" onChange={(e: any) => titleFormik.setFieldValue('status', e.target.value)} className="form-radio h-6 w-6"/>
+                            <span className="ml-2">Tetap</span>
+                        </label>
+                    </div>
+                </div>
+                <div className='w-full relative left-5'>
+                    <label htmlFor="status" className='text-[14px] font-bold text-slate-800'>Status Data</label>
+                    <div className='w-[90%] bg-white  oerflow-hidden rounded-full border-slate-500 border outline-0 h-[43px] relative top-3 px-3'>
+                        <select name="category" onChange={titleFormik.handleChange} onBlur={titleFormik.handleBlur} id="category" className='bg-white rounded-full w-full border-0 outline-0 h-full'>
+                            <option value="" disabled={true}>Pilih Kategori</option>
+                            <option value="Koordinat">Titik Koordinat</option>
+                            <option value="Polygon">Polygon</option>
+                            <option value="Gabungan">Gabungan</option>
+                        </select>
+                    </div>
                 </div>
             </div>
             <div className='mb-5'>

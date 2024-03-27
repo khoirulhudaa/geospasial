@@ -2,11 +2,14 @@ import axios from 'axios'
 import { debounce } from 'lodash'
 import React, { useEffect, useState } from 'react'
 import { ChromePicker } from 'react-color'
-import { FaCheckCircle, FaSpinner, FaTimesCircle, FaTrashAlt } from 'react-icons/fa'
+import { FaCheckCircle, FaFileExcel, FaHandPointer, FaSpinner, FaTimes, FaTimesCircle, FaTrashAlt } from 'react-icons/fa'
 import { useDispatch, useSelector } from 'react-redux'
+import * as XLSX from 'xlsx'
 import { formProps } from '../Models/componentInterface'
+import { removeCoordinateById } from '../Store/coordinateSlice'
 import store from '../Store/store'
 import { useCoordinateFormik } from '../Validations/coordinateValidation'
+import { useCustomExcelCoordinateFormik } from '../Validations/createCoordinateExcelPolygon'
 import { useCustomCoordinateFormik } from '../Validations/createCoordinateValidation'
 import { useDinasFormik } from '../Validations/dinasValidation'
 import { useSignInFormik } from '../Validations/signinValidation'
@@ -16,7 +19,6 @@ import { useUpdateSubdistrictFormik } from '../Validations/updateSubdistrict'
 import InputField from './InputField'
 import SweetAlert from './SweetAlert'
 import ErrorMessage from './errorMessage'
-import { removeCoordinateById } from '../Store/coordinateSlice'
 
 const FormGroup: React.FC<formProps> = ({
     type,
@@ -30,7 +32,8 @@ const FormGroup: React.FC<formProps> = ({
     data,
     dataSubdistrict,
     swipe,
-    changeColor
+    changeColor,
+    uploadExcel
 }) => {
 
     const coordinates = useSelector((state: any) => state.Coordinate?.coordinate)
@@ -49,6 +52,10 @@ const FormGroup: React.FC<formProps> = ({
     const [showTrash, setShowTrash] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [nowIndex, setNowIndex] = useState<number>(999999999);
+    const [nameFile, setNameFile] = useState<string>('')
+    const [dataPolygonExcel, setDataPolygonExcel] = useState<any>(null);
+
+    console.log(nameFile)
 
     const handleMouseEnter = (index: number) => {
       setShowTrash(true);
@@ -130,6 +137,7 @@ const FormGroup: React.FC<formProps> = ({
     const clearAllForm = () => {
         dinasFormik.resetForm()
         authFormiks.resetForm()
+        setNameFile('')
         authFormiks2.resetForm()
         coordinateFormik.resetForm()
     }
@@ -145,6 +153,7 @@ const FormGroup: React.FC<formProps> = ({
     const handleResponseCustom = (response: number) => {
         if(response === 200) {
             clearAllForm()
+            setNameFile('')
             handleAlert('Berhasil tambah data')
             handleStatus()
         }
@@ -328,6 +337,85 @@ const FormGroup: React.FC<formProps> = ({
         titleID,
         danger
     })
+
+    const createCustomCoordinateWithExcel =  useCustomExcelCoordinateFormik({
+        onError: handleErrorMessage,
+        onResponse: handleResponseCustom,
+        dataPolygonExcel,
+        titleID
+    })
+
+
+    const handleFileUploadPolygon = (e: any) => {
+        console.log(e)
+        const file = e.target.files[0];
+        setNameFile(file.name)
+        const reader = new FileReader();
+            
+        reader.onload = (event: any) => {
+        const binaryString = event.target.result;
+        const workbook = XLSX.read(binaryString, { type: 'binary' });
+    
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+    
+        const data: any = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        const findFieldIndex = (fieldOptions: string[]) => {
+        for (let i = 0; i < data[0].length; i++) {
+            const field = data[0][i].toLowerCase();
+            if (fieldOptions.some(option => field.includes(option.toLowerCase()))) {
+            return i;
+            }
+        }
+        return -1; 
+        };
+        
+        // Mengonversi data Excel menjadi array of objects dengan property name_location, lat, dan long
+        const nameIndex = findFieldIndex(["Nama lokasi", "nama lokasi", "lokasi", "nama", "Nama", "NAMA", "name", "Name", "NAME", "Daftar data", 'daftar data", "nama", "Daftar Data", "Nama data', "Data", "NAMA LOKASI", "LOKASI", "DAFTAR DATA", "NAMA DATA", "Daftar_data", "Nama _lokasi"]);
+        const typeDangerExcel = findFieldIndex(["Jenis Rawan", "Jenis Rawan" , "jenis_rawan", "jenis rawan", "JENIS_RAWAN", "Jenis Rawan", "JENIS RAWAN"]);
+        const typeAreaExcel = findFieldIndex(["jenis area", "jenis_area", "Jenis_area", "Jenis Area", "JENIS AREA", "JENIS_AREA"]);
+        const colorExcel = findFieldIndex(["Warna", "warna", "WARNA"]);
+        const descriptionExcel = findFieldIndex(["Deskripsi", "deskripsi", "DESKRIPSI"]);
+        const wideExcel = findFieldIndex(["Luas", "luas", "LUAS", "luas_area", "Luas_area", "luas area"]);
+        const typeWideExcel = findFieldIndex(["satuan", "Satuan", "SATUAN"]);
+        const coordinatesIndex = findFieldIndex(["Koordinat", "koordinat", "kordinat", "Kordinat", "KOORDINAT"]);
+    
+        const convertedData: any = data.slice(1).map((row: any) => {
+            const coordinatesString = row[coordinatesIndex]; // Ambil nilai koordinat dalam format string JSON dari row
+            const coordinates = JSON.parse(coordinatesString); 
+        
+            console.log('result excel polygon coordinates:', coordinates)
+
+            return {
+                name: nameIndex !== -1 ? row[nameIndex] : '-',
+                type_danger: typeDangerExcel !== -1 ? row[typeDangerExcel] : '-',
+                type_area: typeAreaExcel !== -1 ? row[typeAreaExcel] : '-',
+                color: colorExcel !== -1 ? row[colorExcel] : '-',
+                description: descriptionExcel !== -1 ? row[descriptionExcel] : '-',
+                wide: wideExcel !== -1 ? row[wideExcel] : '-',
+                typeWide: typeWideExcel !== -1 ? row[typeWideExcel] : 0,
+                coordinates: Array.isArray(coordinates) ? coordinates.map(coord => [parseFloat(coord[0]), parseFloat(coord[1])]) : [],
+            };
+        }).filter((obj: any) =>
+            obj.name !== '' &&
+            obj.type_danger !== '' &&
+            obj.type_area !== '' &&
+            obj.color !== '' &&
+            obj.description !== '' &&
+            obj.wide !== '' &&
+            obj.typeWide !== ''
+        );
+
+        // Menyimpan data yang sudah dikonversi
+        console.log('this is excel data:', data);
+        console.log('new data from excel:', convertedData);
+        setDataPolygonExcel(convertedData);
+    
+        };
+    
+        reader.readAsBinaryString(file);
+        };
+    
 
     switch(type) {
         case "signup" :
@@ -575,10 +663,108 @@ const FormGroup: React.FC<formProps> = ({
                     </div>
                 </form>
             )
+        case "custom-coordinate-excel": 
+            return (
+                <div className='relative w-full bg-white rounded-[12px] flex-col flex justify-center items-center px-5 py-12 h-max'>
+                    <div onClick={() => uploadExcel()} className='absolute top-5 right-5 w-[34px] h-[34px] rounded-full bg-green-500 text-white flex items-center justify-center cursor-pointer hover:brightness-[90%] active:scale-[0.98]'>
+                        <FaHandPointer />
+                    </div>
+                    {
+                        nameFile !== '' ? (
+                            <form onSubmit={createCustomCoordinateWithExcel.handleSubmit} className='mt-6 bg-slate-100 h-max py-6 rounded-[12px] w-full'>
+                                <div className='relative w-full h-max overflow-ellipsis whitespace-nowrap text-center flex flex-col items-center justify-center'>
+                                    <FaFileExcel className='text-[30px] mb-4' />
+                                    <div className='w-max h-max px-3 py-2 rounded-full flex items-center justify-center bg-white'>
+                                        {nameFile}
+                                    </div>
+                                    <div onClick={() => {setNameFile(''), setDataPolygonExcel([])}} className='w-max h-max mt-4 px-4 py-2 rounded-full flex items-center justify-center bg-red-500 text-white'>
+                                        <FaTimes className='text-white' />
+                                        <p className='ml-3'>Hapus File</p>
+                                    </div>
+                                    <button type='submit' className='w-[80%] mt-5 text-center bg-slate-700 border border-black hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center justify-center px-4 py-2 rounded-full text-[16px] text-white'>
+                                        <p>
+                                            Simpan
+                                        </p>
+                                    </button>
+                                </div>
+                            </form>
+                        ):
+                        <div className='w-full mb-4'>
+                            <div className='relativ mt-6 bg-slate-100 h-max py-14 rounded-[12px] w-full mx-auto text-center flex flex-col items-center justify-center'>
+                                <FaFileExcel className='text-[30px]' />
+                                <p className='mt-8'>Tambahkan file excel</p>
+                            </div>
+                            <input accept=".xlsx, .xls" type="file" name='excel' onChange={(e: any) => handleFileUploadPolygon(e)} className='w-full bg-white cursor-pointer opacity-0 z-40 h-[30%] scale-[10]' />
+                        </div>
+                    }
+                    <hr className='border-t border-t-slate-300 border-[1px] mb-5 w-full' />
+                    <div className='w-full mb-5'>
+                        <div className='w-full flex items-center'>
+                            <div className='bg-green-200 text-green-500 rounded-lg w-max h-max px-3 py-1'>nama/nama lokasi</div>
+                            <div className='ml-2 bg-red-200 text-red-500 rounded-lg w-max h-max px-2 text-[12px] py-1'>wajib</div>
+                        </div>
+                        <small>Nama area polygon</small>
+                    </div>
+                    <div className='w-full mb-5'>
+                        <div className='w-full flex items-center'>
+                            <div className='bg-green-200 text-green-500 rounded-lg w-max h-max px-3 py-1'>jenis area</div>
+                            <div className='ml-2 bg-red-200 text-red-500 rounded-lg w-max h-max px-2 text-[12px] py-1'>wajib</div>
+                        </div>
+                        <small>Kabupaten/Kota/Gabungan</small>
+                    </div>
+                    <div className='w-full mb-5'>
+                        <div className='w-full flex items-center'>
+                            <div className='bg-green-200 text-green-500 rounded-lg w-max h-max px-3 py-1'>jenis rawan</div>
+                            <div className='ml-2 bg-red-200 text-red-500 rounded-lg w-max h-max px-2 text-[12px] py-1'>wajib</div>
+                        </div>
+                        <small>Kerawan yang sering terjadi</small>
+                    </div>
+                    <div className='w-full mb-5'>
+                        <div className='w-full flex items-center'>
+                            <div className='bg-green-200 text-green-500 rounded-lg w-max h-max px-3 py-1'>warna</div>
+                            <div className='ml-2 bg-red-200 text-red-500 rounded-lg w-max h-max px-2 text-[12px] py-1'>wajib</div>
+                        </div>
+                        <small>Warna untuk polygon</small>
+                    </div>
+                    <div className='w-full mb-5'>
+                        <div className='w-full flex items-center'>
+                            <div className='bg-green-200 text-green-500 rounded-lg w-max h-max px-3 py-1'>deskripsi</div>
+                            <div className='ml-2 bg-red-200 text-red-500 rounded-lg w-max h-max px-2 text-[12px] py-1'>wajib</div>
+                        </div>
+                        <small>Keterangan singkat terkait area</small>
+                    </div>
+                    <div className='w-full mb-5'>
+                        <div className='w-full flex items-center'>
+                            <div className='bg-green-200 text-green-500 rounded-lg w-max h-max px-3 py-1'>luas</div>
+                            <div className='ml-2 bg-red-200 text-red-500 rounded-lg w-max h-max px-2 text-[12px] py-1'>wajib</div>
+                        </div>
+                        <small>Luas area dalam polygon</small>
+                    </div>
+                    <div className='w-full mb-5'>
+                        <div className='w-full flex items-center'>
+                            <div className='bg-green-200 text-green-500 rounded-lg w-max h-max px-3 py-1'>satuan</div>
+                            <div className='ml-2 bg-red-200 text-red-500 rounded-lg w-max h-max px-2 text-[12px] py-1'>wajib</div>
+                        </div>
+                        <small>KM/Hektart/Yarn/dll</small>
+                    </div>
+                    <div className='w-full mb-5'>
+                        <div className='w-full flex items-center'>
+                            <div className='bg-green-200 text-green-500 rounded-lg w-max h-max px-3 py-1'>koordinat</div>
+                            <div className='ml-2 bg-red-200 text-red-500 rounded-lg w-max h-max px-2 text-[12px] py-1'>wajib</div>
+                        </div>
+                        <small>Semua data <b>lat</b> dan <b>long</b></small>
+                    </div>
+                </div>
+            )
         case "custom-coordinate":
             return (
                 <form onSubmit={createCustomCoordinate.handleSubmit} className='w-full bg-white rounded-[12px] px-5 pb-4 py-5 h-max'>
-                    <label className='font-[500] text-[14px] text-slate-800'>Titik koordinat</label>
+                    <div className='w-full border-b border-slate-300 pb-4 flex items-center justify-between'>
+                        <label className='font-[500] text-[14px] text-slate-800'>Titik koordinat</label>
+                        <div onClick={() => uploadExcel()} className='w-[34px] h-[34px] rounded-full bg-green-500 text-white flex items-center justify-center cursor-pointer hover:brightness-[90%] active:scale-[0.98]'>
+                            <FaFileExcel />
+                        </div>
+                    </div>
                     <div className='my-5 h-max border-b border-black pb-3 w-full'>
                     <div className='w-full overflow-x-auto flex flex-wrap items-center'>
                         {
@@ -716,11 +902,11 @@ const FormGroup: React.FC<formProps> = ({
                         />
                     </div>
                     <div className='w-full flex items-center mb-3'>
-                    <button type='submit' className='w-full mt-12 text-center bg-slate-700 mr-6 border border-black hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center justify-center px-5 py-3 rounded-full text-[16px] text-white'>
-                        <p>
-                            Simpan
-                        </p>
-                    </button>
+                        <button type='submit' className='w-full mt-12 text-center bg-slate-700 mr-6 border border-black hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center justify-center px-5 py-3 rounded-full text-[16px] text-white'>
+                            <p>
+                                Simpan
+                            </p>
+                        </button>
                     </div>
                 </form>
             )

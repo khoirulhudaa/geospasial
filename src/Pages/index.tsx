@@ -42,6 +42,7 @@ const Homepage: React.FC = () => {
   const [updateDinas, setUpdateDinas] = useState<boolean>(false)
   const [updateTitle, setUpdateTitle] = useState<boolean>(false)
   const [swipe, setSwipe] = useState<boolean>(false)
+  const [uploadExcel, setUploadExcel] = useState<boolean>(false)
 
   // String
   const [activeUpdate, setActiveUpdate] = useState<string>('')
@@ -72,10 +73,12 @@ const Homepage: React.FC = () => {
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
   useEffect(() => {
+    window.scrollTo(0, 0)
 
     if(titleID !== '') {
       (async () => {
         const response = await API.getCustomCoordinate(titleID)
+        console.log('data custom polygon', response?.data?.data)
         setCustom(response?.data?.data)
       })()
     }
@@ -90,8 +93,6 @@ const Homepage: React.FC = () => {
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-
-    window.scrollTo(0, 0)
   
   }, [status, titleID, dinasID]);
 
@@ -118,6 +119,8 @@ const Homepage: React.FC = () => {
   
   const handleStatus = () => {
     setStatus(true)
+    setAddGeospasialExcel(false)
+    setUploadExcel(false)
     setUpdateTitle(false)
   }
   
@@ -175,7 +178,7 @@ const Homepage: React.FC = () => {
       </div>
     ) },
     { condition: addGeospasial, component: <PopupTitleGeospasial dinasNAME={nameDinas ?? ''} handleStatus={() => handleStatus()} dinasID={dinasID} close={closePopup} handleAlert={handleAlert} /> },
-    { condition: addGeospasialExcel, component: <PopupTitleGeospasialExcel dinasNAME={nameDinas ?? ''} handleStatus={() => handleStatus()} dinasID={dinasID} close={closePopup} handleAlert={handleAlert} /> },
+    { condition: addGeospasialExcel, component: <PopupTitleGeospasialExcel dinasNAME={nameDinas ?? ''} titleID={titleID ?? ''} handleStatus={() => handleStatus()} dinasID={dinasID} close={closePopup} handleAlert={handleAlert} /> },
     { condition: addKoordinat, component: <PopupKoordinat dataSubdistrict={allSubdistrict ?? []} handleDone={() => setAddKoordinat(!addKoordinat)} titleID={titleID} close={closePopup} handleStatus={() => handleStatus()} handleAlert={handleAlert} /> },
   ];
 
@@ -252,6 +255,7 @@ const Homepage: React.FC = () => {
   }
 
   const handleDeleteCoordinate = async (data: any) => {
+    console.log(data)
     SweetAlert({
       icon: 'question',
       text: 'Yakin hapus koordinat ?',
@@ -534,12 +538,12 @@ const Homepage: React.FC = () => {
               {
                 swipe ? (
                   <>
-                    <FormGroup changeColor={(e: any) => setColor(e)} handleAlert={(textAlert?: string) => handleAlert(textAlert)} titleID={titleID} swipe={() => handleSwipe()} type='custom-coordinate' />
+                    <FormGroup changeColor={(e: any) => setColor(e)} handleStatus={() => handleStatus()} uploadExcel={() => setUploadExcel(!uploadExcel)} titleID={titleID ?? ''} handleAlert={(textAlert?: string) => handleAlert(textAlert)} swipe={() => handleSwipe()} type={`${uploadExcel ? 'custom-coordinate-excel' : 'custom-coordinate'}`} />
                   </>
                 ):
                   <>
                     <img src={EarthPNG} alt="side-bg" className='absolute scale-[1.8] z-[1] left-[-15px] bottom-[-150px] opacity-[0.1]' />
-                    <div className='relative w-full h-max z-[40] flex mb-10 items-center justify-between'>
+                    <div className='Titik Koorelative w-full h-max z-[40] flex mb-10 items-center justify-between'>
                       <h2 onClick={() => window.location.reload()} className={`cursor-pointer active:scale-[0.98] hover:brightness-[90%] text-white text-[22px] ${activeWidth ? 'hidden' : 'inline'}`}>Geospasial ✨</h2>
                       <button title='Buat dinas baru' onClick={() => setAddService(!addService)} className={`w-max border border-black hover:brightness-[90%] active:scale-[0.99] duration-100 h-max ${activeWidth ? 'hidden' : 'flex'} items-center px-5 py-2 rounded-full text-[16px] bg-white text-black`}>
                         <p className='mr-4'>
@@ -562,6 +566,7 @@ const Homepage: React.FC = () => {
                               onClick={() => {
                                   setDinasID(data?.dinas_id)
                                   setTitleID('')
+                                  dispatch(clearCoordinate())
                                   setNameDinas(data?.name_dinas)
                                   setAbbreviation(data?.abbreviation)
                                   setShowAll(false)
@@ -590,17 +595,17 @@ const Homepage: React.FC = () => {
             <div className={`w-full ${activeHeight ? 'mt-[-120px] opacity-0' : 'mt-0 opacity-1'} flex duration-200 ease items-center pb-9`}>
               <h2 title='Judul website' className='text-[21px]'>Data Geospasial 🗺️</h2>
               <div className='w-[1px] mx-5 h-[22px] bg-black rounded-full'></div>
-              <button title='Lihat pea' onClick={() => titleID === '' ? null : setActivePage('')} className={`w-max mr-6 border border-black ${titleID === '' ? 'cursor-not-allowed bg-slate-200 text-slate-400' : 'hover:brightness-[90%] active:scale-[0.99] duration-100'} duration-100 h-max ${(activePage === '' || activePage === 'peta') && titleID !== '' ? 'flex bg-slate-700 text-white' : 'bg-white text-black'} items-center px-5 py-2 rounded-full text-[16px]`}>
+              <button title='Lihat peta' onClick={() => titleID === '' ? null : setActivePage('')} className={`w-max mr-6 border border-black ${titleID === '' ? 'cursor-not-allowed bg-slate-200 text-slate-400' : 'hover:brightness-[90%] active:scale-[0.99] duration-100'} duration-100 h-max ${(activePage === '' || activePage === 'peta') && titleID !== '' ? 'flex bg-slate-700 text-white' : 'bg-white text-black'} items-center px-5 py-2 rounded-full text-[16px]`}>
                 <p>
                   Peta
                 </p>
               </button>
-              <button title='LIhat daftar kecamatan' onClick={() => activePage === 'subdistrict' ? setActivePage('') : setActivePage('subdistrict')} className={`w-max mr-6 ${activePage === 'subdistrict' ? 'bg-slate-700 text-white' : 'bg-white text-black'} border border-black hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-2 rounded-full text-[16px]`}>
+              <button title='Lihat daftar kecamatan' onClick={() => activePage === 'subdistrict' ? setActivePage('') : setActivePage('subdistrict')} className={`w-max mr-6 ${activePage === 'subdistrict' ? 'bg-slate-700 text-white' : 'bg-white text-black'} border border-black hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-2 rounded-full text-[16px]`}>
                 <p>
                   Kecamatan
                 </p>
               </button>
-              <button title='LIhat daftar kecamatan' onClick={() => titleID === '' ? null : (activePage === 'grafik' ? setActivePage('') : setActivePage('grafik'))} className={`w-max mr-6 ${activePage === 'grafik' ? 'bg-slate-700 text-white' : 'bg-white text-black'} ${titleID === '' ? 'cursor-not-allowed bg-slate-200 text-slate-400' : 'hover:brightness-[90%] active:scale-[0.99] duration-100'} border border-black h-max flex items-center px-5 py-2 rounded-full text-[16px]`}>
+              <button title='Lihat daftar visual' onClick={() => titleID === '' ? null : (activePage === 'grafik' ? setActivePage('') : setActivePage('grafik'))} className={`w-max mr-6 ${activePage === 'grafik' ? 'bg-slate-700 text-white' : 'bg-white text-black'} ${titleID === '' ? 'cursor-not-allowed bg-slate-200 text-slate-400' : 'hover:brightness-[90%] active:scale-[0.99] duration-100'} border border-black h-max flex items-center px-5 py-2 rounded-full text-[16px]`}>
                 <p>
                   Grafik data
                 </p>
@@ -695,7 +700,7 @@ const Homepage: React.FC = () => {
                                   {
                                      allTitle && allTitle.length > 0 ? (
                                       allTitle
-                                      .filter((data: any) => data?.dinas_id === dinasID)
+                                      .filter((data: any) => data?.title_id === titleID)
                                       .map((data: any) => (
                                         data.coordinate
                                         .filter((sub: any) => {
@@ -885,7 +890,7 @@ const Homepage: React.FC = () => {
                             })
                             .map((data: any, index: number) => (
                               <div key={index} title={data?.description} className='cursor-pointer relative w-[96%] md:w-[47%] border-[2px] border-slate-700 px-4 h-[180px] flex flex-col justify-between mr-4 mt-6 rounded-lg shadow-lg p-4 bg-white'>
-                                  <h2 onClick={() => {setTitleID(data.title_id), setSelectTitle(data.title), window.scrollTo(0, 0)}} className="max-w-[926%] cursor-pointer hover:text-blue-600 active:scale-[0.98] text-blue-400 overflow-hidden overflow-ellipsis whitespace-nowrap border-b border-b-slate-700 pb-4 mt-2 text-[16px]">{ data?.title }</h2>
+                                  <h2 onClick={() => {window.alert(data?.title_id), setTitleID(data.title_id), setSelectTitle(data.title), window.scrollTo(0, 0)}} className="max-w-[926%] cursor-pointer hover:text-blue-600 active:scale-[0.98] text-blue-400 overflow-hidden overflow-ellipsis whitespace-nowrap border-b border-b-slate-700 pb-4 mt-2 text-[16px]">{ data?.title }</h2>
                                   <div className='w-max flex items-center'>
                                     <div className='rounded-full w-max h-max px-4 py-2 flex items-center justify-center bg-slate-200 text-slate-500 mr-3'>
                                       <FaCalendarAlt className='mr-2' /> {data?.year}
@@ -894,7 +899,7 @@ const Homepage: React.FC = () => {
                                       <FaClock className='mr-2' /> {data?.status}
                                     </div>
                                     <div className='rounded-full w-max h-max px-4 py-2 flex items-center justify-center bg-yellow-200 text-yellow-600 mr-4'>
-                                      {data?.category === 'Titik Koordinat' ? <FaDotCircle className='mr-2' /> : data?.category === 'Polygon' ? <FaDrawPolygon className='mr-2' /> : <FaBezierCurve className='mr-2' />} { data?.category ?? 'Titik Koordinat' }
+                                      {data?.category === 'Koordinat' ? <FaDotCircle className='mr-2' /> : data?.category === 'Polygon' ? <FaDrawPolygon className='mr-2' /> : <FaBezierCurve className='mr-2' />} { data?.category ?? '-' }
                                     </div>
                                   </div>
                                   <div className='w-full flex items-center justify-between mt-1'>

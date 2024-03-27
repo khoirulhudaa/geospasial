@@ -3,7 +3,7 @@ import * as Yup from 'yup';
 import API from '../Services/service';
 import capitalizeEveryWord from '../Helpers/capitalizeEveryWord';
 
-export const useTitleFormik = ({onError, onResponse, dinasID, dinasNAME, excelData}: {onError?: any, onResponse?: any, dinasID?: string, dinasNAME?: string, excelData?: any[]}) => {
+export const useTitleFormik = ({onError, onResponse, dinasID, dinasNAME, excelData, titleID}: {onError?: any, onResponse?: any, dinasID?: string, dinasNAME?: string, excelData?: any[], titleID?: string}) => {
     const formik = useFormik<any>({
         initialValues: {
             title: '',
@@ -30,6 +30,8 @@ export const useTitleFormik = ({onError, onResponse, dinasID, dinasNAME, excelDa
                         lat: parseFloat(data.lat),
                         long: parseFloat(data.long),
                         thumbnail: data?.thumbnail,
+                        title_id: titleID,
+                        coordinate_id: data?.coordinate_id
                     };
                     }
                     
@@ -40,6 +42,7 @@ export const useTitleFormik = ({onError, onResponse, dinasID, dinasNAME, excelDa
 
                 const data = {
                     dinas_id: dinasID,
+                    ...(titleID && titleID !== null && excelData !== undefined ? { title_id: titleID } : {}),
                     description: values.description,
                     type: 'public',
                     name_dinas: dinasNAME,

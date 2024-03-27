@@ -74,6 +74,12 @@ const API = {
     removeCoordinateCustom: (coordinate_id?: string) => {
         return api.post(`/coordinate/delete/custom/${coordinate_id}`)
     },
+
+    // Polygon With Excel
+    customCoordinateExcelPolygon: (title_id?: string, body?: any) => {
+        return api.post(`/polygon/excel/${title_id}`, body)
+    },
+    
 }
 
 export default API;

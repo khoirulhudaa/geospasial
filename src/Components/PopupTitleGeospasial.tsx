@@ -85,7 +85,7 @@ const PopupTitleGeospasial: React.FC<popUpProps> = ({
                     <div className='w-[90%] bg-white  oerflow-hidden rounded-full border-slate-500 border outline-0 h-[43px] relative top-3 px-3'>
                         <select name="category" onChange={titleFormik.handleChange} onBlur={titleFormik.handleBlur} id="category" className='bg-white rounded-full w-full border-0 outline-0 h-full'>
                             <option value="" disabled={true}>Pilih Kategori</option>
-                            <option value="Titik Koordinat">Titik Koordinat</option>
+                            <option value="Koordinat">Titik Koordinat</option>
                             <option value="Polygon">Polygon</option>
                             <option value="Gabungan">Gabungan</option>
                         </select>

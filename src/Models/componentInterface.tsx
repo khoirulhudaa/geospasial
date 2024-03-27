@@ -73,4 +73,5 @@ export interface formProps {
     dataSubdistrict?: any[];
     swipe?: any;
     changeColor?: any;
+    uploadExcel?: any;
 }

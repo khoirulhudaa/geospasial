@@ -43,6 +43,7 @@ export const useCoordinateFormik = ({onError, onResponse, titleID, condition}: {
                     lat: values.lat,
                     long: values.long,
                     link: values.link, 
+                    category: 'Koordinat',
                     thumbnail: values.thumbnail, 
                     condition: condition,  
                 }
@@ -57,11 +58,9 @@ export const useCoordinateFormik = ({onError, onResponse, titleID, condition}: {
                     resetForm()
                 }else {
                     onError(response.data.message)
-                    resetForm()
                 }
             } catch (error: any) {
                 onError(error.message)
-                resetForm()
             }
         }
     })
