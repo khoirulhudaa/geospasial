@@ -578,7 +578,7 @@ const Homepage: React.FC = () => {
                               <p title='nama dinas' className={`text-[18px] underline overflow-hidden overflow-ellipsis whitespace-nowrap max-w-full ${data.dinas_id === dinasID ? 'text-white' : 'text-blue-500 hover:text-blue-700'} ${activeWidth ? 'hidden' : 'block'}`}>{data?.name_dinas}</p>
                               <small className={`text-[14px] ${activeWidth ? 'hidden' : 'block'}`}>( { data?.abbreviation } )</small>
                             </div>
-                            <div title='Hapus dinas' onClick={() => handleRemoveDinas(data?.dinas_id)} className='w-[55px] border-l border-white acive:scale-[0.98] hover:bg-slate-500 cursor-pointer h-full flex justify-center items-center font-normal p-2 text-white bg-blue-400 relative left-4'>
+                            <div title='Hapus dinas' onClick={() => handleRemoveDinas(data?.dinas_id)} className='w-[55px] border-l border-white acive:scale-[0.98] hover:bg-slate-sudo cursor-pointer h-full flex justify-center items-center font-normal p-2 text-white bg-blue-400 relative left-4'>
                               <FaTimes className='cursor-pointer active:scale-[0.98]' />
                             </div>
                           </div>

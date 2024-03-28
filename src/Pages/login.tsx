@@ -70,7 +70,7 @@ const Login: React.FC = () => {
                     <div className='relative overflow-hidden w-[67vw] h-screen bg-slate-700 border-r border-r-slate-700'>
                         <img src={EarthPNG} alt="side-bg" id='earth' className='absolute scale-[1.8] z-[1] left-[-30px] bottom-[-20%] opacity-[0.6]' />    
                         <div className='relative w-full flex items-center justify-center h-screen p-8 bg-black z-[333] bg-opacity-[0.4]'>
-                        <h1 className='text-white text-[62px]'>Cirebon</h1>
+                        <h1 className='text-white text-[62px]'>S I G E O</h1>
                         </div>
                     </div>
                 </div>
