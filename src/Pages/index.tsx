@@ -43,6 +43,7 @@ const Homepage: React.FC = () => {
   const [updateTitle, setUpdateTitle] = useState<boolean>(false)
   const [swipe, setSwipe] = useState<boolean>(false)
   const [uploadExcel, setUploadExcel] = useState<boolean>(false)
+  const [skeleton, setSkeleton] = useState<boolean>(true)
 
   // String
   const [activeUpdate, setActiveUpdate] = useState<string>('')
@@ -78,7 +79,6 @@ const Homepage: React.FC = () => {
     if(titleID !== '') {
       (async () => {
         const response = await API.getCustomCoordinate(titleID)
-        console.log('data custom polygon', response?.data?.data)
         setCustom(response?.data?.data)
       })()
     }
@@ -96,23 +96,22 @@ const Homepage: React.FC = () => {
   
   }, [status, titleID, dinasID]);
 
-  console.log('custom:', custom)
 
   const isDesktop = screenWidth >= 900;
 
   useEffect(() => {
     (async () => {
-      console.log('test')
       const resultSubdistrict = await API.getAllSubdistrict()
       const resultDinas = await API.getAllDinas()
       const resultTitle = await API.getAllTitle()
-      setAllSubdistrict(resultSubdistrict.data.data)
-      setAllTitle(resultTitle.data.data)
-      console.log('all title:', resultTitle?.data?.data)
-      setAllDinas(resultDinas.data.data)
+      setAllSubdistrict(resultSubdistrict?.data?.data)
+      setAllTitle(resultTitle?.data?.data)
+      setAllDinas(resultDinas?.data?.data)
+      setSkeleton(false)
       setStatus(false)
     })()
   }, [status, dinasID])
+  
 
   const auth = store.getState().Auth.auth ?? ''
   console.log(auth)
@@ -556,6 +555,7 @@ const Homepage: React.FC = () => {
                     <div className='relative w-full h-[1px] bg-white mb-9 z-[40]'></div>
           
                     {
+                      !skeleton ? (
                       allDinas && allDinas.length > 0 ? (
                         allDinas.map((data: any, index: number) => (
                           <div 
@@ -587,6 +587,24 @@ const Homepage: React.FC = () => {
                         <div onClick={() => setAddService(!addService)} className='border text-center border-dashed text-slate-400 border-black  cursor-pointer active:scale-[0.99] w-full bg-white flex justify-center items-center px-4 h-[80px] rounded-[12px] overflow-hidden mb-5'>
                           <p className='flex items-center'>Tambah Dinas baru <FaPlus className='ml-3' /></p>
                         </div>
+                      ):
+                          <div>
+                            <div className='relative w-full bg-slate-300 animate-pulse h-[80px] overflow-hidden rounded-[12px] mb-4 duration-200'>
+                              <div className='w-[26%] h-full absolute right-0 top-0 bg-slate-400'>
+
+                              </div>
+                            </div>
+                            <div className='relative w-full bg-slate-300 animate-pulse h-[80px] overflow-hidden rounded-[12px] mb-4 duration-200'>
+                              <div className='w-[26%] h-full absolute right-0 top-0 bg-slate-400'>
+
+                              </div>
+                            </div>
+                            <div className='relative w-full bg-slate-300 animate-pulse h-[80px] overflow-hidden rounded-[12px] mb-4 duration-200'>
+                              <div className='w-[26%] h-full absolute right-0 top-0 bg-slate-400'>
+
+                              </div>
+                            </div>
+                          </div>
                     }
                   </>
               }
