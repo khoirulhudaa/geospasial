@@ -11,6 +11,7 @@ export const useCoordinateFormik = ({onError, onResponse, titleID, condition}: {
             lat: '',
             long: '',
             link: '',  
+            address: '',  
             thumbnail: '',  
             condition: [],  
         },
@@ -24,6 +25,8 @@ export const useCoordinateFormik = ({onError, onResponse, titleID, condition}: {
             .required('Tidak boleh kosong!'),
             long: Yup.string()
             .required('Tidak boleh kosong!'),
+            address: Yup.string()
+            .required(),
             link: Yup.string()
             .required(),
             thumbnail: Yup.string()
@@ -42,6 +45,7 @@ export const useCoordinateFormik = ({onError, onResponse, titleID, condition}: {
                     subdistrict: values.subdistrict,
                     lat: Number(values.lat),
                     long: Number(values.long),
+                    address: values.address, 
                     link: values.link, 
                     category: 'Koordinat',
                     thumbnail: values.thumbnail, 

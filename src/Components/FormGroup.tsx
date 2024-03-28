@@ -514,7 +514,7 @@ const FormGroup: React.FC<formProps> = ({
                             </div>
                         </div>
                         <div className='w-full mb-5 flex items-center justify-between'>
-                            <div className='w-1/2 pr-6'>
+                            <div className='w-[30%]'>
                                 <InputField 
                                     label='Latitude'
                                     name='lat'
@@ -527,7 +527,7 @@ const FormGroup: React.FC<formProps> = ({
                                     onTouched={coordinateFormik.touched.lat}
                                 />
                             </div>
-                            <div className='w-1/2'>
+                            <div className='w-[30%]'>
                                 <InputField 
                                     label='Longitude'
                                     name='long'
@@ -538,6 +538,19 @@ const FormGroup: React.FC<formProps> = ({
                                     onBlur={coordinateFormik.handleBlur}
                                     onError={coordinateFormik.errors.long}
                                     onTouched={coordinateFormik.touched.long}
+                                />
+                            </div>
+                            <div className='w-[30%]'>
+                                <InputField 
+                                    label='Alamat'
+                                    name='address'
+                                    id='address'
+                                    value={coordinateFormik.values.address}
+                                    placeholder='Jl.xxxxxx'
+                                    onChange={coordinateFormik.handleChange}
+                                    onBlur={coordinateFormik.handleBlur}
+                                    onError={coordinateFormik.errors.address}
+                                    onTouched={coordinateFormik.touched.address}
                                 />
                             </div>
                         </div>

@@ -4,6 +4,7 @@ export interface coordinateProps {
     lat?: string;
     long?: string;
     link?: string;  
+    address?: string;  
     thumbnail?: string;  
     note?: string;  
     condition?: any[];  
