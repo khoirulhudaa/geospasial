@@ -656,7 +656,7 @@ const Homepage: React.FC = () => {
                       />
                     ):
                     activePage === 'grafik' ? (
-                      <Grafik data={allTitle ?? []} dinasID={dinasID} />
+                      <Grafik data={allTitle ?? []} dinasID={dinasID ?? ''} titleID={titleID ?? ''} />
                     ):
                       <div className='w-full'>
                         
