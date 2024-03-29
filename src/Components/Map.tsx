@@ -30,9 +30,11 @@ const Map: React.FC<mapProps> = ({
   showAll,
   dataSubdistrict,
   swipe,
+  titleID,
   color,
   customData,
   handleAlert,
+  handleStatus,
 }) => {
 
   const dispatch = useDispatch()
@@ -55,6 +57,7 @@ const Map: React.FC<mapProps> = ({
   const [activeClick, setActiveClick] = useState<boolean>(false)
   const [activeClick2, setActiveClick2] = useState<any>(null)
   const [selectColor, setSelectColor] = useState<any>(null)
+  const [dataExcel, setDataExcel] = useState<any[]>([])
   const [status, setStatus] = useState<boolean>(false)
 
   const coorNew = useSelector((state: any) => state.Coordinate?.coordinate)
@@ -2038,44 +2041,73 @@ const Map: React.FC<mapProps> = ({
   });
 
   const handleFileUpload = (e: any) => {
+    console.log(e)
     const file = e.target.files[0];
     setNameFile(file.name)
     const reader = new FileReader();
-    
+        
     reader.onload = (event: any) => {
-      const binaryString = event.target.result;
-      const workbook = XLSX.read(binaryString, { type: 'binary' });
+        const binaryString = event.target.result;
+        const workbook = XLSX.read(binaryString, { type: 'binary' });
 
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
 
-      const data: any = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-      const findFieldIndex = (fieldOptions: string[]) => {
+        const data: any = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        const findFieldIndex = (fieldOptions: string[]) => {
         for (let i = 0; i < data[0].length; i++) {
-          const field = data[0][i].toLowerCase();
-          if (fieldOptions.some(option => field.includes(option.toLowerCase()))) {
+            const field = data[0][i].toLowerCase();
+            if (fieldOptions.some(option => field.includes(option.toLowerCase()))) {
             return i;
-          }
+            }
         }
-        return -1; 
-      };
-      
-      // Mengonversi data Excel menjadi array of objects dengan property name_location, lat, dan long
-      const nameIndex = findFieldIndex(["Nama lokasi", "nama lokasi", "lokasi", "Daftar data", 'daftar data", "nama", "Daftar Data", "Nama data', "Data", "Nama lokasi", "nama lokasi", "DAFTAR DATA", "NAMA DATA", "Daftar_data", "Nama _lokasi"]);
-      const latIndex = findFieldIndex(["Latitude", "latitude", "lat", "Lat", "LAT", "LATITUDE"]);
-      const longIndex = findFieldIndex(["Longitude", "longitude", "long", "Long", "lng", "LONG", "LONGITUDE", "Longitudinal", "LONGITUDINAL"]);
+          return -1; 
+        };
+        
+        // Mengonversi data Excel menjadi array of objects dengan property name_location, lat, dan long
+        const nameIndex = findFieldIndex(["Nama lokasi", "nama lokasi", "lokasi", "nama", "Nama", "NAMA", "name", "Name", "NAME", "Daftar data", 'daftar data", "nama", "Daftar Data", "Nama data', "Data", "NAMA LOKASI", "LOKASI", "DAFTAR DATA", "NAMA DATA", "Daftar_data", "Nama _lokasi"]);
+        const subdistrictExcel = findFieldIndex(["Kecamatan", "kecamatan" ,"KECAMATAN"]);
+        const latitudeExcel = findFieldIndex(["latitude", "Latitude", "lat", "LATITUDE"]);
+        const longitudeExcel = findFieldIndex(["longitude", "Longitude", "long", "LONGITUDE"]);
+        const addressExcel = findFieldIndex(["alamat", "Alamat", "ALAMAT"]);
+        const linkExcel = findFieldIndex(["link", "Link", "LINK"]);
+        const thumbnailExcel = findFieldIndex(["thumbnail", "Thumbnail", "gambar", "foto", "Foto", "THUMBNAIL"]);
+        const rawanIndex = findFieldIndex(["rawan", "Rawan", "RAWAN"]);
 
-      // Mengambil data sesuai dengan indeks yang telah ditemukan
-      const convertedData: any = data.slice(1).map((row: any) => ({
-        name_location: nameIndex !== -1 ? row[nameIndex] : '',
-        lat: latIndex !== -1 ? row[latIndex] : '',
-        long: longIndex !== -1 ? row[longIndex] : ''
-      })).filter((obj: any) => obj.name_location !== '' && obj.lat !== '' && obj.long !== '' && obj.name_location !== undefined && obj.lat !== undefined && obj.long !== undefined);
+        const convertedData: any = data.slice(1).map((row: any) => {
+            let condition = [];
+            if (rawanIndex !== -1) {
+                const rawanValue = row[rawanIndex]?.toLowerCase();
+                if (rawanValue === "y") {
+                    condition.push({ label: "Rawan bencana", icon: "🛑" });
+                }
+            }  
+            return {
+                title_id: titleID,
+                name_location: nameIndex !== -1 ? row[nameIndex] : '-',
+                subdistrict: subdistrictExcel !== -1 ? row[subdistrictExcel] : '-',
+                lat: latitudeExcel !== -1 ? row[latitudeExcel] : '-',
+                long: longitudeExcel !== -1 ? row[longitudeExcel] : '-',
+                address: addressExcel !== -1 ? row[addressExcel] : '-',
+                link: linkExcel !== -1 ? row[linkExcel] : '-',
+                thumbnail: thumbnailExcel !== -1 ? row[thumbnailExcel] : 0,
+                condition: condition
+            };
+        }).filter((obj: any) =>
+            obj.name_location !== undefined &&
+            obj.subdistrict !== undefined &&
+            obj.lat !== undefined &&
+            obj.long !== undefined &&
+            obj.address !== undefined &&
+            obj.link !== undefined &&
+            obj.thumbnail !== undefined 
+        );
 
-      // Menyimpan data yang sudah dikonversi
-      console.log('new data from excel:', convertedData)
-      setExcelData(convertedData);
-      setActiveUploadExcel(!activeUploadExcel)
+        // Menyimpan data yang sudah dikonversi
+        console.log('this is excel data:', data);
+        console.log('new data from excel:', convertedData);
+        setDataExcel(convertedData);
+
     };
 
     reader.readAsBinaryString(file);
@@ -2147,7 +2179,7 @@ const Map: React.FC<mapProps> = ({
       
       {
         activeUploadExcel ? (
-          <PopupUploadFile onChange={(e: any) => handleFileUpload(e)} />
+          <PopupUploadFile dataExcel={dataExcel ?? []} hendleClear={() => {setNameFile(''), setExcelData([]), setActiveUploadExcel(false)}} nameFile={nameFile ?? ''} handleStatus={() => handleStatus()} onChange={(e: any) => handleFileUpload(e)} />
         ):
           null
       }
@@ -2272,7 +2304,11 @@ const Map: React.FC<mapProps> = ({
                             </div>
                           </div>
                           <p className='text-center mt-[-10px]'>
-                            {marker.name_location}
+                          {marker.name_location}
+                          </p>
+                          <hr />
+                          <p className='text-center mt-[-10px]'>
+                            {marker?.address ?? 'Alamat tidak tersedia'}
                           </p>
                         </Popup>
                     }

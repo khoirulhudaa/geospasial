@@ -23,7 +23,10 @@ export interface popUpProps {
     dinasNAME?: string;
     handleStatus?: any;
     titleID?: string;
+    hendleClear?: any;
     handleDone?: any;
+    nameFile?: any;
+    dataExcel?: any;
     dataSubdistrict?: any;
     onDeleteSubdistrict?: any;
     update?: any;
@@ -40,8 +43,11 @@ export interface mapProps {
     handleWidth?: any;
     handleHeight?: any,
     height: boolean;
+    titleID?: string;
     width: boolean;
     search?: string;
+    handleStatus?: any;
+    handleClear?: any;
     handleShowAll?: any;
     showAll?: boolean;
     dataSubdistrict?: any;

@@ -1,7 +1,7 @@
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import React, { RefObject, useEffect, useRef, useState } from 'react';
-import { FaBezierCurve, FaCalendarAlt, FaClock, FaDotCircle, FaDrawPolygon, FaFileExcel, FaFilePdf, FaPenAlt, FaPlus, FaSignOutAlt, FaTimes, FaTrash } from 'react-icons/fa';
+import { FaBezierCurve, FaCalendarAlt, FaClock, FaDotCircle, FaDrawPolygon, FaFileExcel, FaFilePdf, FaKey, FaPenAlt, FaPlus, FaSignOutAlt, FaTimes, FaTrash } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';
@@ -674,10 +674,10 @@ const Homepage: React.FC = () => {
                           </div>
                         </div>
                         <div className={`w-full ${activeHeight ? 'h-[80vh]' : 'h-[72vh]'} border-[1px] border-black ease duration-200 rounded-[16px] overflow-hidden mt-3`}>
-                          <Map handleAlert={(textAlert?: string) => handleAlert(textAlert)} customData={custom} color={color} swipe={() => handleSwipe()} dataSubdistrict={allSubdistrict} handleShowAll={() => setShowAll(!showAll)} showAll={showAll} search={search} width={activeWidth} height={activeHeight} handleWidth={() => setActiveWidth(!activeWidth)} handleHeight={() => setActiveHeight(!activeHeight)} ref={mapRef} data={!showAll ? allTitle?.filter((data: any) => data?.title_id === titleID) : allTitle?.filter((data: any) => data?.dinas_id === dinasID) ?? []} line={line} handleAddKoordinat={() => setAddKoordinat(true)} />
+                          <Map titleID={titleID ?? ''} handleStatus={() => handleStatus()} handleAlert={(textAlert?: string) => handleAlert(textAlert)} customData={custom} color={color} swipe={() => handleSwipe()} dataSubdistrict={allSubdistrict} handleShowAll={() => setShowAll(!showAll)} showAll={showAll} search={search} width={activeWidth} height={activeHeight} handleWidth={() => setActiveWidth(!activeWidth)} handleHeight={() => setActiveHeight(!activeHeight)} ref={mapRef} data={!showAll ? allTitle?.filter((data: any) => data?.title_id === titleID) : allTitle?.filter((data: any) => data?.dinas_id === dinasID) ?? []} line={line} handleAddKoordinat={() => setAddKoordinat(true)} />
                         </div>
                         
-                        <h2 className='font-bold text-[26px] my-8'>Daftar (lokasi & bangunan)</h2>
+                        <h2 className='font-bold text-[26px] my-8'>Daftar Lokasi/Bangunan ({allTitle?.length})</h2>
                         <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 dark:bg-gray-900">
                             <div className="relative">
                                 <div className="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
@@ -769,7 +769,7 @@ const Homepage: React.FC = () => {
                        
                         <hr className='w-full mt-16 mb-12 border-[1px] border-slate-300' />
 
-                        <h2 className='font-bold text-[26px] my-8'>Daftar (koordinat kustom)</h2>
+                        <h2 className='font-bold text-[26px] my-8'>Daftar Area Polygon ({custom?.length})</h2>
                         <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 dark:bg-gray-900">
                             <div className="relative">
                                 <div className="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
@@ -925,7 +925,10 @@ const Homepage: React.FC = () => {
                                       <p onClick={() => {setTitleID(data.title_id), setSelectTitle(data.title)}} className='max-w-[926%] text-slate-500 overflow-hidden overflow-ellipsis whitespace-nowrap'>{ (data?.coordinate)?.length } Data koordinat</p>
                                     </div>
                                     <div className='w-max flex iems-center'>
-                                      <div onClick={() => {setUpdateTitle(!updateTitle), setDataTitleNow(data)}} className='w-[30px] h-[30px] rounded-full bg-yellow-500 text-white flex items-center justify-center p-[10px] cursor-pointer hover:bg-yellow-600 active:scale-[0.98]'>
+                                      <div title={data?.title_id} className='w-[30px] h-[30px] rounded-full bg-green-500 text-white flex items-center justify-center p-[10px] cursor-pointer hover:bg-green-600 active:scale-[0.98]'>
+                                        <FaKey />
+                                      </div>
+                                      <div onClick={() => {setUpdateTitle(!updateTitle), setDataTitleNow(data)}} className='ml-3 w-[30px] h-[30px] rounded-full bg-yellow-500 text-white flex items-center justify-center p-[10px] cursor-pointer hover:bg-yellow-600 active:scale-[0.98]'>
                                         <FaPenAlt />
                                       </div>
                                       <div onClick={() => handleRemoveTitle(data?.title_id)} className='ml-3 w-[30px] h-[30px] rounded-full bg-red-500 text-white flex items-center justify-center p-[10px] cursor-pointer hover:bg-red-600 active:scale-[0.98]'>

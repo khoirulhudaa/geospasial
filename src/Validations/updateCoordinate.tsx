@@ -4,7 +4,7 @@ import * as Yup from 'yup';
 import { coordinateProps } from '../Models/apiInterface';
 import API from '../Services/service';
 
-export const useUpdateCoordinateFormik = ({onError, onResponse, titleID, condition, data}: {onError?: any, onResponse?: any, titleID?: string, condition?: any, data?: any}) => {
+export const useUpdateCoordinateFormik = ({onError, onResponse, condition, data}: {onError?: any, onResponse?: any, condition?: any, data?: any}) => {
     const formik = useFormik<coordinateProps>({
         initialValues: {
             name_location: '',
@@ -13,7 +13,6 @@ export const useUpdateCoordinateFormik = ({onError, onResponse, titleID, conditi
             long: '',
             link: '',  
             thumbnail: '',  
-            note: '',  
             condition: [],  
         },
         validationSchema: Yup.object({
@@ -30,16 +29,12 @@ export const useUpdateCoordinateFormik = ({onError, onResponse, titleID, conditi
             .required(),
             thumbnail: Yup.string()
             .required(),
-            note: Yup.string()
-            .notRequired(),
             condition: Yup.array()
             .notRequired(),
         }),
         onSubmit: async (values: any, {resetForm}) => {
             try {
 
-                console.log('title id:', titleID)
-                
                 const newData = {
                     title_id: data.title_id,
                     coordinate_id: data.coordinate_id,
@@ -49,13 +44,9 @@ export const useUpdateCoordinateFormik = ({onError, onResponse, titleID, conditi
                     long: values.long,
                     link: values.link, 
                     thumbnail: values.thumbnail, 
-                    note: values.note, 
                     condition: condition,  
                 }
-                console.log('data coordinate new:', newData)
-                
                 const response = await API.updateCoordinate(newData)
-                console.log('new kor',response)
 
                 if(response.data.status === 200) {  
                     onResponse(response.data.status)

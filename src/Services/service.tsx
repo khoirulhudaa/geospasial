@@ -59,6 +59,9 @@ const API = {
     addCoordinate: (body: any) => {
         return api.post('/coordinate', body)
     },
+    addCoordinateExcel: (body: any) => {
+        return api.post('/coordinate/excel', body)
+    },
     removeCoordinate: (body: any) => {
         return api.post('/coordinate/remove', body)
     },

@@ -36,11 +36,7 @@ const FormGroup: React.FC<formProps> = ({
     uploadExcel
 }) => {
 
-    console.log('kce:', dataSubdistrict)
-
     const coordinates = useSelector((state: any) => state.Coordinate?.coordinate)
-    console.log('coor nbew:', coordinates)
-
     const dispatch = useDispatch()
 
     const [error, setError] = useState<string>('')
@@ -273,7 +269,6 @@ const FormGroup: React.FC<formProps> = ({
         onResponse: handleResponse,
         data,
         condition,
-        titleID
     })
 
     useEffect(() => {
@@ -1006,19 +1001,6 @@ const FormGroup: React.FC<formProps> = ({
                                         onTouched={updateCorFormik.touched.link}
                                     />
                                 </div>
-                                <div className='w-full'>
-                                    <InputField 
-                                        label='Catatan'
-                                        name='note'
-                                        id='note'
-                                        value={updateCorFormik.values.note}
-                                        placeholder='2009720'
-                                        onChange={updateCorFormik.handleChange}
-                                        onBlur={updateCorFormik.handleBlur}
-                                        onError={updateCorFormik.errors.note}
-                                        onTouched={updateCorFormik.touched.note}
-                                    />
-                                </div>
                             </div>
                             <h2 className='mt-8 text-[20px] font-bold'>Dekat area apakah ? (opsi)</h2>
                             <div className='w-full overflow-hidden flex-wrap h-max mt-5 flex items-center'>
@@ -1038,7 +1020,7 @@ const FormGroup: React.FC<formProps> = ({
                             </div>
                         </div>
                     </div>
-                    <div className='w-max flex items-center'>
+                    <div className='w-max mt-8 flex items-center'>
                         <button type='submit' className='w-max hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-3 rounded-full text-[14px] bg-slate-700 text-white'>
                             <p>
                                 Perbarui koordinat

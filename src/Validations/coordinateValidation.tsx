@@ -36,8 +36,6 @@ export const useCoordinateFormik = ({onError, onResponse, titleID, condition}: {
         }),
         onSubmit: async (values: any, {resetForm}) => {
             try {
-
-                console.log('title id:', titleID)
                 
                 const data = {
                     title_id: titleID,
