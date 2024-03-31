@@ -1941,8 +1941,6 @@ const Map: React.FC<mapProps> = ({
     return coordinates;
   };
 
-  console.log('all title:',data)
-  
   // Blok area koordinat (bgcolor dan border)
   const areas = (excelData.length > 0 ? excelData : (subdistrictDots && dataSubdistrict.length > 0 ? dataSubdistrict : data[0]?.coordinate)).map((marker: any) => {
     const lat = parseFloat(marker.lat);
@@ -2041,7 +2039,6 @@ const Map: React.FC<mapProps> = ({
   });
 
   const handleFileUpload = (e: any) => {
-    console.log(e)
     const file = e.target.files[0];
     setNameFile(file.name)
     const reader = new FileReader();
@@ -2104,8 +2101,6 @@ const Map: React.FC<mapProps> = ({
         );
 
         // Menyimpan data yang sudah dikonversi
-        console.log('this is excel data:', data);
-        console.log('new data from excel:', convertedData);
         setDataExcel(convertedData);
 
     };
@@ -2135,7 +2130,6 @@ const Map: React.FC<mapProps> = ({
   const checkForDisaster = (conditions: any[]) => {
     for (let i = 0; i < conditions?.length; i++) {
       if (conditions[i].label === "Rawan bencana") {
-        console.log(i) 
         return true;
       }
     }
@@ -2155,7 +2149,6 @@ const Map: React.FC<mapProps> = ({
 
   const handleFinallyRemoveCoordinate = async (id: string) => {
     const response = await API.removeCoordinateCustom(id)
-    console.log('delete:', response.data)
     if(response.status === 200) {
       setStatus(false)
       setActiveClick2(false)

@@ -113,7 +113,6 @@ const Homepage: React.FC = () => {
   
 
   const auth = store.getState().Auth.auth ?? ''
-  console.log(auth)
   
   const handleStatus = () => {
     setStatus(true)
@@ -146,15 +145,11 @@ const Homepage: React.FC = () => {
     setAddSubdistrict(true)
   }
 
-  console.log(allSubdistrict)
- 
   const dataDinasNow = {
     name_dinas: nameDinas,
     abbreviation: abbreviation,
     dinas_id: dinasID
   }
-
-  console.log(dataDinasNow)
 
   const popups = [
     { condition: addSubdistrict, component: <PopupSubdistrict handleAlert={(textAlert?: string) => handleAlert(textAlert)} close={() => closePopup()} /> },
@@ -178,7 +173,6 @@ const Homepage: React.FC = () => {
 
   const handleFinallyRemoveDinas = async (dinas_id: string) => {
     const result = await API.removeDinas(dinas_id)
-    console.log(result)
     if(result.data.status === 200) {
       setStatus(true)
       setTextAlert('Berhasil hapus dinas!')
@@ -196,7 +190,6 @@ const Homepage: React.FC = () => {
 
   const handleFinallyRemoveTitle = async (title_id: string) => {
       const result = await API.removeTitle(title_id)
-      console.log(result)
       if(result.data.status === 200) {
         setStatus(true)
         setTextAlert('Berhasil hapus data!')
@@ -234,9 +227,7 @@ const Homepage: React.FC = () => {
       title_id: titleID,
       coordinate_id: coordinateID
     }
-    console.log(data)
     const result = await API.removeCoordinate(data)
-    console.log('ddd', result)
     if(result.data.status === 200) setStatus(true)
   }
 
@@ -249,7 +240,6 @@ const Homepage: React.FC = () => {
   }
 
   const handleDeleteCoordinate = async (data: any) => {
-    console.log(data)
     SweetAlert({
       icon: 'question',
       text: 'Yakin hapus koordinat ?',
@@ -265,7 +255,6 @@ const Homepage: React.FC = () => {
   }
 
   const dataNowSubdistrict = () => {
-    console.log(lat, long)
       return {
         name: selectNameSub,
         id: subdistrictID ,
@@ -681,7 +670,7 @@ const Homepage: React.FC = () => {
                           <Map titleID={titleID ?? ''} handleStatus={() => handleStatus()} handleAlert={(textAlert?: string) => handleAlert(textAlert)} customData={custom} color={color} swipe={() => handleSwipe()} dataSubdistrict={allSubdistrict} handleShowAll={() => setShowAll(!showAll)} showAll={showAll} search={search} width={activeWidth} height={activeHeight} handleWidth={() => setActiveWidth(!activeWidth)} handleHeight={() => setActiveHeight(!activeHeight)} ref={mapRef} data={!showAll ? allTitle?.filter((data: any) => data?.title_id === titleID) : allTitle?.filter((data: any) => data?.dinas_id === dinasID) ?? []} line={line} handleAddKoordinat={() => setAddKoordinat(true)} />
                         </div>
                         
-                        <h2 className='font-bold text-[26px] my-8'>Daftar Lokasi/Bangunan ({allTitle?.length})</h2>
+                        <h2 className='font-bold text-[26px] my-8'>Daftar Lokasi/Bangunan ({allTitle?.filter((data: any) => data?.title_id === titleID)?.[0]?.coordinate?.length})</h2>
                         <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 dark:bg-gray-900">
                             <div className="relative">
                                 <div className="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
@@ -845,7 +834,6 @@ const Homepage: React.FC = () => {
                     activePage === 'subdistrict' ? (
                       <Subdistrict 
                         update={(id: string, name: string, lat: any, long: any) => {
-                          console.log('d', lat, long)
                           setSubdistrictID(id)
                           setSelectNameSub(name)
                           setLat(lat)
