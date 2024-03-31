@@ -11,7 +11,6 @@ import Grafik from '../Components/Grafik';
 import PopupSubdistrict from '../Components/PopSubdistrict';
 import PopupKoordinat from '../Components/PopupKoordinat';
 import PopupTitleGeospasial from '../Components/PopupTitleGeospasial';
-import PopupTitleGeospasialExcel from '../Components/PopupTitleGeospasialExcel';
 import PopupUpdateService from '../Components/PopupUpdateService';
 import PopupUpdateTitleGeospasial from '../Components/PopupUpdateTitle';
 import SweetAlert from '../Components/SweetAlert';
@@ -30,7 +29,6 @@ const Homepage: React.FC = () => {
   const [addService, setAddService] = useState<boolean>(false)
   const [alert, setAlert] = useState<boolean>(false)
   const [addGeospasial, setAddGeospasial] = useState<boolean>(false)
-  const [addGeospasialExcel, setAddGeospasialExcel] = useState<boolean>(false)
   const [addKoordinat, setAddKoordinat] = useState<boolean>(false)
   const [addSubdistrict, setAddSubdistrict] = useState<boolean>(false)
   const [line] = useState<boolean>(false)
@@ -118,7 +116,6 @@ const Homepage: React.FC = () => {
   
   const handleStatus = () => {
     setStatus(true)
-    setAddGeospasialExcel(false)
     setUploadExcel(false)
     setUpdateTitle(false)
   }
@@ -130,7 +127,6 @@ const Homepage: React.FC = () => {
     setAddSubdistrict(false)
     setActiveSidebarUpdateSub(false)
     setActiveUpdate('')
-    setAddGeospasialExcel(false)
     setTextAlert(textAlert)
     setAlert(true)
     setStatus(true)
@@ -143,7 +139,6 @@ const Homepage: React.FC = () => {
     setAddService(false)
     setAddKoordinat(false)
     setAddSubdistrict(false)
-    setAddGeospasialExcel(false)
   }
 
   const handleSubdistrict = () => {
@@ -177,7 +172,6 @@ const Homepage: React.FC = () => {
       </div>
     ) },
     { condition: addGeospasial, component: <PopupTitleGeospasial dinasNAME={nameDinas ?? ''} handleStatus={() => handleStatus()} dinasID={dinasID} close={closePopup} handleAlert={handleAlert} /> },
-    { condition: addGeospasialExcel, component: <PopupTitleGeospasialExcel dinasNAME={nameDinas ?? ''} titleID={titleID ?? ''} handleStatus={() => handleStatus()} dinasID={dinasID} close={closePopup} handleAlert={handleAlert} /> },
     { condition: addKoordinat, component: <PopupKoordinat dataSubdistrict={allSubdistrict ?? []} handleDone={() => setAddKoordinat(!addKoordinat)} titleID={titleID} close={closePopup} handleStatus={() => handleStatus()} handleAlert={handleAlert} /> },
   ];
 
@@ -879,15 +873,7 @@ const Homepage: React.FC = () => {
                             <div className='flex px-5 items-center bg-blue-500 h-full text-white w-max'>
                               <FaPlus />
                             </div>
-                            <small className="text-[14px] ml-3 text-slate-400">Tambahkan data (manual)</small>
-                          </div>
-                        
-                          <div title='Tambah koordinat/lokasi baru' onClick={() => setAddGeospasialExcel(!addGeospasialExcel)} className={`w-[96%] pr-4 md:w-max border-[2px] border-slate-700 h-[55px] rounded-[10px] mr-4 mt-6 overflow-hidden cursor-pointer shadow-lg bg-white ${dinasID !== '' ? 'flex' : 'hidden'} items-center justify-center items-center hover:brightness-[95%] active:scale-[0.98]`}>
-                            <div className='flex px-3 items-center bg-green-500 h-full text-white w-max'>
-                              <FaPlus />
-                              <FaFileExcel className='ml-1' />
-                            </div>
-                            <small className="text-[14px] ml-3 text-slate-400">Tambahkan data (excel)</small>
+                            <small className="text-[14px] ml-3 text-slate-400">Tambahkan data (Judul)</small>
                           </div>
                         </div>
 

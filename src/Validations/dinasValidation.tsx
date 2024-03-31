@@ -10,10 +10,8 @@ export const useDinasFormik = ({onError, onResponse}: {onError?: any, onResponse
         },
         validationSchema: Yup.object({
             name_dinas: Yup.string()
-            .min(5, 'Minimal 5 karakter')
             .required('Tidak boleh kosong!'),
             abbreviation: Yup.string()
-            .min(5, 'Minimal 5 karakter')
             .required('Tidak boleh kosong!'),
         }),
         onSubmit: async (values: any, {resetForm}) => {

@@ -6,6 +6,7 @@ import Side from './side.svg'
 import EarthPNG from './earth.png'
 import EarthGIF from './earth.gif'
 import Device from './device.png'
+import Loading from './loading.gif'
 
 export {
     Success,
@@ -15,5 +16,6 @@ export {
     Side,
     EarthPNG,
     EarthGIF,
-    Device
+    Device,
+    Loading
 }
