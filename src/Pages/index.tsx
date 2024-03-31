@@ -59,6 +59,7 @@ const Homepage: React.FC = () => {
   const [abbreviation, setAbbreviation] = useState<string>('')
   const [nameDinas, setNameDinas] = useState<string>('')
   const [color, setColor] = useState<string>('')
+  const [searchNameDinas, setSearchNameDinas] = useState<string>('')
   const [custom, setCustom] = useState<any[]>([])
   const [dataTitleNow, setDataTitleNow] = useState<any>(null)
 
@@ -537,7 +538,7 @@ const Homepage: React.FC = () => {
                   <>
                     <img src={EarthPNG} alt="side-bg" className='absolute scale-[1.8] z-[1] left-[-15px] bottom-[-150px] opacity-[0.1]' />
                     <div className='Titik Koorelative w-full h-max z-[40] flex mb-10 items-center justify-between'>
-                      <h2 onClick={() => window.location.reload()} className={`cursor-pointer active:scale-[0.98] hover:brightness-[90%] text-white text-[22px] ${activeWidth ? 'hidden' : 'inline'}`}>Geospasial ✨</h2>
+                      <h2 onClick={() => window.location.reload()} className={`cursor-pointer active:scale-[0.98] hover:brightness-[90%] text-white text-[22px] ${activeWidth ? 'hidden' : 'inline'}`}>SI-GEO 🌎</h2>
                       <button title='Buat dinas baru' onClick={() => setAddService(!addService)} className={`w-max border border-black hover:brightness-[90%] active:scale-[0.99] duration-100 h-max ${activeWidth ? 'hidden' : 'flex'} items-center px-5 py-2 rounded-full text-[16px] bg-white text-black`}>
                         <p className='mr-4'>
                           Dinas Baru
@@ -546,12 +547,21 @@ const Homepage: React.FC = () => {
                       </button>
                     </div>
           
-                    <div className='relative w-full h-[1px] bg-white mb-9 z-[40]'></div>
-          
+                    <div className='relative w-full h-[1px] bg-white mb-4 z-[40]'></div>
+                    <div className="w-[100%] mb-4">
+                        <input name="searchNameDinas" value={searchNameDinas} onChange={(e: any) => setSearchNameDinas(e.target.value)} type="text" className="w-full rounded-[10px] bg-white my-2 px-3 py-3 text-slate-600 outline-0 border border-slate-300 text-[14px]" placeholder="Cari nama dinas..." />
+                    </div>
+                    <div className='relative w-full h-[1px] bg-white mb-5 z-[40]'></div>
                     {
                       !skeleton ? (
-                      allDinas && allDinas.length > 0 ? (
-                        allDinas.map((data: any, index: number) => (
+                      allDinas && allDinas?.length > 0 ? (
+                        allDinas?.filter((data: any) => {
+                          if(searchNameDinas !== '') {
+                            return (data?.name_dinas).toLowerCase().includes(searchNameDinas.toLowerCase())
+                          }
+                          return true
+                        })
+                        .map((data: any, index: number) => (
                           <div 
                               key={index} 
                               className={`relative ${data.dinas_id === dinasID ? 'border-2 bg-blue-400 text-white' : 'border border-white bg-white'} cursor-pointer active:scale-[0.99] z-[40] w-full flex justify-between items-center px-4 h-[80px] rounded-[12px] overflow-hidden text-black mb-5`}
