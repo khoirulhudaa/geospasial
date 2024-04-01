@@ -39,6 +39,12 @@ const FormGroup: React.FC<formProps> = ({
     const coordinates = useSelector((state: any) => state.Coordinate?.coordinate)
     const dispatch = useDispatch()
 
+    useEffect(() => {
+        dataSubdistrict?.unshift({
+            name_subdistrict: 'Pilih Kecamatan',
+        })
+    }, [dataSubdistrict])
+
     const [error, setError] = useState<string>('')
     const [check, setCheck] = useState<number>(0)
     const [inputValue, setInputValue] = useState<string>('')
@@ -283,7 +289,7 @@ const FormGroup: React.FC<formProps> = ({
     }
 
     const dataDanger = [
-        {label: 'Pilih jenis kerawan', value: ''},
+        {label: 'Pilih jenis kerawanan', value: ''},
         {label: 'Banjir', value: 'Banjir'},
         {label: 'Longsor', value: 'Longsor'},
         {label: 'Abu vulkanik', value: 'Abu vulkanik'},
@@ -888,6 +894,7 @@ const FormGroup: React.FC<formProps> = ({
                             label='Wilayah'
                             large
                             type='select-input'
+                            placeholder='dddd'
                             options={dataArea}
                             value={createCustomCoordinate.values.type_area}
                             onChange={createCustomCoordinate.handleChange}
