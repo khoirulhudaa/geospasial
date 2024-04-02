@@ -8,17 +8,20 @@ import markerShadowUrl from 'leaflet/dist/images/marker-shadow.png';
 import 'leaflet/dist/leaflet.css';
 import React, { useEffect, useRef, useState } from "react";
 import ReactDOMServer from 'react-dom/server';
-import { FaBuilding, FaCameraRetro, FaEye, FaEyeSlash, FaFileExport, FaGoogle, FaGripLines, FaIcons, FaPlusCircle, FaTextHeight, FaTextWidth, FaTimes, FaTrashAlt, FaUpload, FaVectorSquare } from 'react-icons/fa';
-import { MapContainer, Marker, Polygon, Polyline, Popup, TileLayer, Tooltip, useMapEvent } from "react-leaflet";
+import { FaBuilding, FaCameraRetro, FaChevronDown, FaEye, FaEyeSlash, FaFileExport, FaGoogle, FaGripLines, FaIcons, FaPlusCircle, FaTextHeight, FaTextWidth, FaTimes, FaTrashAlt, FaUpload, FaVectorSquare } from 'react-icons/fa';
+import { GeoJSON, MapContainer, Marker, Polygon, Polyline, Popup, TileLayer, Tooltip, useMapEvent } from "react-leaflet";
 import { useDispatch, useSelector } from 'react-redux';
 import * as XLSX from 'xlsx';
+import geoJsonDataPantai from '../GeoJson/garisPantai.json';
+import geoJsonData from '../GeoJson/kecamatan.json';
+import geoJsonDataSungai from '../GeoJson/sungai.json';
 import { mapProps } from '../Models/componentInterface';
+import API from '../Services/service';
 import { clearCoordinate, getCoordinate } from '../Store/coordinateSlice';
 import PopupUploadFile from './PopupUploadFile';
 import SweetAlert from './SweetAlert';
-import API from '../Services/service';
 
-const Map: React.FC<mapProps> = ({
+const Map: React.FC<mapProps> = React.memo(({
   handleAddKoordinat, 
   data, 
   handleWidth, 
@@ -59,6 +62,10 @@ const Map: React.FC<mapProps> = ({
   const [selectColor, setSelectColor] = useState<any>(null)
   const [dataExcel, setDataExcel] = useState<any[]>([])
   const [status, setStatus] = useState<boolean>(false)
+  const [activeDesa, setActiveDesa] = useState<boolean>(false)
+  const [activePantai, setActivePantai] = useState<boolean>(false)
+  const [activeSungai, setActiveSungai] = useState<boolean>(false)
+  const [activeMenuBatas, setActiveMenuBatas] = useState<boolean>(false)
 
   const coorNew = useSelector((state: any) => state.Coordinate?.coordinate)
   
@@ -76,6 +83,12 @@ const Map: React.FC<mapProps> = ({
     setTimeout(() => {
       setActiveClick2(true)
     }, 100)
+  };
+
+  const onEachFeature = (feature: any, layer: any) => {
+    if (feature?.properties && feature?.properties?.NAMOBJ) {
+      layer.bindTooltip(feature?.properties?.NAMOBJ);
+    }
   };
 
   const kabupatenCirebonBoundary = [
@@ -2167,6 +2180,22 @@ const Map: React.FC<mapProps> = ({
     })
   }
 
+  const geoJsonStyle = {
+    color: '#87A922',
+  };
+
+  const geoJsonStylePantai = {
+    color: '#008DDA',
+  };
+
+  const geoJsonStyleSungai = {
+    color: '#41C9E2',
+  };
+
+  const geoJsonData1: any = geoJsonData;
+  const geoJsonData2: any = geoJsonDataPantai;
+  const geoJsonData3: any = geoJsonDataSungai;
+
   return (
     <div className='relative w-full h-full'>
       
@@ -2192,7 +2221,22 @@ const Map: React.FC<mapProps> = ({
             <div title='Layar tinggi penuh' onClick={() => handleHeight()} className={`${height ? 'bg-green-200' : 'bg-white'} ml-4 cursor-pointer active:scale-[0.98] hover:bg-green-200 z-[22222] w-[45px] h-[45px] px-2 py-2 flex items-center justify-center text-center rounded-full text-[16px] border border-slate-700 right-0 top-36`}><FaTextHeight /></div>
             <div title='Layar lebar penuh' onClick={() => handleWidth()} className={`${width ? 'bg-green-200' : 'bg-white'} ml-4 cursor-pointer active:scale-[0.98] hover:bg-green-200 z-[22222] w-[45px] h-[45px] px-2 py-2 flex items-center justify-center text-center rounded-full text-[16px] border border-slate-700 right-0 top-52`}><FaTextWidth /></div>
           </div>
-          <div title='Area perbatasan kabupaten' onClick={() => setActiveLineSub(!activeLineSub)} className={`${activeLineSub ? 'bg-green-200' : 'bg-white'} hover:bg-green-200 cursor-pointer active:scale-[0.98] z-[22222] w-max h-max px-4 py-2 flex items-center justify-center text-center rounded-full text-[16px] border border-slate-700 top-4`}>Batas kabupaten <FaVectorSquare className="ml-3" /></div>
+          <div title='Area perbatasan kabupaten' onClick={() => setActiveMenuBatas(!activeMenuBatas)} className={`${activeMenuBatas ? 'bg-green-200' : 'bg-white'} hover:bg-green-200 cursor-pointer z-[22222] w-max h-max px-4 py-2 flex items-center justify-center text-center rounded-full text-[16px] border border-slate-700 top-4`}>Perbatasan <FaChevronDown className={`${activeMenuBatas ? 'rotate-[-180deg]' : 'rotate-[0deg]'} duration-300 text-[14px] ml-3`} />
+            <div className={`absolute h-max mr-10 justify-between z-[33] flex flex-col ${activeMenuBatas ? 'bottom-[-190px] opacity-[1]' : 'bottom-[-160px] opacity-[0]'} duration-100 text-left rounded-[14px] bg-white p-4 shadow-lg`}>
+              <div className='w-flex items-center mb-3 h-[30px]'>
+                <input type="checkbox" name='kabupaten' onClick={() => setActiveLineSub(!activeLineSub)} className='mr-2 scale-[1.3] rounded-[10px]' /> Batas Kabupaten
+              </div>
+              <div className='w-flex items-center mb-3 h-[30px]'>
+                <input type="checkbox" name='kabupaten' onClick={() => setActiveDesa(!activeDesa)} className='mr-2 scale-[1.3] rounded-[10px]' /> Batas Desa
+              </div>
+              <div className='w-flex items-center mb-3 h-[30px]'>
+                <input type="checkbox" name='kabupaten' onClick={() => setActivePantai(!activePantai)} className='mr-2 scale-[1.3] rounded-[10px]' /> Garis Pantai
+              </div>
+              <div className='w-flex items-center h-[30px]'>
+                <input type="checkbox" name='kabupaten' onClick={() => setActiveSungai(!activeSungai)} className='mr-2 scale-[1.3] rounded-[10px]' /> Jalur Sungai
+              </div>
+            </div>
+          </div>
           <div title='Ganti ikon marker' onClick={() => subdistrictDots ? null : setActieMenuIcon(!activeMenuIcon)} className={`overflow-hidden ${activeMenuIcon && !subdistrictDots ? 'bg-green-200' : 'bg-white'} ${subdistrictDots ? 'cursor-not-allowed bg-red-400 before:absolute before:h-[42px] before:w-[3px] before:rotate-[40deg] before:bg-red-400 text-slate-400' : 'cursor-pointer active:scale-[0.98] hover:bg-green-200'} ml-4 z-[22222] w-[45px] h-[45px] px-2 py-2 flex items-center justify-center text-center rounded-full text-[16px] border border-slate-700 right-0 top-52`}><FaIcons /></div>
           <div className={`w-[45px] absolute top-20 duration-200 ease ${activeMenuIcon && !subdistrictDots ? 'right-3' : 'right-[-55px]'} bg-white  overflow-hidden flex-col h-max border border-slate-700 rounded-full flex lfex-col items-center justify-center`}>
             <div onClick={() => setSelectIcon('🏢')} className='text-center flex justify-center items-center cursor-pointer active:scale-[0.98] hover:bg-green-200 border-b w-full py-5 min-h-[50px] border-slate-700 text-black'>
@@ -2259,7 +2303,24 @@ const Map: React.FC<mapProps> = ({
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
-
+          {
+            activeDesa ? (
+              <GeoJSON data={geoJsonData1} style={geoJsonStyle} onEachFeature={onEachFeature} />
+            ):
+              null
+          }
+          {
+            activePantai ? (
+              <GeoJSON data={geoJsonData2} style={geoJsonStylePantai} onEachFeature={onEachFeature} />
+            ):
+              null
+          }
+          {
+            activeSungai ? (
+              <GeoJSON data={geoJsonData3} style={geoJsonStyleSungai} onEachFeature={onEachFeature} />
+            ):
+              null
+          }
           {
             (subdistrictDots ? dataSubdistrict : filteredData)
             .filter((con: any) => {
@@ -2307,7 +2368,7 @@ const Map: React.FC<mapProps> = ({
                     }
                   <Tooltip sticky>{(subdistrictDots ? marker.name_subdistrict : marker.name_location)}</Tooltip> {/* Label hanya muncul saat hover */}
                 </Marker>
-            ))
+            )) 
           }
 
           {
@@ -2326,14 +2387,14 @@ const Map: React.FC<mapProps> = ({
 
           {/* Garis kabupaten perbatasan */}
           {activeLineSub && lines && lines?.length > 1 && (
-            <Polygon positions={lines} color="#008ada" />
+            <Polygon positions={lines} color="#378CE7" />
           )}
 
           {
             activeClick && activeClick2 && coordinates && coordinates.length > 1 && (
-              <Polygon positions={coordinates} color={`${selectColor ? selectColor : '#00eada'}`} />
-              )
-            }
+              <Polygon positions={coordinates} color={`${selectColor ? selectColor : '#FDA403'}`} />
+            )
+          }
 
           {
             customData && customData.length > 0 ? (
@@ -2375,7 +2436,7 @@ const Map: React.FC<mapProps> = ({
           {/* Garis antar marker */}
           {
             activeLineMarker ? (
-              <Polyline positions={lineMarkers} color="#008ada" />
+              <Polyline positions={lineMarkers} color="#E11111" />
             ):
               null
           }
@@ -2385,7 +2446,7 @@ const Map: React.FC<mapProps> = ({
 
     </div>
   );
-};
+});
 
 
 export default Map
