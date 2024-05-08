@@ -1,10 +1,9 @@
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { coordinateProps } from '../Models/apiInterface';
 import API from '../Services/service';
 
 export const useCoordinateFormik = ({onError, onResponse, titleID, condition}: {onError?: any, onResponse?: any, titleID?: string, condition: any[]}) => {
-    const formik = useFormik<coordinateProps>({
+    const formik = useFormik<any>({
         initialValues: {
             name_location: '',
             subdistrict: '',
@@ -13,7 +12,20 @@ export const useCoordinateFormik = ({onError, onResponse, titleID, condition}: {
             link: '',  
             address: '',  
             thumbnail: '',  
-            condition: [],  
+            condition: [],
+            scale: '', 
+            remark: '',
+            code: '', // kode qgis
+            pum: '', // kode PUM
+            province: '',
+            typeArea: '', // kab or kot
+            ward: '', // desa
+            provinceCode: '',
+            typeAreaCode: '', //kode kabupaten
+            subdistrictCode: '', // kode kecamatan
+            wardCode: '', // kode desa
+            wide: '', // luas
+            source: '',
         },
         validationSchema: Yup.object({
             name_location: Yup.string()
@@ -30,6 +42,20 @@ export const useCoordinateFormik = ({onError, onResponse, titleID, condition}: {
             link: Yup.string()
             .required(),
             thumbnail: Yup.string()
+            .required(),
+            province: Yup.string()
+            .required(),
+            typeArea: Yup.string()
+            .required(),
+            ward: Yup.string()
+            .required(),
+            pum: Yup.string()
+            .required(),
+            provinceCode: Yup.string()
+            .required(),
+            typeAreaCode: Yup.string()
+            .required(),
+            subdistrictCode: Yup.string()
             .required(),
             condition: Yup.array()
             .notRequired(),
@@ -48,6 +74,19 @@ export const useCoordinateFormik = ({onError, onResponse, titleID, condition}: {
                     category: 'Koordinat',
                     thumbnail: values.thumbnail, 
                     condition: condition,  
+                    scale: values.scale, 
+                    remark: values.remark,
+                    code: values.code,
+                    pum: values.pum,
+                    province: values.province,
+                    typeArea: values.typeArea,
+                    ward: values.ward,
+                    provinceCode: values.provinceCode,
+                    typeAreaCode: values.typeAreaCode, //kode kabupaten
+                    subdistrictCode: values.subdistrictCode,
+                    wardCode: values.wardCode,
+                    wide: values.wide,
+                    source: values.source
                 }
                 
                 console.log('data coordinate new:', data)

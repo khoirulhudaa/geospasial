@@ -891,8 +891,8 @@ const Homepage: React.FC = () => {
                               }
                             })
                             .map((data: any, index: number) => (
-                              <div key={index} title={data?.description} className='cursor-pointer relative w-[96%] md:w-[47%] border-[2px] border-slate-700 px-4 h-[180px] flex flex-col justify-between mr-4 mt-6 rounded-lg shadow-lg p-4 bg-white'>
-                                  <h2 onClick={() => {setTitleID(data.title_id), setSelectTitle(data.title), window.scrollTo(0, 0)}} className="max-w-[926%] cursor-pointer hover:text-blue-600 active:scale-[0.98] text-blue-400 overflow-hidden overflow-ellipsis whitespace-nowrap border-b border-b-slate-700 pb-4 mt-2 text-[16px]">{ data?.title }</h2>
+                              <div key={index} className='cursor-pointer relative w-[96%] md:w-[47%] border-[2px] border-slate-700 px-4 h-[180px] flex flex-col justify-between mr-4 mt-6 rounded-lg shadow-lg p-4 bg-white'>
+                                  <h2 title={data?.description} onClick={() => {setTitleID(data.title_id), setSelectTitle(data.title), window.scrollTo(0, 0)}} className="max-w-[926%] cursor-pointer hover:text-blue-600 active:scale-[0.98] text-blue-400 overflow-hidden overflow-ellipsis whitespace-nowrap border-b border-b-slate-700 pb-4 mt-2 text-[16px]">{ data?.title }</h2>
                                   <div className='w-max flex items-center'>
                                     <div className='rounded-full w-max h-max px-4 py-2 flex items-center justify-center bg-slate-200 text-slate-500 mr-3'>
                                       <FaCalendarAlt className='mr-2' /> {data?.year}
@@ -912,10 +912,10 @@ const Homepage: React.FC = () => {
                                       <div title={data?.title_id} className='w-[30px] h-[30px] rounded-full bg-green-500 text-white flex items-center justify-center p-[10px] cursor-pointer hover:bg-green-600 active:scale-[0.98]'>
                                         <FaKey />
                                       </div>
-                                      <div onClick={() => {setUpdateTitle(!updateTitle), setDataTitleNow(data)}} className='ml-3 w-[30px] h-[30px] rounded-full bg-yellow-500 text-white flex items-center justify-center p-[10px] cursor-pointer hover:bg-yellow-600 active:scale-[0.98]'>
+                                      <div title={'Perbarui data'} onClick={() => {setUpdateTitle(!updateTitle), setDataTitleNow(data)}} className='ml-3 w-[30px] h-[30px] rounded-full bg-yellow-500 text-white flex items-center justify-center p-[10px] cursor-pointer hover:bg-yellow-600 active:scale-[0.98]'>
                                         <FaPenAlt />
                                       </div>
-                                      <div onClick={() => handleRemoveTitle(data?.title_id)} className='ml-3 w-[30px] h-[30px] rounded-full bg-red-500 text-white flex items-center justify-center p-[10px] cursor-pointer hover:bg-red-600 active:scale-[0.98]'>
+                                      <div title={'Hapus data'} onClick={() => handleRemoveTitle(data?.title_id)} className='ml-3 w-[30px] h-[30px] rounded-full bg-red-500 text-white flex items-center justify-center p-[10px] cursor-pointer hover:bg-red-600 active:scale-[0.98]'>
                                         <FaTrash />
                                       </div>
                                     </div>

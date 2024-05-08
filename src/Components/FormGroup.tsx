@@ -320,6 +320,12 @@ const FormGroup: React.FC<formProps> = ({
         {label: 'ft', value: 'ft'},
         {label: 'Yeard', value: 'yd'},
     ]
+    
+    const dataJenisWilayah = [
+        {label: 'Pilih jenis wilayah', value: ''},
+        {label: 'Kabupaten', value: 'Kabupaten'},
+        {label: 'Kota', value: 'Kota'},
+    ]
 
     const hanleFinallyRemoveCoordinate = (number: number) => {
         dispatch(removeCoordinateById(number))
@@ -468,19 +474,41 @@ const FormGroup: React.FC<formProps> = ({
             )
         case "coordinate":
             return (
-                <form onSubmit={coordinateFormik.handleSubmit} className={`w-[80vw] h-max rounded-[20px] bg-white p-7 border ${borderError ? 'border-[3px] border-red-500' : 'border-slate-300'} `}>
+                <form onSubmit={coordinateFormik.handleSubmit} className={`absolute right-0 top-0 w-[70vw] h-[100vh] overflow-y-auto bg-white p-7 border ${borderError ? 'border-[3px] border-red-500' : 'border-slate-300'} `}>
                 {
                     error !== '' ? (
                         <ErrorMessage error={error} />
                     ):
                         null
                 }
-                <div className='w-full flex h-max'>
+                <div className='relative w-full h-max'>
+                    <div className='relative w-full border-b border-b-slate-300 h-max pb-6 mb-4 overflow-hidden px-1'>
+                        <div className='relative flex items-center w-full h-max z-[9999]'>
+                            <div className='w-1/2'>
+                                <h2 className='font-bold text-[26px]'>Tambah Koordinat Baru</h2>
+                                <p>Pastikan data sesuai dan jelas</p>
+                            </div>
+                            <div className='w-1/2 mt-4 flex items-center justify-end'>
+                                <button type='submit' className='w-[40%] hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-3 rounded-full text-[14px] bg-slate-700 text-white'>
+                                    <p className='mx-auto'>
+                                        Simpan
+                                    </p>
+                                </button>
+                                <button onClick={close} className='w-[35%] ml-4 hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-3 rounded-full text-[14px] bg-white border border-black text-black'>
+                                    <p className='mx-auto'>
+                                        Batalkan
+                                    </p>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                     <div className='w-full p-2 h-full'>
-                        <div className='w-full mb-5 flex items-center justify-between'>
-                            <div className='w-1/2 pr-6'>
+
+                        <div className='w-full mb-5'>
+                            <div className='w-full'>
                                 <InputField 
-                                    label='Nama lokasi/bangunan'
+                                    label='Nama Objek (NAMOBJ)'
                                     name='name_location'
                                     id='name_location'
                                     iconLabel={
@@ -499,9 +527,9 @@ const FormGroup: React.FC<formProps> = ({
                                     onTouched={coordinateFormik.touched.name_location}
                                 />
                             </div>
-                            <div className='w-1/2'>
+                            <div className='w-full mt-5'>
                                 <InputField 
-                                    label='Kecataman'
+                                    label='Kecamatan (WADMKC)'
                                     name='subdistrict'
                                     type='select-input'
                                     options={dataSubdistrict}
@@ -514,10 +542,11 @@ const FormGroup: React.FC<formProps> = ({
                                 />
                             </div>
                         </div>
-                        <div className='w-full mb-5 flex items-center justify-between'>
-                            <div className='w-[30%]'>
+
+                        <div className='w-full mb-5'>
+                            <div className='w-full'>
                                 <InputField 
-                                    label='Latitude'
+                                    label='Latitude (LONG)'
                                     name='lat'
                                     id='latitude'
                                     value={coordinateFormik.values.lat}
@@ -528,9 +557,9 @@ const FormGroup: React.FC<formProps> = ({
                                     onTouched={coordinateFormik.touched.lat}
                                 />
                             </div>
-                            <div className='w-[30%]'>
+                            <div className='w-full mt-5'>
                                 <InputField 
-                                    label='Longitude'
+                                    label='Longitude (LAT)'
                                     name='long'
                                     id='longitude'
                                     value={coordinateFormik.values.long}
@@ -541,9 +570,9 @@ const FormGroup: React.FC<formProps> = ({
                                     onTouched={coordinateFormik.touched.long}
                                 />
                             </div>
-                            <div className='w-[30%]'>
+                            <div className='w-full mt-5'>
                                 <InputField 
-                                    label='Alamat'
+                                    label='Alamat (ADDRESS)'
                                     name='address'
                                     id='address'
                                     value={coordinateFormik.values.address}
@@ -555,10 +584,11 @@ const FormGroup: React.FC<formProps> = ({
                                 />
                             </div>
                         </div>
-                        <div className='w-full mt-8 justify-between mb-5 flex items-center'>
-                            <div className='w-[30%]'>
+
+                        <div className='w-full mt-5 justify-between mb-5'>
+                            <div className='w-full'>
                                 <InputField 
-                                    label='Link google map'
+                                    label='Link google map (LINK)'
                                     name='link'
                                     id='link'
                                     value={coordinateFormik.values.link}
@@ -569,9 +599,9 @@ const FormGroup: React.FC<formProps> = ({
                                     onTouched={coordinateFormik.touched.link}
                                 />
                             </div>
-                            <div className='w-[30%]'>
+                            <div className='w-full mt-5'>
                                 <InputField 
-                                    label='Link Thumbnail (Google map)'
+                                    label='Link Thumbnail (THUMBNAIL)'
                                     name='thumbnail'
                                     id='thumbnail'
                                     value={coordinateFormik.values.thumbnail}
@@ -582,21 +612,217 @@ const FormGroup: React.FC<formProps> = ({
                                     onTouched={coordinateFormik.touched.thumbnail}
                                 />
                             </div>
-                            <div className='w-[30%] flex flex-col pl-[0.8px]'>
-                                <label className='font-[500] text-[14px]'>Rawan bencana ? </label>
-                                <div className={`w-full flec h-[45px] border mt-4 flex items-center border-slate-700 rounded-full px-2 duration-200 ${activeDanger ? 'bg-red-500' : 'bg-slate-200'}`}>
-                                    <div onClick={() => {
-                                            addCondition('Rawan bencana', '🛑')
-                                            setActiveDanger(!activeDanger)
-                                        }} 
-                                        className={`w-[30px] flex items-center justify-center rounded-full h-[30px] ${activeDanger ? 'ml-auto' : 'ml-0'} bg-white duration-300 cursor-pointer active:scale-[0.98] hover:brightness-[98%]`}>
-                                            <p className={`${activeDanger ? 'text-red-600 flex' : 'hidden'}`}>
-                                                !
-                                            </p>
-                                    </div>
+                        </div>
+                        
+                        {/* new */}
+                        <div className='w-full mb-5'>
+                            <div className='w-full'>
+                                <InputField 
+                                    label='Penjelasan (REMARK)'
+                                    name='remark'
+                                    id='remark'
+                                    value={coordinateFormik.values.remark}
+                                    placeholder='Contoh: SMA di kabupaten cirebon'
+                                    onChange={coordinateFormik.handleChange}
+                                    onBlur={coordinateFormik.handleBlur}
+                                    onError={coordinateFormik.errors.remark}
+                                    onTouched={coordinateFormik.touched.remark}
+                                />
+                            </div>
+                            <div className='w-full mt-5'>
+                                <InputField 
+                                    label='Skala (SRS_ID)'
+                                    name='scale'
+                                    id='scale'
+                                    value={coordinateFormik.values.scale}
+                                    placeholder='WGS/UTM'
+                                    onChange={coordinateFormik.handleChange}
+                                    onBlur={coordinateFormik.handleBlur}
+                                    onError={coordinateFormik.errors.scale}
+                                    onTouched={coordinateFormik.touched.scale}
+                                />
+                            </div>
+                        </div>
+
+                        <div className='w-full mb-5'>
+                            <div className='w-full'>
+                                <InputField 
+                                    label='Kode (FCODE)'
+                                    name='code'
+                                    id='code'
+                                    value={coordinateFormik.values.code}
+                                    placeholder='xx13avb23x'
+                                    onChange={coordinateFormik.handleChange}
+                                    onBlur={coordinateFormik.handleBlur}
+                                    onError={coordinateFormik.errors.code}
+                                    onTouched={coordinateFormik.touched.code}
+                                />
+                            </div>
+                            <div className='w-full mt-5'>
+                                <InputField 
+                                    label='Kode PUM(ADMIN)'
+                                    name='pum'
+                                    id='pum'
+                                    value={coordinateFormik.values.pum}
+                                    placeholder='xx2323'
+                                    onChange={coordinateFormik.handleChange}
+                                    onBlur={coordinateFormik.handleBlur}
+                                    onError={coordinateFormik.errors.pum}
+                                    onTouched={coordinateFormik.touched.pum}
+                                />
+                            </div>
+                        </div>
+
+                        <div className='w-full mb-5'>
+                            <div className='w-full'>
+                                <InputField 
+                                    label='Provinsi (WADMPR)'
+                                    name='province'
+                                    id='province'
+                                    value={coordinateFormik.values.province}
+                                    placeholder='Jawa Barat'
+                                    onChange={coordinateFormik.handleChange}
+                                    onBlur={coordinateFormik.handleBlur}
+                                    onError={coordinateFormik.errors.province}
+                                    onTouched={coordinateFormik.touched.province}
+                                />
+                            </div>
+                            <div className='w-full mt-5'>
+                                <InputField 
+                                    label='Jenis Wilayah (WADMKK)'
+                                    name='typeArea'
+                                    type='select-input'
+                                    options={dataJenisWilayah}
+                                    id='typeArea'
+                                    value={coordinateFormik.values.typeArea}
+                                    onChange={coordinateFormik.handleChange}
+                                    onBlur={coordinateFormik.handleBlur}
+                                    onError={coordinateFormik.errors.typeArea}
+                                    onTouched={coordinateFormik.touched.typeArea}
+                                />
+                            </div>
+                        </div>
+
+                        <div className='w-full mb-5'>
+                            <div className='w-full'>
+                                <InputField 
+                                    label='Kelurahan (WADMKD)'
+                                    name='ward'
+                                    id='ward'
+                                    value={coordinateFormik.values.ward}
+                                    placeholder='Kelurahan...'
+                                    onChange={coordinateFormik.handleChange}
+                                    onBlur={coordinateFormik.handleBlur}
+                                    onError={coordinateFormik.errors.ward}
+                                    onTouched={coordinateFormik.touched.ward}
+                                />
+                            </div>
+                            <div className='w-full mt-5'>
+                                <InputField 
+                                    label='Kode Provinsi (WIADPR)'
+                                    name='provinceCode'
+                                    id='provinceCode'
+                                    value={coordinateFormik.values.provinceCode}
+                                    placeholder='0XX'
+                                    onChange={coordinateFormik.handleChange}
+                                    onBlur={coordinateFormik.handleBlur}
+                                    onError={coordinateFormik.errors.provinceCode}
+                                    onTouched={coordinateFormik.touched.provinceCode}
+                                />
+                            </div>
+                        </div>
+
+                        <div className='w-full mb-5'>
+                            <div className='w-full'>
+                                <InputField 
+                                    label='Kode Kabupaten/Kota (WIADKK)'
+                                    name='typeAreaCode'
+                                    id='typeAreaCode'
+                                    value={coordinateFormik.values.typeAreaCode}
+                                    placeholder='0XX'
+                                    onChange={coordinateFormik.handleChange}
+                                    onBlur={coordinateFormik.handleBlur}
+                                    onError={coordinateFormik.errors.typeAreaCode}
+                                    onTouched={coordinateFormik.touched.typeAreaCode}
+                                />
+                            </div>
+                            <div className='w-full mt-5'>
+                                <InputField 
+                                    label='Kode Kecamatan (WIADKC)'
+                                    name='subdistrictCode'
+                                    id='subdistrictCode'
+                                    value={coordinateFormik.values.subdistrictCode}
+                                    placeholder='0XX'
+                                    onChange={coordinateFormik.handleChange}
+                                    onBlur={coordinateFormik.handleBlur}
+                                    onError={coordinateFormik.errors.subdistrictCode}
+                                    onTouched={coordinateFormik.touched.subdistrictCode}
+                                />
+                            </div>
+                        </div>
+
+                        <div className='w-full mb-5'>
+                            <div className='w-full'>
+                                <InputField 
+                                    label='Kode Kelurahan/Desa (WIADKD)'
+                                    name='wardCode'
+                                    id='wardCode'
+                                    value={coordinateFormik.values.wardCode}
+                                    placeholder='0XX'
+                                    onChange={coordinateFormik.handleChange}
+                                    onBlur={coordinateFormik.handleBlur}
+                                    onError={coordinateFormik.errors.wardCode}
+                                    onTouched={coordinateFormik.touched.wardCode}
+                                />
+                            </div>
+                            <div className='w-full mt-5'>
+                                <InputField 
+                                    label='Luas area (LUAS)'
+                                    name='wide'
+                                    id='wide'
+                                    value={coordinateFormik.values.wide}
+                                    placeholder='123999km'
+                                    onChange={coordinateFormik.handleChange}
+                                    onBlur={coordinateFormik.handleBlur}
+                                    onError={coordinateFormik.errors.wide}
+                                    onTouched={coordinateFormik.touched.wide}
+                                />
+                            </div>
+                        </div>
+                        
+                        <div className='w-full mb-5'>
+                            <div className='w-full'>
+                                <InputField 
+                                    label='Sumber (METADATA)'
+                                    name='source'
+                                    id='source'
+                                    value={coordinateFormik.values.source}
+                                    placeholder='Dinas xxxxxxxxxx'
+                                    onChange={coordinateFormik.handleChange}
+                                    onBlur={coordinateFormik.handleBlur}
+                                    onError={coordinateFormik.errors.source}
+                                    onTouched={coordinateFormik.touched.source}
+                                />
+                            </div>
+                        </div>
+                        {/* End New */}
+
+                        <div className='w-full mt-5 flex flex-col'>
+                            <label className='font-[500] text-[14px]'>Rawan bencana ? (ON/OFF) </label>
+                            <div className={`w-full flec h-[45px] border mt-4 flex items-center border-slate-700 rounded-full px-2 duration-200 ${activeDanger ? 'bg-red-500' : 'bg-slate-200'}`}>
+                                <div onClick={() => {
+                                        addCondition('Rawan bencana', '🛑')
+                                        setActiveDanger(!activeDanger)
+                                    }} 
+                                    className={`w-[30px] flex items-center justify-center rounded-full h-[30px] ${activeDanger ? 'ml-auto' : 'ml-0'} bg-white duration-300 cursor-pointer active:scale-[0.98] hover:brightness-[98%]`}>
+                                        <p className={`${activeDanger ? 'text-red-600 flex' : 'hidden'}`}>
+                                            !
+                                        </p>
                                 </div>
                             </div>
                         </div>
+
+                        {/* Condition area */}
                         <h2 className='mt-8 text-[20px] font-bold'>Dekat area apakah ? (opsi)</h2>
                         <div className='w-full overflow-hidden flex-wrap h-max mt-5 flex items-center'>
                             <div className='w-max flex items-center overflow-x-auto'>
@@ -610,21 +836,10 @@ const FormGroup: React.FC<formProps> = ({
                                 }
                             </div>
                         </div>
-                        {/* <hr className='mb-4 mt-2 border-1 border-slate-700' /> */}
+                    
                     </div>
                 </div>
-                <div className='w-max mt-4 flex items-center'>
-                    <button type='submit' className='w-max hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-3 rounded-full text-[14px] bg-slate-700 text-white'>
-                        <p>
-                            Tambah koordinat
-                        </p>
-                    </button>
-                    <button onClick={close} className='w-max ml-4 hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-3 rounded-full text-[14px] bg-white border border-black text-black'>
-                        <p>
-                            Batalkan
-                        </p>
-                    </button>
-                </div>
+
             </form>
             )
         case "update-subdistrict":
