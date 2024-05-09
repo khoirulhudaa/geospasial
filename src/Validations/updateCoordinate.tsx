@@ -75,7 +75,7 @@ export const useUpdateCoordinateFormik = ({onError, onResponse, condition, data}
                     long: values.long,
                     link: values.link, 
                     thumbnail: values.thumbnail, 
-                    condition: condition, 
+                    condition: condition.length > 0 ? condition : undefined, // Mengirimkan nilai condition hanya jika tidak kosong
                     scale: values.scale, 
                     remark: values.remark,
                     code: values.code, 

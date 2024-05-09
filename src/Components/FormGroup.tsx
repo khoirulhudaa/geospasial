@@ -49,6 +49,7 @@ const FormGroup: React.FC<formProps> = ({
     const [check, setCheck] = useState<number>(0)
     const [inputValue, setInputValue] = useState<string>('')
     const [condition, setCondition] = useState<any[]>([])
+    const [conditionUpdate, setConditionUpdate] = useState<any>([])
     const [activeDanger, setActiveDanger] = useState<boolean>(false)
     const [borderError, setBorderError] = useState<boolean>(false)
     const [selectColor, setSelectColor] = useState<string>('')
@@ -166,6 +167,7 @@ const FormGroup: React.FC<formProps> = ({
     const handleResponseCoordinate = (response: number) => {
         if(response === 200) {
             setCondition([])
+            setConditionUpdate([])
             clearAllForm()
             handleAlert()
             handleDone()
@@ -182,6 +184,7 @@ const FormGroup: React.FC<formProps> = ({
         setError(error)
         setLoading(false)
         setCondition([])
+        setConditionUpdate([])
     }
 
     const handleResponseAuth = () => {
@@ -208,13 +211,30 @@ const FormGroup: React.FC<formProps> = ({
             label,
             icon
         }
-        const index = condition.findIndex(value => value.label === label);
+        const index = condition.findIndex((value: any) => value.label === label);
 
         // If the condition is found, remove it
         if (index !== -1) {
-            setCondition(prevCondition => prevCondition.filter(value => value.label !== label));
+            setCondition((prevCondition: any) => prevCondition.filter((value: any) => value.label !== label));
         } else {
-            setCondition(prevCondition => [...prevCondition, newData]);
+            setCondition((prevCondition: any) => [...prevCondition, newData]);
+        }
+
+        console.log('cond', condition)
+    }
+
+    const addConditionUpdate = (label: string, icon: string) => {
+        const newData = {
+            label,
+            icon
+        }
+        const index = conditionUpdate.findIndex((value: any) => value.label === label);
+
+        // If the condition is found, remove it
+        if (index !== -1) {
+            setConditionUpdate((prevCondition: any) => prevCondition.filter((value: any) => value.label !== label));
+        } else {
+            setConditionUpdate((prevCondition: any) => [...prevCondition, newData]);
         }
 
         console.log('cond', condition)
@@ -274,12 +294,18 @@ const FormGroup: React.FC<formProps> = ({
         onError: handleErrorMessage,
         onResponse: handleResponse,
         data,
-        condition,
+        condition: conditionUpdate
     })
 
+    console.log('conditionUpdate:',conditionUpdate)
+    
     useEffect(() => {
-        setCondition(prevCondition => [...prevCondition, ...updateCorFormik.values.condition ?? []]);
-    }, [])
+        setConditionUpdate(updateCorFormik.values.condition)
+        setCondition((prevCondition: any) => [...prevCondition, ...updateCorFormik.values.condition ?? []]);
+        setConditionUpdate((prevCondition: any) => [...prevCondition, ...updateCorFormik.values.condition ?? []]);
+    }, [updateCorFormik.values.condition])
+
+    console.log('conddition:', conditionUpdate)
 
     const handleClick = () => {
         setError('')
@@ -1492,9 +1518,9 @@ const FormGroup: React.FC<formProps> = ({
                                     <div className='w-max flex items-center overflow-x-auto'>
                                         {
                                             dataConditionArea.map((data: any, index: number) => {
-                                                const isSelected2 = condition.some(dataCon => dataCon.label === data.label);
+                                                const isSelected2 = conditionUpdate?.some((dataCon: any) => dataCon.label === data.label);
                                                 return (
-                                                    <div key={index} onClick={() => addCondition(data.label, data.icon)} className={`cursor-pointer hover:bg-green-200 active:scale-[0.99] duration-100 w-max h-[40px] mr-4 mb-5 border ${isSelected2 ? 'border-green-500 bg-green-200' : 'border-black bg-transparent'} rounded-[10px] px-2 py-1 text-center flex items-center justify-center`}>
+                                                    <div key={index} onClick={() => addConditionUpdate(data.label, data.icon)} className={`cursor-pointer hover:bg-green-200 active:scale-[0.99] duration-100 w-max h-[40px] mr-4 mb-5 border ${isSelected2 ? 'border-green-500 bg-green-200' : 'border-black bg-transparent'} rounded-[10px] px-2 py-1 text-center flex items-center justify-center`}>
                                                         <p className='mr-3 w-max'>{data.label}</p>
                                                         {data.icon}
                                                     </div>
