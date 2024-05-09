@@ -2,8 +2,8 @@ import axios from "axios";
 import store from "../Store/store.tsx";
 
 const api = axios.create({
-    baseURL: "https://be-geospasial.vercel.app",
-    // baseURL: "http://localhost:3600",
+    baseURL: "http://localhost:3600",
+    // baseURL: "https://be-geospasial.vercel.app",
     headers: {
         "Content-Type": "application/json",
     },

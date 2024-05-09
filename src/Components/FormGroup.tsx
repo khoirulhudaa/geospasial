@@ -508,7 +508,7 @@ const FormGroup: React.FC<formProps> = ({
                         <div className='w-full mb-5'>
                             <div className='w-full'>
                                 <InputField 
-                                    label='Nama Objek (NAMOBJ)'
+                                    label='Nama Objek(NAMOBJ)'
                                     name='name_location'
                                     id='name_location'
                                     iconLabel={
@@ -647,7 +647,7 @@ const FormGroup: React.FC<formProps> = ({
                         <div className='w-full mb-5'>
                             <div className='w-full'>
                                 <InputField 
-                                    label='Kode (FCODE)'
+                                    label='Kode Unsur - KUGI (FCODE)'
                                     name='code'
                                     id='code'
                                     value={coordinateFormik.values.code}
@@ -1149,16 +1149,37 @@ const FormGroup: React.FC<formProps> = ({
                         ):
                             null
                     }
+                    <div className='relative w-full border-b border-b-slate-300 h-max pb-6 mb-4 overflow-hidden px-1'>
+                        <div className='relative flex items-center w-full h-max z-[9999]'>
+                            <div className='w-1/2'>
+                                <h2 className='font-bold text-[26px]'>Perbarui data</h2>
+                                <p>Pastikan data sesuai dan jelas</p>
+                            </div>
+                            <div className='w-1/2 mt-4 flex items-center justify-end'>
+                                <button type='submit' className='w-[40%] hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-3 rounded-[10px] text-[14px] bg-slate-700 text-white'>
+                                    <p className='mx-auto'>
+                                        Perbarui
+                                    </p>
+                                </button>
+                                <button onClick={close} className='w-[35%] ml-4 hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-3 rounded-[10px] text-[14px] bg-white border border-black text-black'>
+                                    <p className='mx-auto'>
+                                        Batalkan
+                                    </p>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                     <div className='w-full flex h-max'>
                         <div className='w-full p-2 h-full'>
+                            
                             <div className='w-full mb-5 flex flex-col items-center justify-between'>
                                 <div className='w-full mb-5'>
                                     <InputField 
-                                        label='Nama lokasi/bangunan'
+                                        label='Nama objek (NAMOBJ)'
                                         name='name_location'
                                         id='name_location'
                                         value={updateCorFormik.values.name_location}
-                                        placeholder='Contoh: SMA di kabupaten cirebon'
+                                        placeholder='SMA di kabupaten cirebon'
                                         onChange={updateCorFormik.handleChange}
                                         onBlur={updateCorFormik.handleBlur}
                                         onError={updateCorFormik.errors.name_location}
@@ -1167,13 +1188,13 @@ const FormGroup: React.FC<formProps> = ({
                                 </div>
                                 <div className='w-full'>
                                     <InputField 
-                                        label='Kecataman'
+                                        label='Kecataman (WADMKC)'
                                         name='subdistrict'
                                         type='select-input'
                                         options={dataSubdistrict}
                                         id='subdistrict'
                                         value={updateCorFormik.values.subdistrict}
-                                        placeholder='Contoh: Kedawung'
+                                        placeholder='Kedawung'
                                         onChange={updateCorFormik.handleChange}
                                         onBlur={updateCorFormik.handleBlur}
                                         onError={updateCorFormik.errors.subdistrict}
@@ -1181,42 +1202,58 @@ const FormGroup: React.FC<formProps> = ({
                                     />
                                 </div>
                             </div>
+
                             <div className='w-full mb-5 flex flex-col items-center justify-between'>
                                 <div className='w-full mb-5'>
                                     <InputField 
-                                        label='Latitude'
+                                        label='Latitude (LAT)'
                                         name='lat'
                                         id='latitude'
                                         value={updateCorFormik.values.lat}
-                                        placeholder='-6123762'
+                                        placeholder='-612332762'
                                         onChange={updateCorFormik.handleChange}
                                         onBlur={updateCorFormik.handleBlur}
                                         onError={updateCorFormik.errors.lat}
                                         onTouched={updateCorFormik.touched.lat}
                                     />
                                 </div>
-                                <div className='w-full'>
+                                <div className='w-full mb-5'>
                                     <InputField 
-                                        label='Longitude'
+                                        label='Longitude (LONG)'
                                         name='long'
                                         id='longitude'
                                         value={updateCorFormik.values.long}
-                                        placeholder='2009720'
+                                        placeholder='20097232320'
                                         onChange={updateCorFormik.handleChange}
                                         onBlur={updateCorFormik.handleBlur}
                                         onError={updateCorFormik.errors.long}
                                         onTouched={updateCorFormik.touched.long}
                                     />
                                 </div>
+                                <div className='w-full'>
+                                    <InputField 
+                                        label='Jenis Wilayah (WADMKK)'
+                                        name='typeArea'
+                                        type='select-input'
+                                        options={dataJenisWilayah}
+                                        id='typeArea'
+                                        value={updateCorFormik.values.typeArea}
+                                        onChange={updateCorFormik.handleChange}
+                                        onBlur={updateCorFormik.handleBlur}
+                                        onError={updateCorFormik.errors.typeArea}
+                                        onTouched={updateCorFormik.touched.typeArea}
+                                    />
+                                </div>
                             </div>
-                            <div className='w-full mb-5 flex flex-col items-center'>
+
+                            <div className='w-full flex flex-col items-center'>
                                 <div className='w-full mb-5'>
                                     <InputField 
-                                        label='Link google map (opsi)'
+                                        label='Link google map (LINK)'
                                         name='link'
                                         id='link'
                                         value={updateCorFormik.values.link}
-                                        placeholder='-6123762'
+                                        placeholder='https://.....'
                                         onChange={updateCorFormik.handleChange}
                                         onBlur={updateCorFormik.handleBlur}
                                         onError={updateCorFormik.errors.link}
@@ -1224,35 +1261,250 @@ const FormGroup: React.FC<formProps> = ({
                                     />
                                 </div>
                             </div>
-                            <h2 className='mt-8 text-[20px] font-bold'>Dekat area apakah ? (opsi)</h2>
-                            <div className='w-full overflow-hidden flex-wrap h-max mt-5 flex items-center'>
-                                <div className='w-max flex items-center overflow-x-auto'>
-                                    {
-                                        dataConditionArea.map((data: any, index: number) => {
-                                            const isSelected2 = condition.some(dataCon => dataCon.label === data.label);
-                                            return (
-                                                <div key={index} onClick={() => addCondition(data.label, data.icon)} className={`cursor-pointer hover:bg-green-200 active:scale-[0.99] duration-100 w-max h-[40px] mr-4 mb-5 border ${isSelected2 ? 'border-green-500 bg-green-200' : 'border-black bg-transparent'} rounded-[10px] px-2 py-1 text-center flex items-center justify-center`}>
-                                                    <p className='mr-3 w-max'>{data.label}</p>
-                                                    {data.icon}
-                                                </div>
-                                            )
-                                        })
-                                    }
+
+                            <div className='w-full flex flex-col items-center'>
+                                <div className='w-full mb-5'>
+                                    <InputField 
+                                        label='Thumbnail (THUMBNAIL)'
+                                        name='thumbnail'
+                                        id='thumbnail'
+                                        value={updateCorFormik.values.thumbnail}
+                                        placeholder='https://.....'
+                                        onChange={updateCorFormik.handleChange}
+                                        onBlur={updateCorFormik.handleBlur}
+                                        onError={updateCorFormik.errors.thumbnail}
+                                        onTouched={updateCorFormik.touched.thumbnail}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className='w-full flex flex-col items-center'>
+                                <div className='w-full mb-5'>
+                                    <InputField 
+                                        label='Alamat (ADDRESS)'
+                                        name='address'
+                                        id='address'
+                                        value={updateCorFormik.values.address}
+                                        placeholder='Jl.xxxxxxxx'
+                                        onChange={updateCorFormik.handleChange}
+                                        onBlur={updateCorFormik.handleBlur}
+                                        onError={updateCorFormik.errors.address}
+                                        onTouched={updateCorFormik.touched.address}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className='w-full flex flex-col items-center'>
+                                <div className='w-full mb-5'>
+                                    <InputField 
+                                        label='Catatan (REMARK)'
+                                        name='remark'
+                                        id='remark'
+                                        value={updateCorFormik.values.remark}
+                                        placeholder='Berikan Catatan.....'
+                                        onChange={updateCorFormik.handleChange}
+                                        onBlur={updateCorFormik.handleBlur}
+                                        onError={updateCorFormik.errors.remark}
+                                        onTouched={updateCorFormik.touched.remark}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className='w-full flex flex-col items-center'>
+                                <div className='w-full mb-5'>
+                                    <InputField 
+                                        label='Skala (SRS_ID)'
+                                        name='scale'
+                                        id='scale'
+                                        value={updateCorFormik.values.scale}
+                                        placeholder='Kabupaten/Nasional/Kecamatan/Desa'
+                                        onChange={updateCorFormik.handleChange}
+                                        onBlur={updateCorFormik.handleBlur}
+                                        onError={updateCorFormik.errors.scale}
+                                        onTouched={updateCorFormik.touched.scale}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className='w-full flex flex-col items-center'>
+                                <div className='w-full mb-5'>
+                                    <InputField 
+                                        label='Kode Unsur - KUGI (FCODE)'
+                                        name='code'
+                                        id='code'
+                                        value={updateCorFormik.values.code}
+                                        placeholder='HSYDXXS7X'
+                                        onChange={updateCorFormik.handleChange}
+                                        onBlur={updateCorFormik.handleBlur}
+                                        onError={updateCorFormik.errors.code}
+                                        onTouched={updateCorFormik.touched.code}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className='w-full flex flex-col items-center'>
+                                <div className='w-full mb-5'>
+                                    <InputField 
+                                        label='Kode PUM (ADMIN)'
+                                        name='pum'
+                                        id='pum'
+                                        value={updateCorFormik.values.pum}
+                                        placeholder='3xxx'
+                                        onChange={updateCorFormik.handleChange}
+                                        onBlur={updateCorFormik.handleBlur}
+                                        onError={updateCorFormik.errors.pum}
+                                        onTouched={updateCorFormik.touched.pum}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className='w-full flex flex-col items-center'>
+                                <div className='w-full mb-5'>
+                                    <InputField 
+                                        label='Provinsi (WADMPR)'
+                                        name='province'
+                                        id='province'
+                                        value={updateCorFormik.values.province}
+                                        placeholder='Jawa Barat'
+                                        onChange={updateCorFormik.handleChange}
+                                        onBlur={updateCorFormik.handleBlur}
+                                        onError={updateCorFormik.errors.province}
+                                        onTouched={updateCorFormik.touched.province}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className='w-full flex flex-col items-center'>
+                                <div className='w-full mb-5'>
+                                    <InputField 
+                                        label='Nama Desa (WADMKD)'
+                                        name='ward'
+                                        id='ward'
+                                        value={updateCorFormik.values.ward}
+                                        placeholder='Ds.xxxxx'
+                                        onChange={updateCorFormik.handleChange}
+                                        onBlur={updateCorFormik.handleBlur}
+                                        onError={updateCorFormik.errors.ward}
+                                        onTouched={updateCorFormik.touched.ward}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className='w-full flex flex-col items-center'>
+                                <div className='w-full mb-5'>
+                                    <InputField 
+                                        label='Kode Provinsi (WIADPR)'
+                                        name='provinceCode'
+                                        id='provinceCode'
+                                        value={updateCorFormik.values.provinceCode}
+                                        placeholder='3x'
+                                        onChange={updateCorFormik.handleChange}
+                                        onBlur={updateCorFormik.handleBlur}
+                                        onError={updateCorFormik.errors.provinceCode}
+                                        onTouched={updateCorFormik.touched.provinceCode}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className='w-full flex flex-col items-center'>
+                                <div className='w-full mb-5'>
+                                    <InputField 
+                                        label='Kode Kabupaten (WIADKK)'
+                                        name='typeAreaCode'
+                                        id='typeAreaCode'
+                                        value={updateCorFormik.values.typeAreaCode}
+                                        placeholder='2x'
+                                        onChange={updateCorFormik.handleChange}
+                                        onBlur={updateCorFormik.handleBlur}
+                                        onError={updateCorFormik.errors.typeAreaCode}
+                                        onTouched={updateCorFormik.touched.typeAreaCode}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className='w-full p-2 h-full'>
+                                <div className='w-full flex flex-col items-center'>
+                                    <div className='w-full mb-5'>
+                                        <InputField 
+                                            label='Kode Kecamatan (WIADKC)'
+                                            name='subdistrictCode'
+                                            id='subdistrictCode'
+                                            value={updateCorFormik.values.subdistrictCode}
+                                            placeholder='-6123762'
+                                            onChange={updateCorFormik.handleChange}
+                                            onBlur={updateCorFormik.handleBlur}
+                                            onError={updateCorFormik.errors.subdistrictCode}
+                                            onTouched={updateCorFormik.touched.subdistrictCode}
+                                        />
+                                    </div>
+                                </div>
+                                
+                                <div className='w-full flex flex-col items-center'>
+                                    <div className='w-full mb-5'>
+                                        <InputField 
+                                            label='Kode Desa (WIADKD)'
+                                            name='wardCode'
+                                            id='wardCode'
+                                            value={updateCorFormik.values.wardCode}
+                                            placeholder='-6123762'
+                                            onChange={updateCorFormik.handleChange}
+                                            onBlur={updateCorFormik.handleBlur}
+                                            onError={updateCorFormik.errors.wardCode}
+                                            onTouched={updateCorFormik.touched.wardCode}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className='w-full flex flex-col items-center'>
+                                    <div className='w-full mb-5'>
+                                        <InputField 
+                                            label='Luas (LUAS)'
+                                            name='wide'
+                                            id='wide'
+                                            value={updateCorFormik.values.wide}
+                                            placeholder='221km'
+                                            onChange={updateCorFormik.handleChange}
+                                            onBlur={updateCorFormik.handleBlur}
+                                            onError={updateCorFormik.errors.wide}
+                                            onTouched={updateCorFormik.touched.wide}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className='w-full flex flex-col items-center'>
+                                    <div className='w-full mb-5'>
+                                        <InputField 
+                                            label='Sumber Data (METADATA)'
+                                            name='source'
+                                            id='source'
+                                            value={updateCorFormik.values.source}
+                                            placeholder='Dinas xxxxxxx'
+                                            onChange={updateCorFormik.handleChange}
+                                            onBlur={updateCorFormik.handleBlur}
+                                            onError={updateCorFormik.errors.source}
+                                            onTouched={updateCorFormik.touched.source}
+                                        />
+                                    </div>
+                                </div>
+
+                                <h2 className='mt-8 text-[20px] font-bold'>Dekat area apakah ? (opsi)</h2>
+                                <div className='w-full overflow-hidden flex-wrap h-max mt-5 flex items-center'>
+                                    <div className='w-max flex items-center overflow-x-auto'>
+                                        {
+                                            dataConditionArea.map((data: any, index: number) => {
+                                                const isSelected2 = condition.some(dataCon => dataCon.label === data.label);
+                                                return (
+                                                    <div key={index} onClick={() => addCondition(data.label, data.icon)} className={`cursor-pointer hover:bg-green-200 active:scale-[0.99] duration-100 w-max h-[40px] mr-4 mb-5 border ${isSelected2 ? 'border-green-500 bg-green-200' : 'border-black bg-transparent'} rounded-[10px] px-2 py-1 text-center flex items-center justify-center`}>
+                                                        <p className='mr-3 w-max'>{data.label}</p>
+                                                        {data.icon}
+                                                    </div>
+                                                )
+                                            })
+                                        }
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div className='w-max mt-8 flex items-center'>
-                        <button type='submit' className='w-max hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-3 rounded-[10px] text-[14px] bg-slate-700 text-white'>
-                            <p>
-                                Perbarui koordinat
-                            </p>
-                        </button>
-                        <button onClick={close} className='w-max ml-4 hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-3 rounded-[10px] text-[14px] bg-white border border-black text-black'>
-                            <p>
-                                Batalkan
-                            </p>
-                        </button>
                     </div>
                 </form>
             )

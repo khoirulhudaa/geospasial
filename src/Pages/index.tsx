@@ -935,14 +935,21 @@ const Homepage: React.FC = () => {
           {/* Sidebare update */}
           {
             activeSidebarUpdateSub ? (
-              <div className={`${activeUpdate === 'coordinate' ? 'w-[50vw]' : 'w-[34vw]'} border-l-black border fixed top-0 right-0 h-screen overflow-y-auto p-8 bg-white shadow-lg z-[99999999999999999999]`}>
-                <div title='close sidebar' onClick={() => {
-                  setActiveSidebarUpdateSub(false)
-                  setActiveUpdate('')
-                }} 
-                className='absolute top-0 right-0 w-[40px] cursor-pointer hover:brightness-[90%] active:scale-[0.98] h-[40px] text-center flex justify-center items-center text-white bg-red-500'>
-                  <FaTimes />
-                </div>
+              <div className={`${activeUpdate === 'coordinate' ? 'w-[70vw]' : 'w-[34vw]'} border-l-black border fixed top-0 right-0 h-screen overflow-y-auto p-8 bg-white shadow-lg z-[99999999999999999999]`}>
+                
+                {
+                  activeUpdate === 'subdistrict' ? (
+                    <div title='close sidebar' onClick={() => {
+                      setActiveSidebarUpdateSub(false)
+                      setActiveUpdate('')
+                    }} 
+                    className='absolute top-0 right-0 w-[40px] cursor-pointer hover:brightness-[90%] active:scale-[0.98] h-[40px] text-center flex justify-center items-center text-white bg-red-500'>
+                      <FaTimes />
+                    </div>
+                  ):
+                    null
+                }
+                
                 {
                   activeUpdate === 'subdistrict' ? (
                     <FormGroup handleAlert={(textAlert?: string) => handleAlert(textAlert)} handleStatus={() => handleStatus()} data={dataNowSubdistrict} close={() => handleCloseUpdate()} type='update-subdistrict' />
@@ -951,6 +958,7 @@ const Homepage: React.FC = () => {
                   ):
                     null
                 }
+                
               </div>
             ):
               null

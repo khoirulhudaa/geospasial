@@ -2226,7 +2226,7 @@ const Map: React.FC<mapProps> = React.memo(({
                 {selectCoordinateID?.name_location}
               </p>
               <p className='mb-4 h-max w-[50%] pb-2 pt-4 border-l border-l-slate-300 pl-4 border-b border-b-slate-300 pb-4'>
-                <div className='font-bold flex items-center w-full'>FCODE <span className='ml-2 text-[12px] text-slate-500 font-normal'>(Kode)</span></div> 
+                <div className='font-bold flex items-center w-full'>FCODE <span className='ml-2 text-[12px] text-slate-500 font-normal'>(Kode Unsur - KUGI)</span></div> 
                 <br />
                 {selectCoordinateID?.code}
               </p>
@@ -2382,11 +2382,11 @@ const Map: React.FC<mapProps> = React.memo(({
           <div className={`z-[552] ${nameFile ? 'ml-3' : 'ml-0'} w-max h-max px-4 py-2 flex items-center justify-center text-center bg-white rounded-full text-[16px] border border-slate-700 bottom-4`}>{ currentPosition?.[0].toFixed(6) + `  |  ` + currentPosition?.[1].toFixed(6) ?? 0 }</div>
         </div>
         <div className={`w-max ${activeClick ? 'hidden' : 'flex'} items-center`}>
-          <div title='Kantor kecataman' onClick={() => setSubdistrictDots(!subdistrictDots)} className={`${subdistrictDots ? 'bg-green-200' : 'bg-white'} mr-3 hover:bg-green-200 cursor-pointer active:scale-[0.98] z-[22222] w-[40px] h-[40px] py-2 flex items-center justify-center text-center rounded-full text-[16px] border border-slate-700 top-4`}><FaBuilding /></div>
-          <div title='Lihat semua koordinat' onClick={() => handleShowAll()} className={`${showAll ? 'bg-green-200' : 'bg-white'} mr-3 hover:bg-green-200 cursor-pointer active:scale-[0.98] z-[22222] w-[40px] h-[40px] py-2 flex items-center justify-center text-center rounded-full text-[16px] border border-slate-700 top-4`}>{showAll ? <FaEyeSlash /> : <FaEye />}</div>
-          <div onClick={() => exportToGeoJSON()} className={`bg-white mr-3 hover:bg-green-200 cursor-pointer active:scale-[0.98] z-[22222] w-max h-max px-4 py-2 flex items-center justify-center text-center rounded-full text-[16px] border border-slate-700 top-4`}>GeoJSON <FaFileExport className="ml-3" /></div>
-          <div title='Ambil gambar peta' onClick={() => downloadImage()} className={`z-[33333] active:bg-green-200 bg-white mr-3 hover:brightness-[90%] cursor-pointer active:scale-[0.98] z-[22222] w-[40px] h-[40px] py-2 flex items-center justify-center text-center rounded-full text-[16px] border border-slate-700 top-4`}><FaCameraRetro /></div>
-          <div title='Upload excel' onClick={() => setActiveUploadExcel(!activeUploadExcel)} className={`z-[2124] active:bg-green-200 bg-white mr-3 hover:brightness-[90%] cursor-pointer active:scale-[0.98] z-[22222] w-[40px] h-[40px] py-2 flex items-center justify-center text-center rounded-full text-[16px] border border-slate-700 top-4`}><FaUpload /></div>
+          <div title='Kantor kecataman' onClick={() => setSubdistrictDots(!subdistrictDots)} className={`${subdistrictDots ? 'bg-green-200' : 'bg-white'} ml-3 mr-3 hover:bg-green-200 cursor-pointer active:scale-[0.98] z-[1000] w-[40px] h-[40px] py-2 flex items-center justify-center text-center rounded-full text-[16px] border border-slate-700 top-4`}><FaBuilding /></div>
+          <div title='Lihat semua koordinat' onClick={() => handleShowAll()} className={`${showAll ? 'bg-green-200' : 'bg-white'} mr-3 hover:bg-green-200 cursor-pointer active:scale-[0.98] z-[1000] w-[40px] h-[40px] py-2 flex items-center justify-center text-center rounded-full text-[16px] border border-slate-700 top-4`}>{showAll ? <FaEyeSlash /> : <FaEye />}</div>
+          <div onClick={() => exportToGeoJSON()} className={`bg-white mr-3 hover:bg-green-200 cursor-pointer active:scale-[0.98] z-[1000] w-max h-max px-4 py-2 flex items-center justify-center text-center rounded-full text-[16px] border border-slate-700 top-4`}>GeoJSON <FaFileExport className="ml-3" /></div>
+          <div title='Ambil gambar peta' onClick={() => downloadImage()} className={`z-[33333] active:bg-green-200 bg-white mr-3 hover:brightness-[90%] cursor-pointer active:scale-[0.98] z-[1000] w-[40px] h-[40px] py-2 flex items-center justify-center text-center rounded-full text-[16px] border border-slate-700 top-4`}><FaCameraRetro /></div>
+          <div title='Upload excel' onClick={() => setActiveUploadExcel(!activeUploadExcel)} className={`z-[2124] active:bg-green-200 bg-white mr-3 hover:brightness-[90%] cursor-pointer active:scale-[0.98] z-[1000] w-[40px] h-[40px] py-2 flex items-center justify-center text-center rounded-full text-[16px] border border-slate-700 top-4`}><FaUpload /></div>
         </div>
       </div>
       <div title='Hapus semua koordinat' onClick={() => handleClear()} className={`absolute left-[18px] bottom-36 z-[500] active:bg-green-200 bg-white hover:brightness-[90%] cursor-pointer active:rotate-[120deg] duration-100 z-[22222] w-[45px] h-[45px] py-2 ${coordinates.length > 0 && activeClick ? 'flex' : 'hidden'} items-center justify-center text-center rounded-full text-[16px] border border-slate-700`}>
