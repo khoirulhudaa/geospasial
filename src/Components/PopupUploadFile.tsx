@@ -114,17 +114,17 @@ const PopupUploadFile: React.FC<popUpProps> = ({
                     ):
                     <div className='absolute overflow-hidden rounded-[20px] active:scale-[0.98] w-full flex-col h-full bg-white cursor-pointer hover:brightness-[94%] flex justify-center items-center'>
                         <FaFileExcel className='text-[30px] mb-4' />
-                        <div className='w-max h-max px-3 py-2 rounded-full flex items-center justify-center bg-white'>
+                        <div className='w-max h-max px-3 py-2 rounded-[10px] flex items-center justify-center bg-white'>
                             {nameFile}
                         </div>
-                        <div onClick={() => hendleClear()} className='w-max h-max mt-3 px-4 py-2 rounded-full flex items-center justify-center bg-red-500 text-white'>
+                        <div onClick={() => hendleClear()} className='w-max h-max mt-3 px-4 py-2 rounded-[10px] flex items-center justify-center bg-red-500 text-white'>
                             <FaTimes className='text-white' />
                             <p className='ml-3'>Hapus File</p>
                         </div>
                         <div className='w-[70%] mx-auto h-[1px] bg-slate-500 mt-5 mb-1'>
 
                         </div>
-                        <button type='submit' className='w-max h-max mt-5 px-6 py-2 rounded-full flex items-center justify-center bg-slate-700 text-white'>
+                        <button type='submit' className='w-max h-max mt-5 px-6 py-2 rounded-[10px] flex items-center justify-center bg-slate-700 text-white'>
                             <p>Simpan sekarang</p>
                         </button>
                     </div>

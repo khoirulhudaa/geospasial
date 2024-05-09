@@ -38,25 +38,25 @@ export const useCoordinateFormik = ({onError, onResponse, titleID, condition}: {
             long: Yup.string()
             .required('Tidak boleh kosong!'),
             address: Yup.string()
-            .required(),
+            .required('Tidak boleh kosong!'),
             link: Yup.string()
-            .required(),
+            .required('Tidak boleh kosong!'),
             thumbnail: Yup.string()
-            .required(),
+            .required('Tidak boleh kosong!'),
             province: Yup.string()
-            .required(),
+            .required('Tidak boleh kosong!'),
             typeArea: Yup.string()
-            .required(),
+            .required('Tidak boleh kosong!'),
             ward: Yup.string()
-            .required(),
+            .required('Tidak boleh kosong!'),
             pum: Yup.string()
-            .required(),
+            .required('Tidak boleh kosong!'),
             provinceCode: Yup.string()
-            .required(),
+            .required('Tidak boleh kosong!'),
             typeAreaCode: Yup.string()
-            .required(),
+            .required('Tidak boleh kosong!'),
             subdistrictCode: Yup.string()
-            .required(),
+            .required('Tidak boleh kosong!'),
             condition: Yup.array()
             .notRequired(),
         }),

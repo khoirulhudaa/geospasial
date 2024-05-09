@@ -17,7 +17,7 @@ import geoJsonData from '../GeoJson/kecamatan.json';
 import geoJsonDataSungai from '../GeoJson/sungai.json';
 import { mapProps } from '../Models/componentInterface';
 import API from '../Services/service';
-import { clearCoordinate, getCoordinate } from '../Store/coordinateSlice';
+import { clearCoordinate, getCoordinate, getCoordinateID } from '../Store/coordinateSlice';
 import PopupUploadFile from './PopupUploadFile';
 import SweetAlert from './SweetAlert';
 
@@ -66,6 +66,10 @@ const Map: React.FC<mapProps> = React.memo(({
   const [activePantai, setActivePantai] = useState<boolean>(false)
   const [activeSungai, setActiveSungai] = useState<boolean>(false)
   const [activeMenuBatas, setActiveMenuBatas] = useState<boolean>(false)
+  const [activeDetailMarker, setActiveDetailMarker] = useState<boolean>(false)
+  const [selectCoordinateID, setSelectCoordinateID] = useState<any>(null)
+
+  console.log('marker:', selectCoordinateID)
 
   const coorNew = useSelector((state: any) => state.Coordinate?.coordinate)
   
@@ -2206,6 +2210,112 @@ const Map: React.FC<mapProps> = React.memo(({
           null
       }
 
+      {
+        activeDetailMarker ? (
+          <div className='fixed right-0 top-0 w-[70vw] h-screen overflow-y-auto bg-white shadow-lg p-6 z-[99999999999]'>
+            <div onClick={() => setActiveDetailMarker(false)} className='absolute right-6 w-[50px] h-[50px] bg-red-500 text-white cursor-pointer hover:brightness-[90%] active:scale-[0.98] p-2 flex items-center justify-center shadow-md ml-auto rounded-[6px]'>
+              <FaTimes />
+            </div>
+            <h2 className='font-bold text-[24px]'>Detail Data</h2>
+            <small>Menampilkan sumber data yang terperinci</small>
+            <div className='w-[100%] pb-5 border-b border-b-slate-300'></div>
+            <div className='w-full flex flex-wrap justify-between h-max'>
+              <p className='mb-4 h-max w-[50%] pb-2 pt-4 border-b border-b-slate-300 pb-4'>
+                <div className='font-bold flex items-center w-full'>NAMOBJ <span className='ml-2 text-[12px] text-slate-500 font-normal'>(Nama lokasi)</span></div> 
+                <br />
+                {selectCoordinateID?.name_location}
+              </p>
+              <p className='mb-4 h-max w-[50%] pb-2 pt-4 border-l border-l-slate-300 pl-4 border-b border-b-slate-300 pb-4'>
+                <div className='font-bold flex items-center w-full'>FCODE <span className='ml-2 text-[12px] text-slate-500 font-normal'>(Kode)</span></div> 
+                <br />
+                {selectCoordinateID?.code}
+              </p>
+              <p className='mb-4 h-max w-[50%] py-2 border-y border-y-slate-300 pb-4'>
+                <div className='font-bold flex items-center w-full'>LAT <span className='ml-2 text-[12px] text-slate-500 font-normal'>(Latitude)</span></div> 
+                <br />
+                {selectCoordinateID?.lat}
+              </p>
+              <p className='mb-4 h-max w-[50%] py-2 border-l border-l-slate-300 pl-4 border-y border-y-slate-300 pb-4'>
+                <div className='font-bold flex items-center w-full'>LONG <span className='ml-2 text-[12px] text-slate-500 font-normal'>(Longitude)</span></div> 
+                <br />
+                {selectCoordinateID?.long}
+              </p>
+              <p className='mb-4 h-max w-[50%] py-2 border-y border-y-slate-300 pb-4'>
+                <div className='font-bold flex items-center w-full'>WADMKC <span className='ml-2 text-[12px] text-slate-500 font-normal'>(Nama Kecamatan)</span></div> 
+                <br />
+                {selectCoordinateID?.subdistrict}
+              </p>
+              <p className='mb-4 h-max w-[50%] py-2 border-l border-l-slate-300 pl-4 border-y border-y-slate-300 pb-4'>
+                <div className='font-bold flex items-center w-full'>REMARK <span className='ml-2 text-[12px] text-slate-500 font-normal'>(Tanda)</span></div> 
+                <br />
+                {selectCoordinateID?.remark}
+              </p>
+              <div className='mb-4 h-max w-[50%] py-2 border-y border-y-slate-300 pb-4'>
+                <div className='font-bold flex items-center w-full'>SRS_ID <span className='ml-2 text-[12px] text-slate-500 font-normal'>(Skala)</span></div> 
+                <br />
+                {selectCoordinateID?.scale}
+              </div>
+              <p className='mb-4 h-max w-[50%] py-2 border-l border-l-slate-300 pl-4 border-y border-y-slate-300 pb-4'>
+                <div className='font-bold flex items-center w-full'>ADMIN <span className='ml-2 text-[12px] text-slate-500 font-normal'>(Kode PUM)</span></div> 
+                <br />
+                {selectCoordinateID?.pum}
+              </p>
+              <p className='mb-4 h-max w-[50%] py-2 border-y border-y-slate-300 pb-4'>
+                <div className='font-bold flex items-center w-full'>WADMPR <span className='ml-2 text-[12px] text-slate-500 font-normal'>(Nama Provinsi)</span></div> 
+                <br />
+                {selectCoordinateID?.province}
+              </p>
+              <p className='mb-4 h-max w-[50%] py-2 border-l border-l-slate-300 pl-4 border-y border-y-slate-300 pb-4'>
+                <div className='font-bold flex items-center w-full'>WIADPR <span className='ml-2 text-[12px] text-slate-500 font-normal'>(Kode Provinsi)</span></div> 
+                <br />
+                {selectCoordinateID?.provinceCode}
+              </p>
+              <p className='mb-4 h-max w-[50%] py-2 border-y border-y-slate-300 pb-4'>
+                <div className='font-bold flex items-center w-full'>WADMKK <span className='ml-2 text-[12px] text-slate-500 font-normal'>(Jenis Wilayah)</span></div> 
+                <br />
+                {selectCoordinateID?.typeArea}
+              </p>
+              <p className='mb-4 h-max w-[50%] py-2 border-l border-l-slate-300 pl-4 border-y border-y-slate-300 pb-4'>
+                <div className='font-bold flex items-center w-full'>WADMKD <span className='ml-2 text-[12px] text-slate-500 font-normal'>(Nama Desa)</span></div> 
+                <br />
+                {selectCoordinateID?.ward}
+              </p>
+              <p className='mb-4 h-max w-[50%] py-2 border-y border-y-slate-300 pb-4'>
+                <div className='font-bold flex items-center w-full'>WIADKK <span className='ml-2 text-[12px] text-slate-500 font-normal'>(Kode Kabupaten)</span></div> 
+                <br />
+                {selectCoordinateID?.typeAreCode}
+              </p>
+              <p className='mb-4 h-max w-[50%] py-2 border-l border-l-slate-300 pl-4 border-y border-y-slate-300 pb-4'>
+                <div className='font-bold flex items-center w-full'>WIADKC <span className='ml-2 text-[12px] text-slate-500 font-normal'>(Kode Kecamatan)</span></div> 
+                <br />
+                {selectCoordinateID?.subdstrictCode}
+              </p>
+              <p className='mb-4 h-max w-[50%] py-2 border-y border-y-slate-300 pb-4'>
+                <div className='font-bold flex items-center w-full'>WIADKD <span className='ml-2 text-[12px] text-slate-500 font-normal'>(Kode Desa)</span></div> 
+                <br />
+                {selectCoordinateID?.wardCode}
+              </p>
+              <p className='mb-4 h-max w-[50%] py-2 border-l border-l-slate-300 pl-4 border-y border-y-slate-300 pb-4'>
+                <div className='font-bold flex items-center w-full'>LUAS <span className='ml-2 text-[12px] text-slate-500 font-normal'>(Luas Wilayah)</span></div> 
+                <br />
+                {selectCoordinateID?.wide}
+              </p>
+              <p className='mb-4 h-max w-full py-2 border-y border-y-slate-300 pb-4'>
+                <div className='font-bold flex items-center w-full'>METADATA <span className='ml-2 text-[12px] text-slate-500 font-normal'>(Sumber Data)</span></div> 
+                <br />
+                {selectCoordinateID?.source}
+              </p>
+              <p className='h-max w-full pb-4'>
+                <div className='font-bold flex items-center w-full'>ADDRESS <span className='ml-2 text-[12px] text-slate-500 font-normal'>(Alamat)</span></div> 
+                <br />
+                {selectCoordinateID?.address}
+              </p>
+            </div>
+          </div>
+        ):
+          null
+      }
+
       {/* Tombol tambah koordinat dan pengaturan */}
       <div className="w-max z-[444] flex items-center h-[68px] py-[14px] pl-4 rounded-bl-[32px] absolute top-0 right-2">
         <div title='Tambah koordinat baru' className=" top-4 mr-3 w-full flex items-center">
@@ -2222,7 +2332,7 @@ const Map: React.FC<mapProps> = React.memo(({
             <div title='Layar lebar penuh' onClick={() => handleWidth()} className={`${width ? 'bg-green-200' : 'bg-white'} ml-4 cursor-pointer active:scale-[0.98] hover:bg-green-200 z-[22222] w-[45px] h-[45px] px-2 py-2 flex items-center justify-center text-center rounded-full text-[16px] border border-slate-700 right-0 top-52`}><FaTextWidth /></div>
           </div>
           <div title='Area perbatasan kabupaten' onClick={() => setActiveMenuBatas(!activeMenuBatas)} className={`${activeMenuBatas ? 'bg-green-200' : 'bg-white'} hover:bg-green-200 cursor-pointer z-[22222] w-max h-max px-4 py-2 flex items-center justify-center text-center rounded-full text-[16px] border border-slate-700 top-4`}>Perbatasan <FaChevronDown className={`${activeMenuBatas ? 'rotate-[-180deg]' : 'rotate-[0deg]'} duration-300 text-[14px] ml-3`} />
-            <div className={`absolute h-max mr-10 justify-between z-[33] flex flex-col ${activeMenuBatas ? 'bottom-[-190px] opacity-[1]' : 'bottom-[-160px] opacity-[0]'} duration-100 text-left rounded-[14px] bg-white p-4 shadow-lg`}>
+            <div className={`absolute h-max mr-10 z-[33] flex flex-col ${activeMenuBatas ? 'bottom-[-190px] opacity-[1]' : 'bottom-[-160px] opacity-[0]'} duration-100 text-left rounded-[14px] bg-white p-4 shadow-lg`}>
               <div className='w-flex items-center mb-3 h-[30px]'>
                 <input type="checkbox" name='kabupaten' onClick={() => setActiveLineSub(!activeLineSub)} className='mr-2 scale-[1.3] rounded-[10px]' /> Batas Kabupaten
               </div>
@@ -2256,7 +2366,7 @@ const Map: React.FC<mapProps> = React.memo(({
       </div>
       <div title='Area perbatasan kabupaten' onClick={() => setActiveLineSub(!activeLineSub)} className={`absolute ${activeLineSub ? 'bg-green-200' : 'bg-white'} hover:bg-green-200 cursor-pointer active:scale-[0.98] z-[22222] w-max h-max px-4 py-2 ${activeClick ? 'flex' : 'hidden'} items-center justify-center text-center rounded-full text-[16px] border border-slate-700 right-4 top-[13px]`}>Batas kabupaten <FaVectorSquare className="ml-3" /></div>
       
-      <div className='absolute right-2 pl-7 bottom-4 w-full flex items-center justify-between'>
+      <div className='absolute right-2 pl-7 bottom-4 w-full flex items-center'>
         <div className='w-max flex items-center'>
           {
             nameFile !== '' ? (
@@ -2276,7 +2386,7 @@ const Map: React.FC<mapProps> = React.memo(({
           <div title='Lihat semua koordinat' onClick={() => handleShowAll()} className={`${showAll ? 'bg-green-200' : 'bg-white'} mr-3 hover:bg-green-200 cursor-pointer active:scale-[0.98] z-[22222] w-[40px] h-[40px] py-2 flex items-center justify-center text-center rounded-full text-[16px] border border-slate-700 top-4`}>{showAll ? <FaEyeSlash /> : <FaEye />}</div>
           <div onClick={() => exportToGeoJSON()} className={`bg-white mr-3 hover:bg-green-200 cursor-pointer active:scale-[0.98] z-[22222] w-max h-max px-4 py-2 flex items-center justify-center text-center rounded-full text-[16px] border border-slate-700 top-4`}>GeoJSON <FaFileExport className="ml-3" /></div>
           <div title='Ambil gambar peta' onClick={() => downloadImage()} className={`z-[33333] active:bg-green-200 bg-white mr-3 hover:brightness-[90%] cursor-pointer active:scale-[0.98] z-[22222] w-[40px] h-[40px] py-2 flex items-center justify-center text-center rounded-full text-[16px] border border-slate-700 top-4`}><FaCameraRetro /></div>
-          <div title='Upload excel' onClick={() => setActiveUploadExcel(!activeUploadExcel)} className={`z-[3333333333333333] active:bg-green-200 bg-white mr-3 hover:brightness-[90%] cursor-pointer active:scale-[0.98] z-[22222] w-[40px] h-[40px] py-2 flex items-center justify-center text-center rounded-full text-[16px] border border-slate-700 top-4`}><FaUpload /></div>
+          <div title='Upload excel' onClick={() => setActiveUploadExcel(!activeUploadExcel)} className={`z-[2124] active:bg-green-200 bg-white mr-3 hover:brightness-[90%] cursor-pointer active:scale-[0.98] z-[22222] w-[40px] h-[40px] py-2 flex items-center justify-center text-center rounded-full text-[16px] border border-slate-700 top-4`}><FaUpload /></div>
         </div>
       </div>
       <div title='Hapus semua koordinat' onClick={() => handleClear()} className={`absolute left-[18px] bottom-36 z-[500] active:bg-green-200 bg-white hover:brightness-[90%] cursor-pointer active:rotate-[120deg] duration-100 z-[22222] w-[45px] h-[45px] py-2 ${coordinates.length > 0 && activeClick ? 'flex' : 'hidden'} items-center justify-center text-center rounded-full text-[16px] border border-slate-700`}>
@@ -2345,17 +2455,7 @@ const Map: React.FC<mapProps> = React.memo(({
                               <img src={marker?.thumbnail} onClick={() => {window.location.href = marker?.thumbnail as string, '__blank' }} alt="thumbnail" className='cursor-pointer hover:scale-[1.2] duration-300 hover:brightness-[70%]' />
                             </div>
                             <small className='text-[12px] rounded-[8px] hover:brightness-[90%] duration-200 py-3 mb-4 mt-2 bg-blue-700 text-white text-center' onClick={() => {window.location.href = marker?.link as string, '__blank' }}>Lihat di google map</small>
-                            <div className='w-[300px] flex flex-wrap items-center'>
-                              {
-                                marker.condition && marker.condition.slice(0, 3)
-                                .map((con: any, index: number) => (
-                                  <div className='w-max rounded-full bg-white border border-slate-300 h-[35px] mb-2 px-3 flex items-center'>
-                                    <p key={index}>{con.label} {con.icon}</p>
-                                    <div className='w-[6px] h-1'></div>
-                                  </div>
-                                ))
-                              }
-                            </div>
+                            <small className='text-[12px] rounded-[8px] hover:brightness-[90%] duration-200 py-3 mb-4 bg-white border border-slate-400 text-slate-800 text-center' onClick={() => {setActiveDetailMarker(!activeDetailMarker), dispatch(getCoordinateID(marker.coordinate_id)), setSelectCoordinateID(marker)}}>Cek Detail</small>
                           </div>
                           <p className='text-center mt-[-10px]'>
                           {marker.name_location}

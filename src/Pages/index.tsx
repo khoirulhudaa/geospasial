@@ -105,6 +105,7 @@ const Homepage: React.FC = () => {
       const resultTitle = await API.getAllTitle()
       setAllSubdistrict(resultSubdistrict?.data?.data)
       setAllTitle(resultTitle?.data?.data)
+      console.log('data koordinate:',resultTitle?.data?.data)
       setAllDinas(resultDinas?.data?.data)
       setSkeleton(false)
       setStatus(false)
@@ -161,7 +162,7 @@ const Homepage: React.FC = () => {
         <div className='w-[400px] h-max rounded-[20px] flex flex-col text-center bg-white p-7 border border-slate-300'>
           <img src={Success} className='w-[70px] mx-auto' alt="success" />
           <p className='mt-4'>{textAlert !== '' ? textAlert : 'Berhasil tambah data!'}</p>
-          <button onClick={() => setAlert(false)} className='w-max mx-auto mt-5 hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-3 rounded-full text-[14px] bg-white border border-black text-black'>
+          <button onClick={() => setAlert(false)} className='w-max mx-auto mt-5 hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-3 rounded-[10px] text-[14px] bg-white border border-black text-black'>
             <p>Kembali sekarang</p>
           </button>
         </div>

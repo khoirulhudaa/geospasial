@@ -25,7 +25,7 @@ const InputField: React.FC<inputProps> = ({
                         id={id} 
                         name={name} 
                         onChange={onChange} 
-                        className={`w-full border border-black hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 ${large ? 'py-3' : 'py-2'} rounded-full text-[16px] bg-white text-black`}
+                        className={`w-full border border-black hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 ${large ? 'py-3' : 'py-2'} rounded-[10px] text-[16px] bg-white text-black`}
                         value={value} 
                         onBlur={onBlur}
                         required 
@@ -85,7 +85,7 @@ const InputField: React.FC<inputProps> = ({
                       type={type} 
                       name={name} 
                       onChange={onChange} 
-                      className={`w-full border border-black hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 ${large ? 'py-3' : 'py-2'} rounded-full text-[16px] bg-white text-black`}
+                      className={`w-full border border-black hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 ${large ? 'py-3' : 'py-2'} rounded-[10px] text-[16px] bg-white text-black`}
                       placeholder={placeholder} 
                       value={value} 
                       onBlur={onBlur}

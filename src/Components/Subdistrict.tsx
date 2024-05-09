@@ -133,14 +133,14 @@ const Subdistrict: React.FC<popUpProps> = ({
                 <input type="text" name='searchSubdistrict' value={searchSubdistrict} onChange={(e: any) => setSearchSubdistrict(e.target.value)} id="search" className="block px-2 py-3 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Cari kecamatan...." />
             </div>
             <div className='w-max flex items-center'>
-                <button onClick={() => handleSubdistrict()} className='w-max border border-black hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-2 rounded-full text-[16px] bg-white text-black'>
+                <button onClick={() => handleSubdistrict()} className='w-max border border-black hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-2 rounded-[10px] text-[16px] bg-white text-black'>
                 <p className='mr-4'>
                     Tambah kecataman
                 </p>
                 <FaPlus />
                 </button>
-                <button onClick={() => exportToExcel()} className='mx-4 border-0 outline-0 rounded-full flex items-center active:scale-[0.98] hover:brightness-[90%] bg-green-500 text-white px-6 py-2'>Excel <FaFileExcel className='ml-3' /></button>
-                <button onClick={() => exportToPDF()} className='border-0 outline-0 active:scale-[0.98] hover:brightness-[90%] rounded-full flex items-center bg-red-500 text-white px-6 py-2'>PDF <FaFilePdf  className='ml-3' /></button>
+                <button onClick={() => exportToExcel()} className='mx-4 border-0 outline-0 rounded-[10px] flex items-center active:scale-[0.98] hover:brightness-[90%] bg-green-500 text-white px-6 py-2'>Excel <FaFileExcel className='ml-3' /></button>
+                <button onClick={() => exportToPDF()} className='border-0 outline-0 active:scale-[0.98] hover:brightness-[90%] rounded-[10px] flex items-center bg-red-500 text-white px-6 py-2'>PDF <FaFilePdf  className='ml-3' /></button>
             </div>
         </div>
         <div className="relative mt-2 border-[1px] border-black overflow-x-auto shadow-md sm:rounded-lg">

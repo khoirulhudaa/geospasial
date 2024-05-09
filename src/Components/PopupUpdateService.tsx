@@ -60,12 +60,12 @@ const PopupUpdateService: React.FC<popUpProps> = ({
                 />
             </div>
             <div className='w-max flex items-center'>
-                <button type='submit' className='w-max mt-5 hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-3 rounded-full text-[14px] bg-slate-700 text-white'>
+                <button type='submit' className='w-max mt-5 hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-3 rounded-[10px] text-[14px] bg-slate-700 text-white'>
                     <p>
                         Tambah sekarang
                     </p>
                 </button>
-                <button onClick={close} className='w-max ml-4 mt-5 hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-3 rounded-full text-[14px] bg-white border border-black text-black'>
+                <button onClick={close} className='w-max ml-4 mt-5 hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-3 rounded-[10px] text-[14px] bg-white border border-black text-black'>
                     <p>
                         Batalkan
                     </p>

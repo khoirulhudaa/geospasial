@@ -465,7 +465,7 @@ const FormGroup: React.FC<formProps> = ({
                         />
                     </div>
                     <p className='my-8' onClick={() => handleClick()}>Sudah punya akun ? <span className='text-blue-500 cursor-pointer hover:text-blue-700 active:scale-[0.98]'>Masuk</span></p>
-                    <button type='submit' className='w-full mt-12 text-center bg-slate-700 mr-6 border border-black hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center justify-center px-5 py-3 rounded-full text-[16px] text-white'>
+                    <button type='submit' className='w-full mt-12 text-center bg-slate-700 mr-6 border border-black hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center justify-center px-5 py-3 rounded-[10px] text-[16px] text-white'>
                         <p>
                             Daftar sekarang
                         </p>
@@ -489,12 +489,12 @@ const FormGroup: React.FC<formProps> = ({
                                 <p>Pastikan data sesuai dan jelas</p>
                             </div>
                             <div className='w-1/2 mt-4 flex items-center justify-end'>
-                                <button type='submit' className='w-[40%] hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-3 rounded-full text-[14px] bg-slate-700 text-white'>
+                                <button type='submit' className='w-[40%] hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-3 rounded-[10px] text-[14px] bg-slate-700 text-white'>
                                     <p className='mx-auto'>
                                         Simpan
                                     </p>
                                 </button>
-                                <button onClick={close} className='w-[35%] ml-4 hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-3 rounded-full text-[14px] bg-white border border-black text-black'>
+                                <button onClick={close} className='w-[35%] ml-4 hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-3 rounded-[10px] text-[14px] bg-white border border-black text-black'>
                                     <p className='mx-auto'>
                                         Batalkan
                                     </p>
@@ -618,7 +618,7 @@ const FormGroup: React.FC<formProps> = ({
                         <div className='w-full mb-5'>
                             <div className='w-full'>
                                 <InputField 
-                                    label='Penjelasan (REMARK)'
+                                    label='Catatan (REMARK)'
                                     name='remark'
                                     id='remark'
                                     value={coordinateFormik.values.remark}
@@ -631,7 +631,7 @@ const FormGroup: React.FC<formProps> = ({
                             </div>
                             <div className='w-full mt-5'>
                                 <InputField 
-                                    label='Skala (SRS_ID)'
+                                    label='Jenis Skala (SRS_ID)'
                                     name='scale'
                                     id='scale'
                                     value={coordinateFormik.values.scale}
@@ -660,7 +660,7 @@ const FormGroup: React.FC<formProps> = ({
                             </div>
                             <div className='w-full mt-5'>
                                 <InputField 
-                                    label='Kode PUM(ADMIN)'
+                                    label='Kode PUM (ADMIN)'
                                     name='pum'
                                     id='pum'
                                     value={coordinateFormik.values.pum}
@@ -706,11 +706,11 @@ const FormGroup: React.FC<formProps> = ({
                         <div className='w-full mb-5'>
                             <div className='w-full'>
                                 <InputField 
-                                    label='Kelurahan (WADMKD)'
+                                    label='Nama Desa (WADMKD)'
                                     name='ward'
                                     id='ward'
                                     value={coordinateFormik.values.ward}
-                                    placeholder='Kelurahan...'
+                                    placeholder='Ds...'
                                     onChange={coordinateFormik.handleChange}
                                     onBlur={coordinateFormik.handleBlur}
                                     onError={coordinateFormik.errors.ward}
@@ -764,7 +764,7 @@ const FormGroup: React.FC<formProps> = ({
                         <div className='w-full mb-5'>
                             <div className='w-full'>
                                 <InputField 
-                                    label='Kode Kelurahan/Desa (WIADKD)'
+                                    label='Kode Desa (WIADKD)'
                                     name='wardCode'
                                     id='wardCode'
                                     value={coordinateFormik.values.wardCode}
@@ -809,12 +809,12 @@ const FormGroup: React.FC<formProps> = ({
 
                         <div className='w-full mt-5 flex flex-col'>
                             <label className='font-[500] text-[14px]'>Rawan bencana ? (ON/OFF) </label>
-                            <div className={`w-full flec h-[45px] border mt-4 flex items-center border-slate-700 rounded-full px-2 duration-200 ${activeDanger ? 'bg-red-500' : 'bg-slate-200'}`}>
+                            <div className={`w-full flec h-[45px] border mt-4 flex items-center border-slate-700 rounded-[10px] px-2 duration-200 ${activeDanger ? 'bg-red-500' : 'bg-slate-200'}`}>
                                 <div onClick={() => {
                                         addCondition('Rawan bencana', '🛑')
                                         setActiveDanger(!activeDanger)
                                     }} 
-                                    className={`w-[30px] flex items-center justify-center rounded-full h-[30px] ${activeDanger ? 'ml-auto' : 'ml-0'} bg-white duration-300 cursor-pointer active:scale-[0.98] hover:brightness-[98%]`}>
+                                    className={`w-[30px] flex items-center justify-center rounded-[10px] h-[30px] ${activeDanger ? 'ml-auto' : 'ml-0'} bg-white duration-300 cursor-pointer active:scale-[0.98] hover:brightness-[98%]`}>
                                         <p className={`${activeDanger ? 'text-red-600 flex' : 'hidden'}`}>
                                             !
                                         </p>
@@ -828,7 +828,7 @@ const FormGroup: React.FC<formProps> = ({
                             <div className='w-max flex items-center overflow-x-auto'>
                                 {
                                     dataConditionArea.map((data: any, index: number) => (
-                                        <div key={index} onClick={() => addCondition(data.label, data.icon)} className={`cursor-pointer ${condition.some((dataCon: any) => dataCon.label === data.label) ? 'bg-green-200' : 'bg-white'} hover:bg-green-200 active:scale-[0.99] duration-100 w-max h-[40px] mr-4 mb-5 border border-black rounded-full px-2 py-1 text-center flex items-center justify-center`}>
+                                        <div key={index} onClick={() => addCondition(data.label, data.icon)} className={`cursor-pointer ${condition.some((dataCon: any) => dataCon.label === data.label) ? 'bg-green-200' : 'bg-white'} hover:bg-green-200 active:scale-[0.99] duration-100 w-max h-[40px] mr-4 mb-5 border border-black rounded-[10px] px-2 py-1 text-center flex items-center justify-center`}>
                                             <p className='mr-3 w-max'>{data.label}</p>
                                             {data.icon}
                                         </div>
@@ -879,12 +879,12 @@ const FormGroup: React.FC<formProps> = ({
                         />
                     </div>
                     <div className='w-full flex items-center'>
-                        <button type='submit' className='w-max mt-5 hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-3 rounded-full text-[14px] bg-slate-700 text-white'>
+                        <button type='submit' className='w-max mt-5 hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-3 rounded-[10px] text-[14px] bg-slate-700 text-white'>
                             <p>
                                 Perbarui data
                             </p>
                         </button>
-                        <button onClick={() => close()} className='w-max mt-5 ml-5 hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-3 rounded-full text-[14px] text-slate-700 border border-slate-700'>
+                        <button onClick={() => close()} className='w-max mt-5 ml-5 hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-3 rounded-[10px] text-[14px] text-slate-700 border border-slate-700'>
                             <p>
                                 Batalkan
                             </p>
@@ -895,7 +895,7 @@ const FormGroup: React.FC<formProps> = ({
         case "custom-coordinate-excel": 
             return (
                 <div className='relative w-full bg-white rounded-[12px] flex-col flex justify-center items-center px-5 py-12 h-max'>
-                    <div onClick={() => uploadExcel()} className='absolute top-5 right-5 w-[34px] h-[34px] rounded-full bg-green-500 text-white flex items-center justify-center cursor-pointer hover:brightness-[90%] active:scale-[0.98]'>
+                    <div onClick={() => uploadExcel()} className='absolute top-5 right-5 w-[34px] h-[34px] rounded-[10px] bg-green-500 text-white flex items-center justify-center cursor-pointer hover:brightness-[90%] active:scale-[0.98]'>
                         <FaHandPointer />
                     </div>
                     {
@@ -903,14 +903,14 @@ const FormGroup: React.FC<formProps> = ({
                             <form onSubmit={createCustomCoordinateWithExcel.handleSubmit} className='mt-6 bg-slate-100 h-max py-6 rounded-[12px] w-full'>
                                 <div className='relative w-full h-max overflow-ellipsis whitespace-nowrap text-center flex flex-col items-center justify-center'>
                                     <FaFileExcel className='text-[30px] mb-4' />
-                                    <div className='w-max h-max px-3 py-2 rounded-full flex items-center justify-center bg-white'>
+                                    <div className='w-max h-max px-3 py-2 rounded-[10px] flex items-center justify-center bg-white'>
                                         {nameFile}
                                     </div>
-                                    <div onClick={() => {setNameFile(''), setDataPolygonExcel([])}} className='w-max h-max mt-4 px-4 py-2 rounded-full flex items-center justify-center bg-red-500 text-white'>
+                                    <div onClick={() => {setNameFile(''), setDataPolygonExcel([])}} className='w-max h-max mt-4 px-4 py-2 rounded-[10px] flex items-center justify-center bg-red-500 text-white'>
                                         <FaTimes className='text-white' />
                                         <p className='ml-3'>Hapus File</p>
                                     </div>
-                                    <button type='submit' className='w-[80%] mt-5 text-center bg-slate-700 border border-black hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center justify-center px-4 py-2 rounded-full text-[16px] text-white'>
+                                    <button type='submit' className='w-[80%] mt-5 text-center bg-slate-700 border border-black hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center justify-center px-4 py-2 rounded-[10px] text-[16px] text-white'>
                                         <p>
                                             Simpan
                                         </p>
@@ -990,7 +990,7 @@ const FormGroup: React.FC<formProps> = ({
                 <form onSubmit={createCustomCoordinate.handleSubmit} className='w-full bg-white rounded-[12px] px-5 pb-4 py-5 h-max'>
                     <div className='w-full border-b border-slate-300 pb-4 flex items-center justify-between'>
                         <label className='font-[500] text-[14px] text-slate-800'>Titik koordinat</label>
-                        <div onClick={() => uploadExcel()} className='w-[34px] h-[34px] rounded-full bg-green-500 text-white flex items-center justify-center cursor-pointer hover:brightness-[90%] active:scale-[0.98]'>
+                        <div onClick={() => uploadExcel()} className='w-[34px] h-[34px] rounded-[10px] bg-green-500 text-white flex items-center justify-center cursor-pointer hover:brightness-[90%] active:scale-[0.98]'>
                             <FaFileExcel />
                         </div>
                     </div>
@@ -1005,7 +1005,7 @@ const FormGroup: React.FC<formProps> = ({
                                         onMouseLeave={handleMouseLeave} 
                                         title={`lat: ${data[0]} & lng: ${data[1]}`} 
                                         onClick={() => handleRemoveCoordinate(index)} 
-                                        className='w-[40px] h-[40px] cursor-pointer hover:bg-red-500 active:scale-[0.97] duration-100 rounded-full bg-blue-500 text-white mr-3 mb-3 flex justify-center items-center'
+                                        className='w-[40px] h-[40px] cursor-pointer hover:bg-red-500 active:scale-[0.97] duration-100 rounded-[10px] bg-blue-500 text-white mr-3 mb-3 flex justify-center items-center'
                                     >
                                         {
                                             showTrash && nowIndex === index ? (
@@ -1016,7 +1016,7 @@ const FormGroup: React.FC<formProps> = ({
                                     </div>
                                 ))
                             ):
-                                <div className='w-[40px] h-[40px] rounded-full bg-slate-300 text-slate-500 mr-3 mb-3 flex justify-center items-center'>0</div>
+                                <div className='w-[40px] h-[40px] rounded-[10px] bg-slate-300 text-slate-500 mr-3 mb-3 flex justify-center items-center'>0</div>
                         }
                     </div>
                     </div>
@@ -1075,9 +1075,9 @@ const FormGroup: React.FC<formProps> = ({
                     </div>
                     <div className='mb-5'>
                     <label className='font-[500] text-[14px] text-slate-800 mt-1'>Wilayah rawan ? </label>
-                    <div className={`w-[40%] flec h-[45px] border mt-4 flex items-center border-slate-700 rounded-full px-2 duration-200 ${danger ? 'bg-red-500' : 'bg-slate-200'}`}>
+                    <div className={`w-[40%] flec h-[45px] border mt-4 flex items-center border-slate-700 rounded-[10px] px-2 duration-200 ${danger ? 'bg-red-500' : 'bg-slate-200'}`}>
                         <div onClick={() => setDanger(!danger)} 
-                            className={`w-[30px] flex items-center justify-center rounded-full h-[30px] ${danger ? 'ml-auto' : 'ml-0'} bg-white duration-300 cursor-pointer active:scale-[0.98] hover:brightness-[98%]`}>
+                            className={`w-[30px] flex items-center justify-center rounded-[10px] h-[30px] ${danger ? 'ml-auto' : 'ml-0'} bg-white duration-300 cursor-pointer active:scale-[0.98] hover:brightness-[98%]`}>
                                 <p className={`${danger ? 'text-red-600 flex' : 'hidden'}`}>
                                     !
                                 </p>
@@ -1132,7 +1132,7 @@ const FormGroup: React.FC<formProps> = ({
                         />
                     </div>
                     <div className='w-full flex items-center mb-3'>
-                        <button type='submit' className='w-full mt-12 text-center bg-slate-700 mr-6 border border-black hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center justify-center px-5 py-3 rounded-full text-[16px] text-white'>
+                        <button type='submit' className='w-full mt-12 text-center bg-slate-700 mr-6 border border-black hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center justify-center px-5 py-3 rounded-[10px] text-[16px] text-white'>
                             <p>
                                 Simpan
                             </p>
@@ -1231,7 +1231,7 @@ const FormGroup: React.FC<formProps> = ({
                                         dataConditionArea.map((data: any, index: number) => {
                                             const isSelected2 = condition.some(dataCon => dataCon.label === data.label);
                                             return (
-                                                <div key={index} onClick={() => addCondition(data.label, data.icon)} className={`cursor-pointer hover:bg-green-200 active:scale-[0.99] duration-100 w-max h-[40px] mr-4 mb-5 border ${isSelected2 ? 'border-green-500 bg-green-200' : 'border-black bg-transparent'} rounded-full px-2 py-1 text-center flex items-center justify-center`}>
+                                                <div key={index} onClick={() => addCondition(data.label, data.icon)} className={`cursor-pointer hover:bg-green-200 active:scale-[0.99] duration-100 w-max h-[40px] mr-4 mb-5 border ${isSelected2 ? 'border-green-500 bg-green-200' : 'border-black bg-transparent'} rounded-[10px] px-2 py-1 text-center flex items-center justify-center`}>
                                                     <p className='mr-3 w-max'>{data.label}</p>
                                                     {data.icon}
                                                 </div>
@@ -1243,12 +1243,12 @@ const FormGroup: React.FC<formProps> = ({
                         </div>
                     </div>
                     <div className='w-max mt-8 flex items-center'>
-                        <button type='submit' className='w-max hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-3 rounded-full text-[14px] bg-slate-700 text-white'>
+                        <button type='submit' className='w-max hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-3 rounded-[10px] text-[14px] bg-slate-700 text-white'>
                             <p>
                                 Perbarui koordinat
                             </p>
                         </button>
-                        <button onClick={close} className='w-max ml-4 hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-3 rounded-full text-[14px] bg-white border border-black text-black'>
+                        <button onClick={close} className='w-max ml-4 hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-3 rounded-[10px] text-[14px] bg-white border border-black text-black'>
                             <p>
                                 Batalkan
                             </p>
@@ -1293,7 +1293,7 @@ const FormGroup: React.FC<formProps> = ({
                             onTouched={authFormiks.touched.password}
                         />
                     </div>
-                    <button type='submit' onClick={authFormiks.values.password !== '' ? () => setLoading(true) : () => null} className='w-full mt-12 text-center flex items-center bg-slate-700 mr-6 border border-black hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center justify-center px-5 py-3 rounded-full text-[16px] text-white'>
+                    <button type='submit' onClick={authFormiks.values.password !== '' ? () => setLoading(true) : () => null} className='w-full mt-12 text-center flex items-center bg-slate-700 mr-6 border border-black hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center justify-center px-5 py-3 rounded-[10px] text-[16px] text-white'>
                        {
                         loading ? (
                             <FaSpinner className='mr-2 animate-spin' />

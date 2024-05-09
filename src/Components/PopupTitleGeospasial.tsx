@@ -82,8 +82,8 @@ const PopupTitleGeospasial: React.FC<popUpProps> = ({
                 </div>
                 <div className='w-full'>
                     <label htmlFor="status" className='text-[14px] font-bold text-slate-800'>Kategori Data</label>
-                    <div className='w-[90%] bg-white oerflow-hidden rounded-full border-slate-500 border outline-0 h-[43px] relative top-3 px-3'>
-                        <select name="category" onChange={titleFormik.handleChange} onBlur={titleFormik.handleBlur} id="category" className='bg-white rounded-full w-full border-0 outline-0 h-full'>
+                    <div className='w-[90%] bg-white oerflow-hidden rounded-[10px] border-slate-500 border outline-0 h-[43px] relative top-3 px-3'>
+                        <select name="category" onChange={titleFormik.handleChange} onBlur={titleFormik.handleBlur} id="category" className='bg-white rounded-[10px] w-full border-0 outline-0 h-full'>
                             <option value="">Pilih Kategori</option>
                             <option value="Koordinat">Titik Koordinat</option>
                             <option value="Polygon">Polygon</option>
@@ -105,12 +105,12 @@ const PopupTitleGeospasial: React.FC<popUpProps> = ({
                 />
             </div>
             <div className='w-max flex items-center'>
-                <button type='submit' className='w-max mt-5 hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-3 rounded-full text-[14px] bg-slate-700     text-white'>
+                <button type='submit' className='w-max mt-5 hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-3 rounded-[10px] text-[14px] bg-slate-700     text-white'>
                     <p>
                         Tambah judul
                     </p>
                 </button>
-                <button onClick={close} className='w-max ml-4 mt-5 hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-3 rounded-full text-[14px] bg-white border border-black text-black'>
+                <button onClick={close} className='w-max ml-4 mt-5 hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-3 rounded-[10px] text-[14px] bg-white border border-black text-black'>
                     <p>
                         Batalkan
                     </p>
