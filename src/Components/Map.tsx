@@ -2535,7 +2535,7 @@ const Map: React.FC<mapProps> = React.memo(({
 
           {/* Garis kabupaten perbatasan */}
           {activeLineSub && lines && lines?.length > 1 && (
-            <Polygon positions={lines} color="#378CE7" />
+            <Polygon positions={lines} color="#3C4CE7" />
           )}
 
           {
@@ -2584,7 +2584,7 @@ const Map: React.FC<mapProps> = React.memo(({
           {/* Garis antar marker */}
           {
             activeLineMarker ? (
-              <Polyline positions={lineMarkers} color="#E11111" />
+              <Polyline positions={lineMarkers} color="#3f8CE7" />
             ):
               null
           }
