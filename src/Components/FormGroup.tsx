@@ -1062,7 +1062,6 @@ const FormGroup: React.FC<formProps> = ({
                     <div className='mb-5'>
                         <InputField 
                             name='wide'
-                            type='number'
                             label='Luas wilayah (opsi)'
                             value={createCustomCoordinate.values.wide}
                             onChange={createCustomCoordinate.handleChange}

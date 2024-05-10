@@ -2086,12 +2086,25 @@ const Map: React.FC<mapProps> = React.memo(({
         const addressExcel = findFieldIndex(["alamat", "Alamat", "ALAMAT"]);
         const linkExcel = findFieldIndex(["link", "Link", "LINK"]);
         const thumbnailExcel = findFieldIndex(["thumbnail", "Thumbnail", "gambar", "foto", "Foto", "THUMBNAIL"]);
-        const rawanIndex = findFieldIndex(["rawan", "Rawan", "RAWAN"]);
+        const rawanExcel = findFieldIndex(["rawan", "Rawan", "RAWAN"]);
+        const remarkExcel = findFieldIndex(["remark", "catatan", "Catatan", "CATATAN"]);
+        const skalaExcel = findFieldIndex(["skala", "Skala", "SKALA", "scale"]);
+        const codeExcel = findFieldIndex(["kode", "Kode", "KODE", "code"]);
+        const pumExcel = findFieldIndex(["pum", "PUM", "kode pum", "Kode PUM"]);
+        const provinceExcel = findFieldIndex(["provinsi", "province", "nama provinsi", "PROVINSI"]);
+        const typeAreaExcel = findFieldIndex(["jenis wilayah", "Jenis Area", "jenis area", "Jenis Wilayah", "typeArea"]);
+        const wardExcel = findFieldIndex(["desa", "Desa", "nama desa", "Nama Desa", "ward"]);
+        const provinceCodeExcel = findFieldIndex(["kode provinsi", "Kode provinsi", "KODE PROVINSI", "provinceCode", "Kode Provinsi"]);
+        const typeAreaCodeExcel = findFieldIndex(["kode kabupaten", "Kode kabupaten", "KODE KABUPATEN", "typeAreaCode", "Kode Kabupaten"]);
+        const subdistrictCodeExcel = findFieldIndex(["kode kecamatan", "Kode kecamatan", "KODE KECAMATAN", "subdistrictCode", "Kode Kecamatan"]);
+        const wardCodeExcel = findFieldIndex(["kode desa", "Kode desa", "KODE DESA", "wardCode", "Kode Desa"]);
+        const wideExcel = findFieldIndex(["luas", "Luas", "LUAS", "wide", "Luas Wilayah", "luas wilayah"]);
+        const sourceExcel = findFieldIndex(["sumber", "Sumber", "SUMBER", "source", "Sumber Informasi", "sumber data", "dinas"]);
 
         const convertedData: any = data.slice(1).map((row: any) => {
             let condition = [];
-            if (rawanIndex !== -1) {
-                const rawanValue = row[rawanIndex]?.toLowerCase();
+            if (rawanExcel !== -1) {
+                const rawanValue = row[rawanExcel]?.toLowerCase();
                 if (rawanValue === "y") {
                     condition.push({ label: "Rawan bencana", icon: "🛑" });
                 }
@@ -2104,7 +2117,20 @@ const Map: React.FC<mapProps> = React.memo(({
                 long: longitudeExcel !== -1 ? row[longitudeExcel] : '-',
                 address: addressExcel !== -1 ? row[addressExcel] : '-',
                 link: linkExcel !== -1 ? row[linkExcel] : '-',
-                thumbnail: thumbnailExcel !== -1 ? row[thumbnailExcel] : 0,
+                thumbnail: thumbnailExcel !== -1 ? row[thumbnailExcel] : '-',
+                remark: remarkExcel !== -1 ? row[remarkExcel] : '-',
+                scale: skalaExcel !== -1 ? row[skalaExcel] : '-',
+                code: codeExcel !== -1 ? row[codeExcel] : '-',
+                pum: pumExcel !== -1 ? row[pumExcel] : '-',
+                province: provinceExcel !== -1 ? row[provinceExcel] : '-',
+                typeArea: typeAreaExcel !== -1 ? row[typeAreaExcel] : '-',
+                ward: wardExcel !== -1 ? row[wardExcel] : '-',
+                provinceCode: provinceCodeExcel !== -1 ? row[provinceCodeExcel] : '-',
+                typeAreaCode: typeAreaCodeExcel !== -1 ? row[typeAreaCodeExcel] : '-',
+                subdistrictCode: subdistrictCodeExcel !== -1 ? row[subdistrictCodeExcel] : '-',
+                wardCode: wardCodeExcel !== -1 ? row[wardCodeExcel] : '-',
+                wide: wideExcel !== -1 ? row[wideExcel] : '-',
+                source: sourceExcel !== -1 ? row[sourceExcel] : '-',
                 condition: condition
             };
         }).filter((obj: any) =>
@@ -2114,10 +2140,21 @@ const Map: React.FC<mapProps> = React.memo(({
             obj.long !== undefined &&
             obj.address !== undefined &&
             obj.link !== undefined &&
-            obj.thumbnail !== undefined 
+            obj.thumbnail !== undefined &&
+            obj.remark !== undefined &&
+            obj.code !== undefined &&
+            obj.scale !== undefined &&
+            obj.pum !== undefined &&
+            obj.province !== undefined &&
+            obj.typeArea !== undefined &&
+            obj.ward !== undefined &&
+            obj.provinceCode !== undefined &&
+            obj.subdistrictCode !== undefined &&
+            obj.wardCode !== undefined &&
+            obj.wide !== undefined &&
+            obj.source !== undefined 
         );
 
-        // Menyimpan data yang sudah dikonversi
         setDataExcel(convertedData);
 
     };
@@ -2205,7 +2242,7 @@ const Map: React.FC<mapProps> = React.memo(({
       
       {
         activeUploadExcel ? (
-          <PopupUploadFile dataExcel={dataExcel ?? []} hendleClear={() => {setNameFile(''), setExcelData([]), setActiveUploadExcel(false)}} nameFile={nameFile ?? ''} handleStatus={() => handleStatus()} onChange={(e: any) => handleFileUpload(e)} />
+          <PopupUploadFile handleClose={() => setActiveUploadExcel(false)} dataExcel={dataExcel ?? []} hendleClearFile={() => {setNameFile(''), setExcelData([])}} nameFile={nameFile ?? ''} handleStatus={() => handleStatus()} onChange={(e: any) => handleFileUpload(e)} />
         ):
           null
       }

@@ -20,8 +20,10 @@ export interface popUpProps {
     close?: any;
     handleSubdistrict?: any;
     dinasID?: string;
+    handleClose?: any;
     dinasNAME?: string;
     handleStatus?: any;
+    hendleClearFile?: any;
     titleID?: string;
     hendleClear?: any;
     handleDone?: any;

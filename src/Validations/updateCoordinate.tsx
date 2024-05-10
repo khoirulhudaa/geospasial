@@ -4,6 +4,8 @@ import * as Yup from 'yup';
 import API from '../Services/service';
 
 export const useUpdateCoordinateFormik = ({onError, onResponse, condition, data}: {onError?: any, onResponse?: any, condition?: any, data?: any}) => {
+    console.log(data)
+
     const formik = useFormik<any>({
         initialValues: {
             name_location: '',
