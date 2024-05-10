@@ -17,7 +17,7 @@ import geoJsonData from '../GeoJson/kecamatan.json';
 import geoJsonDataSungai from '../GeoJson/sungai.json';
 import { mapProps } from '../Models/componentInterface';
 import API from '../Services/service';
-import { clearCoordinate, getCoordinate, getCoordinateID } from '../Store/coordinateSlice';
+import { clearCoordinate, getCoordinate } from '../Store/coordinateSlice';
 import PopupUploadFile from './PopupUploadFile';
 import SweetAlert from './SweetAlert';
 
@@ -2381,7 +2381,7 @@ const Map: React.FC<mapProps> = React.memo(({
           }
           <div className={`z-[552] ${nameFile ? 'ml-3' : 'ml-0'} w-max h-max px-4 py-2 flex items-center justify-center text-center bg-white rounded-full text-[16px] border border-slate-700 bottom-4`}>{ currentPosition?.[0].toFixed(6) + `  |  ` + currentPosition?.[1].toFixed(6) ?? 0 }</div>
         </div>
-        <div className={`w-max ${activeClick ? 'hidden' : 'flex'} items-center`}>
+        <div className={`absolute right-0 w-max ${activeClick ? 'hidden' : 'flex'} items-center`}>
           <div title='Kantor kecataman' onClick={() => setSubdistrictDots(!subdistrictDots)} className={`${subdistrictDots ? 'bg-green-200' : 'bg-white'} ml-3 mr-3 hover:bg-green-200 cursor-pointer active:scale-[0.98] z-[1000] w-[40px] h-[40px] py-2 flex items-center justify-center text-center rounded-full text-[16px] border border-slate-700 top-4`}><FaBuilding /></div>
           <div title='Lihat semua koordinat' onClick={() => handleShowAll()} className={`${showAll ? 'bg-green-200' : 'bg-white'} mr-3 hover:bg-green-200 cursor-pointer active:scale-[0.98] z-[1000] w-[40px] h-[40px] py-2 flex items-center justify-center text-center rounded-full text-[16px] border border-slate-700 top-4`}>{showAll ? <FaEyeSlash /> : <FaEye />}</div>
           <div onClick={() => exportToGeoJSON()} className={`bg-white mr-3 hover:bg-green-200 cursor-pointer active:scale-[0.98] z-[1000] w-max h-max px-4 py-2 flex items-center justify-center text-center rounded-full text-[16px] border border-slate-700 top-4`}>GeoJSON <FaFileExport className="ml-3" /></div>
@@ -2454,15 +2454,26 @@ const Map: React.FC<mapProps> = React.memo(({
                             <div className='relative overflow-hidden mb-2 rounded-[12px] w-full h-[160px]'>
                               <img src={marker?.thumbnail} onClick={() => {window.location.href = marker?.thumbnail as string, '__blank' }} alt="thumbnail" className='cursor-pointer hover:scale-[1.2] duration-300 hover:brightness-[70%]' />
                             </div>
-                            <small className='text-[12px] rounded-[8px] hover:brightness-[90%] duration-200 py-3 mb-4 mt-2 bg-blue-700 text-white text-center' onClick={() => {window.location.href = marker?.link as string, '__blank' }}>Lihat di google map</small>
-                            <small className='text-[12px] rounded-[8px] hover:brightness-[90%] duration-200 py-3 mb-4 bg-white border border-slate-400 text-slate-800 text-center' onClick={() => {setActiveDetailMarker(!activeDetailMarker), dispatch(getCoordinateID(marker.coordinate_id)), setSelectCoordinateID(marker)}}>Cek Detail</small>
+                            <div className='w-full flex items-center mb-4 mt-2 justify-between'>
+                              <small className='w-[145px] text-[12px] rounded-[8px] hover:brightness-[90%] duration-200 py-3 bg-blue-700 text-white text-center' onClick={() => {window.location.href = marker?.link as string, '__blank' }}>Google map</small>
+                              <small className='w-[145px] text-[12px] rounded-[8px] hover:brightness-[90%] duration-200 py-3 bg-white border border-slate-400 text-slate-800 text-center' onClick={() => {setActiveDetailMarker(!activeDetailMarker), setSelectCoordinateID(marker)}}>Cek Detail</small>
+                            </div>
+                            <div className='w-[300px] overflow-x-auto flex items-center'>
+                              <div className='w-max flex items-center'>
+                                {
+                                  marker.condition && marker.condition.slice(0, 3)
+                                  .map((con: any, index: number) => (
+                                    <div className='w-max mr-2 rounded-full bg-white border border-slate-300 h-[35px] mb-2 px-3 flex items-center'>
+                                      <p key={index}>{con.label} {con.icon}</p>
+                                      <div className='w-[6px] h-1'></div>
+                                    </div>
+                                  ))
+                                }
+                              </div>
+                            </div>
                           </div>
-                          <p className='text-center mt-[-10px]'>
+                          <p className='text-left relative left-[1.6px] mt-[-10px]'>
                           {marker.name_location}
-                          </p>
-                          <hr />
-                          <p className='text-center mt-[-10px]'>
-                            {marker?.address ?? 'Alamat tidak tersedia'}
                           </p>
                         </Popup>
                     }
