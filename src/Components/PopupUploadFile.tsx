@@ -1,5 +1,5 @@
-import React from 'react'
-import { FaDownload, FaFileExcel, FaTimes } from 'react-icons/fa'
+import React, { useState } from 'react'
+import { FaDownload, FaFileExcel, FaSpinner, FaTimes } from 'react-icons/fa'
 import { popUpProps } from '../Models/componentInterface'
 import { useCoordinateExcelFormik } from '../Validations/coordinateExcelValidation'
 import SweetAlert from './SweetAlert'
@@ -13,9 +13,13 @@ const PopupUploadFile: React.FC<popUpProps> = ({
     handleClose
 }) => {
 
+    const [loading, setLoading] = useState(false)
+
     const handleError = (error: string) => {
+        setLoading(false)
         handleStatus()
         hendleClearFile()
+        handleClose()
         SweetAlert({
             title: error,
             icon: 'error',
@@ -25,8 +29,10 @@ const PopupUploadFile: React.FC<popUpProps> = ({
 
     const handleResponse = (response: number) => {
         if(response === 200) {
+            setLoading(false)
             handleStatus()
             hendleClearFile()
+            handleClose()
             SweetAlert({
                 title: 'Berhasil Upload Data',
                 icon: 'success',
@@ -234,9 +240,16 @@ const PopupUploadFile: React.FC<popUpProps> = ({
                         <div className='w-[70%] mx-auto h-[1px] bg-slate-500 mt-5 mb-1'>
 
                         </div>
-                        <button type='submit' className='w-max hover:brightness-[90%] active:scale-[0.98] cursor-pointer h-max mt-5 px-6 py-2 rounded-[10px] flex items-center justify-center bg-slate-700 text-white'>
-                            <p>Simpan sekarang</p>
-                        </button>
+                        {
+                            loading ? (
+                                <button type='submit' onClick={() => setLoading(true)} className='w-max cursor-not-allowed flex items-center h-max mt-5 px-6 py-2 rounded-[10px] flex items-center justify-center bg-slate-300 text-slate-500'>
+                                    <p className='flex items-center'>Sedang Menyimpan <FaSpinner className='ml-2 animate-spin duration-200' /></p>
+                                </button>
+                            ):
+                                <button type='submit' onClick={() => setLoading(true)} className='w-max hover:brightness-[90%] active:scale-[0.98] cursor-pointer h-max mt-5 px-6 py-2 rounded-[10px] flex items-center justify-center bg-slate-700 text-white'>
+                                    <p>Simpan sekarang</p>
+                                </button>
+                        }
                     </div>
                 }
             </div>
