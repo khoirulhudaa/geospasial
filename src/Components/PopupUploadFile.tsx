@@ -49,7 +49,7 @@ const PopupUploadFile: React.FC<popUpProps> = ({
 
     const downloadExcel = () => {
         const fileName = 'format-sigeo.xlsx'; // Ganti dengan nama file Excel yang Anda miliki
-        const url = '../assets/excel/SIGEO.xlsx'; // Ganti dengan URL atau path menuju file Excel Anda
+        const url = 'https://raw.githubusercontent.com/khoirulhudaa/format-sigeo/main/SIGEO.xlsx'; // Ganti dengan URL atau path menuju file Excel Anda
         const a = document.createElement('a');
         a.href = url;
         a.download = fileName;
