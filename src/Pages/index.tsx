@@ -379,7 +379,7 @@ const Homepage: React.FC = () => {
       XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
   
       // Save the workbook
-      XLSX.writeFile(wb, 'koordinat.xlsx');
+      XLSX.writeFile(wb, 'polygon.xlsx');
     };
   }
 
@@ -411,7 +411,7 @@ const Homepage: React.FC = () => {
 
     const filteredArray = listCoordinate[0] && listCoordinate[0]?.map((obj: any, index: number) => ({
       No: index + 1,
-      Nama_lokasi: obj?.name_location,
+      Nama: obj?.name_location,
       Latitude: obj?.lat,
       Longitude: obj?.long,
       Kecamatan: obj?.subdistrict
@@ -461,18 +461,17 @@ const Homepage: React.FC = () => {
         return 0;
     });
 
-
     const filteredArray = custom && custom?.map((obj: any, index: number) => ({
       No: (index + 1).toString(),
-      name: obj?.name,
-      type_area: obj?.type_area,
-      type_danger: obj?.type_danger,
-      wide: obj?.wide,
-      type_wide: obj?.typeWide,
+      Nama: obj?.name,
+      Wilayah: obj?.type_area,
+      Kerawanan: obj?.type_danger,
+      Luas: obj?.wide,
+      Satuan: obj?.typeWide,
     }));
 
     // Tambahkan judul
-    const titleText = "Data koordinat";
+    const titleText = "Data area (polygon)";
     const fontSize = 16;
     const pageWidth = doc.internal.pageSize.getWidth();
     const { w } = doc.getTextDimensions(titleText, { fontSize }); // Menggunakan properti 'w' bukan 'width'
@@ -494,7 +493,7 @@ const Homepage: React.FC = () => {
     });
     
     // Save PDF file
-    doc.save('koordinat.pdf');
+    doc.save('polygon.pdf');
   }
 
   const handleLink = (link: string) => {
@@ -503,6 +502,22 @@ const Homepage: React.FC = () => {
 
   const handleSwipe = () => {
     setSwipe(!swipe)
+  }
+
+  const handleFinallyRemoveCoordinate = async (id: string) => {
+    const response = await API.removeCoordinateCustom(id)
+    if(response.status === 200) {
+      setStatus(true)
+      handleAlert('Berhasil hapus koordinat!')
+    }
+  }
+
+  const handleRemoveCoordinateCustom = (id: string) => {
+    SweetAlert({
+      text: 'Yakin hapus polygon ?',
+      icon: 'question',
+      onClick: () => handleFinallyRemoveCoordinate(id)
+    })
   }
 
   return (
@@ -704,13 +719,13 @@ const Homepage: React.FC = () => {
                                             Kecamatan
                                         </th>
                                         <th scope="col" className="py-6">
-                                            Action
+                                            Aksi
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                   {
-                                     allTitle && allTitle.length > 0 ? (
+                                     allTitle && allTitle?.length > 0 ? (
                                       allTitle
                                       .filter((data: any) => data?.title_id === titleID)
                                       .map((data: any) => (
@@ -755,7 +770,9 @@ const Homepage: React.FC = () => {
                                         ))
                                       ))    
                                      ):
-                                      null
+                                      <div className='p-6'>
+                                        <p>Belum tambah data (koordinat)</p>
+                                      </div>
                                   }
                                 </tbody>
                             </table>
@@ -789,10 +806,13 @@ const Homepage: React.FC = () => {
                                             Luas area
                                         </th>
                                         <th scope="col" className="py-6">
-                                          Satua luas
+                                          Satuan luas
                                         </th>
                                         <th scope="col" className="py-6">
                                             Tipe kerawanan
+                                        </th>
+                                        <th scope="col" className="py-6">
+                                            Aksi
                                         </th>
                                     </tr>
                                 </thead>
@@ -822,10 +842,15 @@ const Homepage: React.FC = () => {
                                               <td className="py-4">
                                                 {data?.type_danger}
                                               </td>
+                                              <td className="py-4 flex items-center">
+                                                  <button className='w-[35px] h-[35px] hover:brightness-[90%] rounded-md p-1 bg-red-500 text-white text-center flex items-center justify-center ml-2' onClick={() => handleRemoveCoordinateCustom(data?.coordinate_id)}><FaTrash /></button>
+                                              </td>
                                           </tr>
                                         ))
                                      ):
-                                      null
+                                      <div className='p-6'>
+                                        <p>Belum tambah data (polygon)</p>
+                                      </div>
                                   }
                                 </tbody>
                             </table>
