@@ -1238,7 +1238,7 @@ const FormGroup: React.FC<formProps> = ({
                                 </div>
                                 <div className='w-full'>
                                     <InputField 
-                                        label='Kecataman (WADMKC)'
+                                        label='Kecamatan (WADMKC)'
                                         name='subdistrict'
                                         type='select-input'
                                         options={dataSubdistrict}

@@ -122,7 +122,7 @@ const Subdistrict: React.FC<popUpProps> = ({
 
   return (
     <div className='w-full mt-[-4px]'>
-        <h2 className='font-bold text-[26px] my-8'>Daftar (kecataman)</h2>
+        <h2 className='font-bold text-[26px] my-8'>Daftar (Kecamatan)</h2>
         <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 dark:bg-gray-900">
             <div className="relative">
                 <div className="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
@@ -135,7 +135,7 @@ const Subdistrict: React.FC<popUpProps> = ({
             <div className='w-max flex items-center'>
                 <button onClick={() => handleSubdistrict()} className='w-max border border-black hover:brightness-[90%] active:scale-[0.99] duration-100 h-max flex items-center px-5 py-2 rounded-[10px] text-[16px] bg-white text-black'>
                 <p className='mr-4'>
-                    Tambah kecataman
+                    Tambah Kecamatan
                 </p>
                 <FaPlus />
                 </button>
