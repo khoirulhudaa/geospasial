@@ -42,8 +42,8 @@ const Login: React.FC = () => {
             isDesktop ? (
                 <div className='min-h-screen flex bg-white'>
                     <div className='relative w-[33vw] h-screen flex justify-center items-center'>
-                        <div onClick={() => setDaftar(true)} className='opacity-0 w-max h-max flex items-center justify-center bg-green-200 fixed z-40 top-4 right-5 cursor-pointer'>Daftar</div>
-                        <div className='relative absolute px-8 pb-8 pt-5 right-0 w-[88%] h-max rounded-[20px] border-2 border-slate-700'>
+                        <div onClick={() => setDaftar(!daftar)} className='absolute opacity-0 w-max h-max flex items-center justify-center bg-green-200 z-[9999999999999] top-4 right-5'>Daftar</div>
+                        <div className='relative px-8 pb-8 pt-5 right-0 w-[88%] h-max rounded-[20px] border-2 border-slate-700'>
                             <div className='w-full flex items-center justify-between mb-8'>
                                 <img src={Diskominfo} className='w-[40%] ml-[-7px]' alt="logo-diskominfo" />
                                 <div onClick={() => setActive(!active)} className='relative cursor-pointer active:scale-[0.99] duration w-[24px] h-[24px] border border-black rounded-full flex items-center justify-center'>

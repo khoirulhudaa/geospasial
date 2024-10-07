@@ -1,10 +1,11 @@
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import React, { RefObject, useEffect, useRef, useState } from 'react';
-import { FaBezierCurve, FaCalendarAlt, FaClock, FaDotCircle, FaDrawPolygon, FaFileExcel, FaFilePdf, FaKey, FaPenAlt, FaPlus, FaSignOutAlt, FaTimes, FaTrash } from 'react-icons/fa';
+import { FaCalendarAlt, FaClock, FaFileExcel, FaFilePdf, FaKey, FaPenAlt, FaPlus, FaSignOutAlt, FaTimes, FaTrash } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';
+import { Device, EarthPNG, Success } from '../assets';
 import { Map, PopupService, Subdistrict } from '../Components';
 import FormGroup from '../Components/FormGroup';
 import Grafik from '../Components/Grafik';
@@ -15,10 +16,10 @@ import PopupUpdateService from '../Components/PopupUpdateService';
 import PopupUpdateTitleGeospasial from '../Components/PopupUpdateTitle';
 import SweetAlert from '../Components/SweetAlert';
 import convertArrayOfObjectsToArray from '../Helpers/arrayTwoDimention';
+import formatIsoDate from '../Helpers/createdAttoNormalFormat';
 import API from '../Services/service';
 import { clearCoordinate } from '../Store/coordinateSlice';
 import store from '../Store/store';
-import { Device, EarthPNG, Success } from '../assets';
 
 const Homepage: React.FC = () => {
 
@@ -59,7 +60,6 @@ const Homepage: React.FC = () => {
   const [abbreviation, setAbbreviation] = useState<string>('')
   const [nameDinas, setNameDinas] = useState<string>('')
   const [color, setColor] = useState<string>('')
-  const [searchNameDinas, setSearchNameDinas] = useState<string>('')
   const [custom, setCustom] = useState<any[]>([])
   const [dataTitleNow, setDataTitleNow] = useState<any>(null)
 
@@ -114,6 +114,7 @@ const Homepage: React.FC = () => {
   
 
   const auth = store.getState().Auth.auth ?? ''
+  console.log(auth)
   
   const handleStatus = () => {
     setStatus(true)
@@ -544,28 +545,25 @@ const Homepage: React.FC = () => {
                     <img src={EarthPNG} alt="side-bg" className='absolute scale-[1.8] z-[1] left-[-15px] bottom-[-150px] opacity-[0.1]' />
                     <div className='Titik Koorelative w-full h-max z-[40] flex mb-10 items-center justify-between'>
                       <h2 onClick={() => window.location.reload()} className={`cursor-pointer active:scale-[0.98] hover:brightness-[90%] text-white text-[22px] ${activeWidth ? 'hidden' : 'inline'}`}>SI-GEO 🌎</h2>
-                      <button title='Buat dinas baru' onClick={() => setAddService(!addService)} className={`w-max border border-black hover:brightness-[90%] active:scale-[0.99] duration-100 h-max ${activeWidth ? 'hidden' : 'flex'} items-center px-5 py-2 rounded-full text-[16px] bg-white text-black`}>
+                      <button title='Buat dinas baru' onClick={() => {allDinas?.filter(data => data?.email === auth?.email)?.length > 0 ? null : setAddService(!addService)}} className={`w-max border border-black duration-100 h-max ${activeWidth ? 'hidden' : 'flex'} items-center px-5 py-2 rounded-full text-[16px] ${allDinas?.filter(data => data?.email === auth?.email)?.length > 0 ? 'bg-slate-300 text-slate-500 cursor-not-allowed' : 'bg-white text-black hover:brightness-[90%] active:scale-[0.99]'}`}>
                         <p className='mr-4'>
                           Dinas Baru
                         </p>
                         <FaPlus />
                       </button>
                     </div>
-          
-                    <div className='relative w-full h-[1px] bg-white mb-4 z-[40]'></div>
-                    <div className="w-[100%] mb-4">
+
+                    <hr className='mb-5' />
+
+                    {/* <div className='relative w-full h-[1px] bg-white mb-4 z-[40]'></div> */}
+                    {/* <div className="w-[100%] mb-4">
                         <input name="searchNameDinas" value={searchNameDinas} onChange={(e: any) => setSearchNameDinas(e.target.value)} type="text" className="w-full rounded-[10px] bg-white my-2 px-3 py-3 text-slate-600 outline-0 border border-slate-300 text-[14px]" placeholder="Cari nama dinas..." />
-                    </div>
-                    <div className='relative w-full h-[1px] bg-white mb-5 z-[40]'></div>
+                    </div> */}
+                    {/* <div className='relative w-full h-[1px] bg-white mb-5 z-[40]'></div> */}
                     {
                       !skeleton ? (
-                      allDinas && allDinas?.length > 0 ? (
-                        allDinas?.filter((data: any) => {
-                          if(searchNameDinas !== '') {
-                            return (data?.name_dinas).toLowerCase().includes(searchNameDinas.toLowerCase())
-                          }
-                          return true
-                        })
+                      allDinas && allDinas?.filter(data => data?.email === auth?.email)?.length > 0 ? (
+                        allDinas?.filter((data: any) => data?.email === auth?.email)
                         .map((data: any, index: number) => (
                           <div 
                               key={index} 
@@ -615,6 +613,37 @@ const Homepage: React.FC = () => {
                             </div>
                           </div>
                     }
+                    <hr className='mt-5 mb-5' />
+                    <div className='relative p-5 bg-white w-full rounded-lg h-max z-[777]'>
+                      <h2 className='font-bold mb-4'>Statistik</h2>
+                      <div className='w-full py-5 border-t border-t-slate-300'>
+                        <p>
+                          Akun Email
+                        </p>
+                        <p className='text-slate-400 text-[13px] mt-2'>{auth?.email}</p>
+                      </div>
+
+                      <div className='w-full py-5 border-t border-t-slate-300'>
+                        <p>
+                          Jumlah Judul Sebaran
+                        </p>
+                        <p className='text-slate-400 text-[13px] mt-2'>{allTitle?.filter(data => data?.dinas_id === dinasID)?.length}</p>
+                      </div>
+
+                      <div className='w-full py-5 border-t border-t-slate-300'>
+                        <p>
+                          Jumlah Dinas Dikelola
+                        </p>
+                        <p className='text-slate-400 text-[13px] mt-2'>{allDinas?.filter(data => data?.email === auth?.email)?.length}</p>
+                      </div>
+                     
+                      <div className='w-full pt-5 border-t border-t-slate-300'>
+                        <p>
+                          Akun Dibuat
+                        </p>
+                        <p className='text-slate-400 text-[13px] mt-2'>{formatIsoDate(auth?.created_at)}</p>
+                      </div>
+                    </div>
                   </>
               }
             </div>
@@ -927,7 +956,7 @@ const Homepage: React.FC = () => {
                                       <FaClock className='mr-2' /> {data?.status}
                                     </div>
                                     <div className='rounded-full w-max h-max px-4 py-2 flex items-center justify-center bg-yellow-200 text-yellow-600 mr-4'>
-                                      {data?.category === 'Koordinat' ? <FaDotCircle className='mr-2' /> : data?.category === 'Polygon' ? <FaDrawPolygon className='mr-2' /> : <FaBezierCurve className='mr-2' />} { data?.category ?? '-' }
+                                      { data?.category ?? '-' }
                                     </div>
                                   </div>
                                   <div className='w-full flex items-center justify-between mt-1'>
